@@ -27,6 +27,24 @@
         <!-- Custom scroll for sidebars,tables and etc. -->
         <script src="<?echo $this->config->base_url()?>html/plugins/core/slimscroll/jquery.slimscroll.min.js"></script>
         <script src="<?echo $this->config->base_url()?>html/plugins/core/slimscroll/jquery.slimscroll.horizontal.min.js"></script>
+		
+		<!-- 데이터 테이블 js 추가 -->
+		<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/jquery.dataTables.js"></script>
+		<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.tableTools.js"></script>
+		<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.bootstrap.js"></script>
+        <script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.responsive.js"></script>
+
+		<!-- 폼 체크 추가 -->
+		<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
+		<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
+		<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
+		
+
+		<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+        <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+        
+
+
         <!-- Remove click delay in touch -->
         <script src="<?echo $this->config->base_url()?>html/plugins/core/fastclick/fastclick.js"></script>
         <!-- Increase jquery animation speed -->
@@ -38,11 +56,6 @@
         <!-- Other plugins ( load only nessesary plugins for every page) -->
         <script src="<?echo $this->config->base_url()?>html/js/libs/date.js"></script>
         <script src="<?echo $this->config->base_url()?>html/js/jquery.dynamic.js"></script>
-        <script src="<?echo $this->config->base_url()?>html/js/sw/sw_common.js"></script>
-
-		<!-- form -->
-		<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-		<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-		<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
+        <script src="<?echo $this->config->base_url()?>html/js/sw/sw_common.js"></script>		
     </body>
 <html>

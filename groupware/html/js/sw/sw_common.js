@@ -173,4 +173,16 @@ $(document).ready(function() {
             adminObj.removeFixedSidebar('right');
         }
     });
+
+	$('.table').checkAll({
+		masterCheckbox: '.check-all',
+		otherCheckboxes: '.check',
+		highlightElement: {
+            active: true,
+            elementClass: 'tr',
+            highlightClass: 'highlight'
+        }
+	});
+
+
 });
