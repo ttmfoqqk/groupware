@@ -59,7 +59,7 @@ class Login extends CI_Controller{
 				$goUrl = !$goUrl ? '/' : $goUrl;
 				redirect($goUrl);
 			}else{
-				alert('계정 정보를 확인해주세요.\n\n'.$string,$this->config->base_url() );
+				alert('계정 정보를 확인해주세요.',$this->config->base_url() );
 			}
 			
 		}
