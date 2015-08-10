@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>게시판 - <?echo BOARD_TITLE;?></h2>
-					<span class="txt">daumeditor 적용요망 </span>
 				</div>
 			</div>
 			<div class="row">
@@ -20,9 +19,10 @@
 							<h4 class="panel-title"><?echo BOARD_TITLE;?></h4>
 						</div>
 						<div class="panel-body">
-							<form id="board-form-write-board" method="post" class="form-horizontal group-border stripped" role="form" action="<?echo $action_url;?>">
-							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<form id="board-form-write-board" method="post" class="form-horizontal group-border stripped" role="form" action="<?echo BOARD_FORM;?>">
+							<input type="hidden" name="action_type" id="action_type" value="">
 							<input type="hidden" name="contents_no" id="contents_no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
 								
 								<table id="tabletools" class="table table-bordered" cellspacing="0" width="100%">
 									<tbody>
@@ -50,15 +50,15 @@
 
 								<!-- End .form-group  -->
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('/board/lists/'.BOARD_CODE)?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url;?>'">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<?if($data['user_id']==$this->session->userdata('user_id')){?>
+									<?if($data['user_id']==$this->session->userdata('id')){?>
 									<button id="contents_board_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $edit_url;?>';">수정</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $edit_url?>'">수정</button>
 									<?}?>
 									<?if(BOARD_REPLY == 0){?>
-									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $reply_url;?>';">답글</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $reply_url?>'">답글</button>
 									<?}?>
 								</div>
 

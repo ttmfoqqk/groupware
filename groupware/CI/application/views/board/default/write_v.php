@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>게시판 - <?echo BOARD_TITLE;?></h2>
-					<span class="txt">daumeditor 적용요망 </span>
 				</div>
 			</div>
 			<div class="row">
@@ -21,8 +20,9 @@
 						</div>
 						<div class="panel-body">
 							
-							<form id="board_form_write_board" name="board_form_write_board" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" >
-							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<form id="board_form_write_board" name="board_form_write_board" action="<?echo BOARD_FORM;?>" method="post" class="form-horizontal group-border stripped" >
+							<input type="hidden" name="action_type" id="action_type" value="create">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
 
 								
 								<div class="form-group">
@@ -54,7 +54,7 @@
 								</div>
 								<!-- End .form-group  -->
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('/board/lists/'.BOARD_CODE)?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
 									<button type="submit" id="test-submit-button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
