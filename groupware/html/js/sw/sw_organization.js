@@ -21,7 +21,7 @@ $(document).ready(function() {
 	//updateOutput($('#nestable3').data('output', $('#nestable-output')));
 
 	set_button();
-
+	$category = $('#nestable3').attr('data-key');
 	$('#category_add').click(function(){
 		action_insert(0);
 	});
@@ -31,7 +31,7 @@ $(document).ready(function() {
 function action_move(obj){
 	$.ajax({
 		type     : 'POST',
-		url      : '/organization/moves',
+		url      : '/groupware/menu/moves',
 		dataType : 'json',
 		data     : {
 			json_data : obj
@@ -61,7 +61,7 @@ function action_update(obj){
 				//alert(result);
 				$.ajax({
 					type     : 'POST',
-					url      : '/organization/update',
+					url      : '/groupware/menu/update',
 					dataType : 'json',
 					data     : {
 						no : $no,
@@ -98,7 +98,7 @@ function action_delete(obj){
 			if(result){
 				$.ajax({
 					type     : 'POST',
-					url      : '/organization/delete',
+					url      : '/groupware/menu/delete',
 					dataType : 'json',
 					data     : {
 						no : li.attr('data-id')
@@ -135,10 +135,11 @@ function action_insert(parent_no){
 			if( $.trim(result) ){
 				$.ajax({
 					type     : 'POST',
-					url      : '/organization/create',
+					url      : '/groupware/menu/create',
 					dataType : 'html',
 					data     : {
-						parent_no : parent_no,
+						category  : $category ,
+						parent_no : parent_no ,
 						name      : $name
 					},
 					success: function(data){

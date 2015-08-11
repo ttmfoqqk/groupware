@@ -114,33 +114,6 @@
 							<li><a href="<?php echo site_url('purpose/add');?>"><span class="txt">추가평점</span></a></li>
 						</ul>
 					</li>
-
-
-
-
-					<!--li>
-						<a href="#"><i class="l-basic-world"></i> <span class="txt">사원</span></a>
-						<ul class="sub">
-							<li><a href="<?php echo site_url('organization');?>"><span class="txt">조직도</span></a></li>
-							<li><a href="<?php echo site_url('member/lists');?>"><span class="txt">사원관리</span></a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="#"><i class="l-basic-sheet-txt"></i> <span class="txt">문서</span></a>
-						<ul class="sub">
-							<li><a href="<?php echo site_url('document/category');?>"><span class="txt">분류</span></a></li>
-							<li><a href="#<?php echo site_url('document/list');?>" onclick="alert('준비중')"><span class="txt">목록</span></a></li>
-						</ul>
-					</li>
-					<li><a href="#<?php echo site_url('project/');?>" onclick="alert('준비중')"><i class="l-basic-laptop"></i> <span class="txt">프로젝트</span></a></li>
-					<li>
-						<a href="#"><i class="l-basic-todo-pencil"></i> <span class="txt">결재</span></a>
-						<ul class="sub">
-							<li><a href="<?php echo site_url('approved/send');?>"><span class="txt">보낸 결재</span></a></li>
-							<li><a href="<?php echo site_url('approved/receive');?>"><span class="txt">받은 결재</span></a></li>
-						</ul>
-					</li-->
-					
 					<li>
 						<a href="#"><i class="l-basic-elaboration-message-dots"></i> <span class="txt">게시판</span></a>
 						<ul class="sub">

@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>게시판 - <?echo BOARD_TITLE;?></h2>
-					<span class="txt">daumeditor 적용요망 </span>
 				</div>
 			</div>
 			<div class="row">
@@ -21,9 +20,10 @@
 						</div>
 						<div class="panel-body">
 							
-							<form id="board-form-write-board" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
-							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<form id="board-form-write-board" action="<?echo BOARD_FORM;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<input type="hidden" name="action_type" id="action_type" value="edit">
 							<input type="hidden" name="contents_no" id="contents_no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
 								
 								<div class="form-group">
 									<label for="subject" class="col-lg-2 col-md-3 control-label">제목</label>
@@ -49,7 +49,7 @@
 								<!-- End .form-group  -->
 								
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('/board/lists/'.BOARD_CODE)?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">수정</button>

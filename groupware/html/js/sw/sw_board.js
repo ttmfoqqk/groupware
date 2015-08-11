@@ -50,6 +50,7 @@ $(document).ready(function() {
 			callback: function(result) {
 		  		//callback result
 				if(result){
+					$('#action_type').val('delete');
 					$('#board-form-list').submit();
 				}		  		
 		    }

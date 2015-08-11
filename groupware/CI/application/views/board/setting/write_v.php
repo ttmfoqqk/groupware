@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>게시판 설정</h2>
-					<span class="txt">게시판 설정</span>
 				</div>
 			</div>
 			<div class="row">
@@ -21,7 +20,7 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="board-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="board-form-write-setting" action="<?echo site_url('board_setting/proc');?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="board_no" id="board_no" value="<?echo $data['no'];?>">
 
@@ -74,10 +73,12 @@
 								<!-- End .form-group  -->
 							
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('board_setting/lists')?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
+									<?if( $action_type == 'edit' ) {?>
 									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+									<?}?>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
 								</div>
 
