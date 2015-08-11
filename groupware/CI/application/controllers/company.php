@@ -4,6 +4,7 @@ class Company extends CI_Controller{
 		parent::__construct();
 		login_check();
 		set_cookie('left_menu_open_cookie',site_url('company'),'0');
+		$this->load->model('md_company');
     }
 
 	public function _remap($method){
@@ -73,6 +74,15 @@ class Company extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$data['list'] = array();
+		$data['action_url'] = site_url('company_setting/proc');
+		$data['action_type'] = 'delete';
+		$result = $this->md_company->get(NULL, 'no, order, gubun, bizName, bizNumber, phone, fax, created');
+		if (count($result) > 0){
+			foreach ($result as $row)
+			{
+				array_push($data['list'], $row);
+			}
+		}
 		$this->load->view('company/company_v',$data);
 	}
 }
