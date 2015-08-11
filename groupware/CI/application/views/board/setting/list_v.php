@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>게시판 설정</h2>
-					<span class="txt">게시판 설정</span>
 				</div>
 			</div>
 			<div class="row">
@@ -20,8 +19,8 @@
 							<h4 class="panel-title">게시판 목록</h4>
 						</div>
 						<div class="panel-body">
-							<form id="board-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
-							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<form id="board-form-list" action="<?echo site_url('board_setting/proc');?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<input type="hidden" name="action_type" id="action_type" value="delete">
 
 							<table id="tabletools" class="table table-bordered" cellspacing="0" width="100%">
 								<thead>
@@ -42,7 +41,7 @@
 								</thead>
 								<tbody>
 								<?php foreach($list as $lt){
-									$anchor_url = site_url('board_setting/write/'.$lt['no']);
+									$anchor = $anchor_url.'?no='.$lt['no'];
 									?>
 									<tr>
 										<td>
@@ -51,12 +50,12 @@
 												<label for="check<?$lt['no'];?>"></label>
 											</div>
 										</td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['code'];?></a></td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['type'];?></a></td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo ($lt['reply'] == 0 ? 'Y' : 'N'); ?></a></td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo ($lt['comment'] == 0 ? 'Y' : 'N'); ?></a></td>
-										<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['code'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['type'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo ($lt['reply'] == 0 ? 'Y' : 'N'); ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo ($lt['comment'] == 0 ? 'Y' : 'N'); ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
 									</tr>
 								<?php }?>
 								<?
@@ -67,10 +66,10 @@
 								<?}?>
 								</tbody>
 							</table>
-							<div class="panel-body" style="text-align:center;">test pagination<br><?echo $pagination;?></div>
+							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
 							<div class="panel-body pull-right">
 								<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-								<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo site_url('board_setting/write')?>';">등록</button>
+								<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $anchor_url;?>';">등록</button>
 							</div>
 							</form>
 						</div>

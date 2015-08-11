@@ -9,17 +9,20 @@ class Board extends CI_Controller{
 			'code' => $this->uri->segment(3) ,
 			'activated' => 0
 		);
-		$result = $this->board_model->get_setting_detail($option);
-		$board  = $result->row_array();
+		$result   = $this->board_model->get_setting_detail($option);
+		$board    = $result->row_array();
+		$cur_page = !$this->uri->segment(4) ? 1 : $this->uri->segment(4); // 현재 페이지
 
 		if( !isset($board['no']) ){
 			alert('잘못된 게시판 코드 입니다.');
 		}
-		define('BOARD_CODE', $board['code']);
-		define('BOARD_TITLE', $board['name']);
-		define('BOARD_REPLY', $board['reply']);
+		define('BOARD_CODE'   , $board['code']);
+		define('BOARD_TITLE'  , $board['name']);
+		define('BOARD_REPLY'  , $board['reply']);
 		define('BOARD_COMMENT', $board['comment']);
-		set_cookie('left_menu_open_cookie',site_url('board/lists/'.BOARD_CODE),'0');		
+		define('BOARD_PAGE'   , $cur_page);
+		define('BOARD_FORM'   , site_url('board/proc/'.BOARD_CODE) );
+		set_cookie('left_menu_open_cookie',site_url('board/lists/'.BOARD_CODE),'0');
 	}
 
 	public function _remap($method){
@@ -46,58 +49,29 @@ class Board extends CI_Controller{
 	}
 
 	public function lists(){
+		// option search 추가
 		$option = array(
-			'is_delete'=>0,
 			'code'=>BOARD_CODE
 		);
-		$option_notice = array(
-			'is_delete'=>0,
-			'code'=>BOARD_CODE,
-			'is_notice'=>0
-		);
-		$data['list'] = $this->board_model->get_board_list($option);
-		$data['notice'] = $this->board_model->get_board_list($option_notice);
-		$data['action_url'] = site_url('board/proc/'.BOARD_CODE);
-		$data['action_type'] = 'delete';
 
-		/*
-			http://codeigniter-kr.org/user_guide_2.1.0/libraries/pagination.html
-		*/
-		$config['base_url'] = site_url('board/lists/'.BOARD_CODE);
-		$config['total_rows'] = 200; // 전체 글갯수
-		$config['per_page'] = 10;  // 보여질 갯수
-		$config['uri_segment'] = 4;
-		$config['num_links'] = 4; // 선택 페이지 좌우 링크 갯수
+		$per_page  = 10; // 글 갯수
+		$offset    = ($per_page * BOARD_PAGE)-$per_page;
+		$get_board = $this->board_model->get_board_list($option,$per_page,$offset);
 		
+		$data['total']         = $get_board['total'];   // 전체글수
+		$data['notice']        = $get_board['notice'];  // 공지
+		$data['list']          = $get_board['list'];    // 글목록
 
-		$config['full_tag_open'] = '<ul class="pagination">';
-		$config['full_tag_close'] = '</ul>';
+		$data['parameters']    = ''; // parameters , search 추가시 수정
+		$data['anchor_url']    = site_url('board/view/'.BOARD_CODE.'/'.BOARD_PAGE); // 글 링크
+		$data['write_url']     = site_url('board/write/'.BOARD_CODE.'/'.BOARD_PAGE); // 글 링크
 
-
-		$config['first_link'] = 'First';
-		$config['first_tag_open'] = '<li class="first">';
-		$config['first_tag_close'] = '</li>';
-
-
-		$config['last_link'] = 'Last';
-		$config['last_tag_open'] = '<li class="last">';
-		$config['last_tag_close'] = '</li>';
-
-		$config['prev_link'] = '<i class="fa fa-angle-left"></i>';
-		$config['prev_tag_open'] = '<li class="prev">';
-		$config['prev_tag_close'] = '</li>';
-
-		$config['next_link'] = '<i class="fa fa-angle-right"></i>';
-		$config['next_tag_open'] = '<li class="next">';
-		$config['next_tag_close'] = '</li>';
-
-		$config['num_tag_open'] = '<li>';
-		$config['num_tag_close'] = '</li>';
-
-		$config['cur_tag_open'] = '<li class="disabled"><a href="#" class="btn btn-primary disabled">';
-		$config['cur_tag_close'] = '</a></li>';
-
-
+		// pagination option
+		$config['base_url']    = site_url('board/lists/'.BOARD_CODE);
+		$config['total_rows']  = $data['total'];
+		$config['per_page']    = $per_page;
+		$config['cur_page']    = BOARD_PAGE;
+		$config['uri_segment'] = 4;
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
@@ -106,10 +80,10 @@ class Board extends CI_Controller{
 	}
 
 	public function view(){
-		$get_no = $page_method = $this->uri->segment(4);
+		$no = $this->input->get('no');
 
 		$option = array(
-			'no'=>$get_no,
+			'no'=>$no,
 			'code'=>BOARD_CODE
 		);
 		$result = $this->board_model->get_board_detail($option,'view');
@@ -130,26 +104,24 @@ class Board extends CI_Controller{
 			'ip' => $result->ip,
 			'created' => $result->created
 		);
-
-		$data['action_url'] = site_url('board/proc/'.BOARD_CODE);
-		$data['action_type'] = 'delete';
-		$data['edit_url'] = site_url('board/edit/'.BOARD_CODE.'/'.$get_no);
-		$data['reply_url'] = site_url('board/reply/'.BOARD_CODE.'/'.$get_no);
+		$data['parameters'] = '';
+		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
+		$data['edit_url']   = site_url('board/edit/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
+		$data['reply_url']  = site_url('board/reply/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
 
 		$this->load->view('board/default/view_v',$data);
 	}
 
 	public function write(){
-		$data['action_url'] = site_url('board/proc/'.BOARD_CODE);
-		$data['action_type'] = 'create';
-
+		$data['parameters'] = '';
+		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/write_v',$data);
 	}
 
 	public function edit(){
-		$get_no = $page_method = $this->uri->segment(4);
+		$no = $this->input->get('no');
 		$option = array(
-			'no'=>$get_no,
+			'no'=>$no,
 			'code'=>BOARD_CODE
 		);
 		$result = $this->board_model->get_board_detail($option,'edit');
@@ -160,7 +132,7 @@ class Board extends CI_Controller{
 
 		$result = $result->row();
 
-		if($result->user_id == $this->session->userdata('user_id')){
+		if($result->user_id == $this->session->userdata('id')){
 			('잘못된 접근입니다.');
 		}
 
@@ -170,25 +142,23 @@ class Board extends CI_Controller{
 			'user_id' => $result->user_id,
 			'user_name' => $result->user_name,
 			'subject' => $result->subject,
-			'contents' => nl2br($result->contents),
+			'contents' => $result->contents,
 			'count_hit' => $result->count_hit,
 			'ip' => $result->ip,
 			'is_notice' => $result->is_notice,
 			'created' => $result->created
 		);
-
-		$data['action_url'] = site_url('board/proc/'.BOARD_CODE);
-		$data['action_type'] = 'edit';
-
+		$data['parameters'] = '';
+		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/edit_v',$data);
 	}
 
 	public function reply(){
 		if(BOARD_REPLY == 1)alert('답글이 제한된 게시판입니다.');
 
-		$get_no = $page_method = $this->uri->segment(4);
+		$no = $this->input->get('no');
 		$option = array(
-			'no'=>$get_no,
+			'no'=>$no,
 			'code'=>BOARD_CODE
 		);
 		$result = $this->board_model->get_board_detail($option,'edit');
@@ -207,15 +177,14 @@ class Board extends CI_Controller{
 			'user_id'     => $result->user_id,
 			'user_name'   => $result->user_name,
 			'subject'     => $result->subject,
-			'contents'    => nl2br($result->contents),
+			'contents'    => $result->contents,
 			'count_hit'   => $result->count_hit,
 			'ip'          => $result->ip,
 			'created'     => $result->created
 		);
 
-		$data['action_url'] = site_url('board/proc/'.BOARD_CODE);
-		$data['action_type'] = 'reply';
-
+		$data['parameters'] = '';
+		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/reply_v',$data);
 	}
 
@@ -231,6 +200,8 @@ class Board extends CI_Controller{
 		$depth       = $this->input->post('depth')==''?0:$this->input->post('depth');
 		$order       = $this->input->post('order')==''?0:$this->input->post('order');
 
+		$parameters  = $this->input->post('parameters');
+
 		if( $action_type == 'create' ){
 			
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -245,9 +216,9 @@ class Board extends CI_Controller{
 				'code'          =>BOARD_CODE,
 				'depth'         =>0,
 				'order'         =>0,
-				'user_no'       =>$this->session->userdata('user_no'),
-				'user_id'       =>$this->session->userdata('user_id'),
-				'user_name'     =>$this->session->userdata('user_name'),
+				'user_no'       =>$this->session->userdata('no'),
+				'user_id'       =>$this->session->userdata('id'),
+				'user_name'     =>$this->session->userdata('name'),
 				'subject'       =>$subject,
 				'contents'      =>$contents,
 				'is_notice'     =>$is_notice,
@@ -282,7 +253,7 @@ class Board extends CI_Controller{
 			);
 			$this->board_model->get_board_update($option,$where);
 
-			alert('수정되었습니다.', site_url('board/view/'.BOARD_CODE.'/'.$contents_no) );
+			alert('수정되었습니다.', site_url('board/view/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$contents_no .'&'. $parameters ) );
 
 		}elseif( $action_type == 'reply' ){
 			if(BOARD_REPLY == 1)alert('답글이 제한된 게시판입니다.');
@@ -308,9 +279,9 @@ class Board extends CI_Controller{
 				'parent_no'     =>$contents_no,
 				'depth'         =>$depth+1,
 				'order'         =>$order+1,
-				'user_no'       =>$this->session->userdata('user_no'),
-				'user_id'       =>$this->session->userdata('user_id'),
-				'user_name'     =>$this->session->userdata('user_name'),
+				'user_no'       =>$this->session->userdata('no'),
+				'user_id'       =>$this->session->userdata('id'),
+				'user_name'     =>$this->session->userdata('name'),
 				'subject'       =>$subject,
 				'contents'      =>$contents,
 				'is_notice'     =>$is_notice,
@@ -321,8 +292,7 @@ class Board extends CI_Controller{
 				'ip'            =>$this->input->ip_address()
 			);
 			$result = $this->board_model->get_board_insert($option);
-			
-			alert('등록되었습니다.', site_url('board/lists/'.BOARD_CODE) );
+			alert('등록되었습니다.', site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'. $parameters ) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('contents_no','게시판 no','required');
 			if ($this->form_validation->run() == FALSE){
