@@ -9,9 +9,8 @@ class Board extends CI_Controller{
 			'code' => $this->uri->segment(3) ,
 			'activated' => 0
 		);
-		$result   = $this->board_model->get_setting_detail($option);
-		$board    = $result->row_array();
-		$cur_page = !$this->uri->segment(4) ? 1 : $this->uri->segment(4); // 현재 페이지
+		$result = $this->board_model->get_setting_detail($option);
+		$board  = $result->row_array();
 
 		if( !isset($board['no']) ){
 			alert('잘못된 게시판 코드 입니다.');
@@ -20,8 +19,9 @@ class Board extends CI_Controller{
 		define('BOARD_TITLE'  , $board['name']);
 		define('BOARD_REPLY'  , $board['reply']);
 		define('BOARD_COMMENT', $board['comment']);
-		define('BOARD_PAGE'   , $cur_page);
+		define('BOARD_PAGE'   , $this->uri->segment(4,1) );
 		define('BOARD_FORM'   , site_url('board/proc/'.BOARD_CODE) );
+
 		set_cookie('left_menu_open_cookie',site_url('board/lists/'.BOARD_CODE),'0');
 	}
 
@@ -51,30 +51,30 @@ class Board extends CI_Controller{
 	public function lists(){
 		// option search 추가
 		$option = array(
-			'code'=>BOARD_CODE
+			'where'=>array( 'code'=>BOARD_CODE ),
+			'like'=>array( 'subject'=>'' )
 		);
 
-		$per_page  = 10; // 글 갯수
-		$offset    = ($per_page * BOARD_PAGE)-$per_page;
-		$get_board = $this->board_model->get_board_list($option,$per_page,$offset);
+		$offset    = (PAGING_PER_PAGE * BOARD_PAGE) - PAGING_PER_PAGE;
+		$get_board = $this->board_model->get_board_list($option,PAGING_PER_PAGE,$offset);
 		
 		$data['total']         = $get_board['total'];   // 전체글수
 		$data['notice']        = $get_board['notice'];  // 공지
 		$data['list']          = $get_board['list'];    // 글목록
 
-		$data['parameters']    = ''; // parameters , search 추가시 수정
+		$data['parameters']    = $_SERVER['QUERY_STRING']; // parameters , search 추가시 수정
 		$data['anchor_url']    = site_url('board/view/'.BOARD_CODE.'/'.BOARD_PAGE); // 글 링크
-		$data['write_url']     = site_url('board/write/'.BOARD_CODE.'/'.BOARD_PAGE); // 글 링크
+		$data['write_url']     = site_url('board/write/'.BOARD_CODE.'/'.BOARD_PAGE); // 쓰기버튼 링크
 
 		// pagination option
 		$config['base_url']    = site_url('board/lists/'.BOARD_CODE);
 		$config['total_rows']  = $data['total'];
-		$config['per_page']    = $per_page;
 		$config['cur_page']    = BOARD_PAGE;
 		$config['uri_segment'] = 4;
 
 		$this->pagination->initialize($config);
-		$data['pagination'] = $this->pagination->create_links();
+		$data['pagination']    = $this->pagination->create_links();
+		// pagination option
 
 		$this->load->view('board/default/list_v',$data);
 	}
@@ -104,8 +104,8 @@ class Board extends CI_Controller{
 			'ip' => $result->ip,
 			'created' => $result->created
 		);
-		$data['parameters'] = '';
-		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
+		$data['parameters'] = $_SERVER['QUERY_STRING'];
+		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$data['edit_url']   = site_url('board/edit/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
 		$data['reply_url']  = site_url('board/reply/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
 
@@ -113,7 +113,7 @@ class Board extends CI_Controller{
 	}
 
 	public function write(){
-		$data['parameters'] = '';
+		$data['parameters'] = $_SERVER['QUERY_STRING'];;
 		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/write_v',$data);
 	}
@@ -148,7 +148,7 @@ class Board extends CI_Controller{
 			'is_notice' => $result->is_notice,
 			'created' => $result->created
 		);
-		$data['parameters'] = '';
+		$data['parameters'] = $_SERVER['QUERY_STRING'];;
 		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/edit_v',$data);
 	}
@@ -183,7 +183,7 @@ class Board extends CI_Controller{
 			'created'     => $result->created
 		);
 
-		$data['parameters'] = '';
+		$data['parameters'] = $_SERVER['QUERY_STRING'];
 		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/reply_v',$data);
 	}
@@ -211,6 +211,23 @@ class Board extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			
+			$file_insert_fg = false;
+			if( isset($_FILES['userfile']) ) {
+				$config['upload_path'] = 'upload/board/';
+				$config['allowed_types'] = 'gif|jpg|png';
+				$config['encrypt_name'] = true;				
+
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_insert_fg = true;
+				}
+			}
 
 			$option = array(
 				'code'          =>BOARD_CODE,
@@ -228,8 +245,18 @@ class Board extends CI_Controller{
 				'count_comment' =>0,
 				'ip'            =>$this->input->ip_address()
 			);
-			$result = $this->board_model->get_board_insert($option);
-			$this->board_model->get_board_update(array('original_no'=>$result,'parent_no'=>$result),array('no'=>$result));
+			$result = $this->board_model->set_board_insert($option);
+			$this->board_model->set_board_update(array('original_no'=>$result,'parent_no'=>$result),array('no'=>$result));
+			
+			if( $file_insert_fg ){
+				$option_filse = array(
+					'code'          => BOARD_CODE,
+					'parent_no'     => $result ,
+					'original_name' => $upload_data['orig_name'],
+					'upload_name'   => $upload_data['file_name']
+				);
+				$this->board_model->set_board_file_insert($option_filse);
+			}
 
 			alert('등록되었습니다.', site_url('board/lists/'.BOARD_CODE) );
 
@@ -251,7 +278,7 @@ class Board extends CI_Controller{
 				'no'=>$contents_no,
 				'code'=>BOARD_CODE
 			);
-			$this->board_model->get_board_update($option,$where);
+			$this->board_model->set_board_update($option,$where);
 
 			alert('수정되었습니다.', site_url('board/view/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$contents_no .'&'. $parameters ) );
 
@@ -291,7 +318,7 @@ class Board extends CI_Controller{
 				'count_comment' =>0,
 				'ip'            =>$this->input->ip_address()
 			);
-			$result = $this->board_model->get_board_insert($option);
+			$result = $this->board_model->set_board_insert($option);
 			alert('등록되었습니다.', site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'. $parameters ) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('contents_no','게시판 no','required');
@@ -303,7 +330,7 @@ class Board extends CI_Controller{
 			$option = array(
 				'is_delete'=>1
 			);
-			$this->board_model->get_board_update($option,'code = "'.BOARD_CODE.'" and no in('.$set_no.')');
+			$this->board_model->set_board_update($option,'code = "'.BOARD_CODE.'" and no in('.$set_no.')');
 			
 			alert('삭제되었습니다.', site_url('board/lists/'.BOARD_CODE) );
 		}else{

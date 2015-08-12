@@ -6,19 +6,21 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>게시판 - <?echo BOARD_TITLE;?></h2>
+					<h2>&nbsp;</h2>
 				</div>
 			</div>
 			<div class="row">
 				<!-- col-lg-12 end here -->
 				<div class="col-lg-12">
 					<!-- col-lg-12 start here -->
-					<div class="panel panel-default">
+					<div class="panel panel-primary">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><?echo BOARD_TITLE;?></h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> <?echo BOARD_TITLE;?></h4>
 						</div>
 						<div class="panel-body">
+
+
 							<form id="board-form-list" action="<?echo BOARD_FORM?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
