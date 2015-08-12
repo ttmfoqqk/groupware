@@ -6,19 +6,29 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?echo MENU_NAME;?></h2>
-					<span class="text">디자인 변경 체크 , 색상 적용 작업</span>
+					<h2>&nbsp;</h2>
 				</div>
 			</div>
 			<div class="row">
-				<div class="panel-body">
-					<div class="dd" id="nestable3" data-key="<?echo $key;?>" style="padding-bottom:100px;">
-						<?echo $tree;?>
-					</div>
+				<div class="col-lg-12">
+					<div class="panel panel-primary">
+						
+						<div class="panel-heading">
+							<h4 class="panel-title"><i class="fa fa-circle"></i> <?echo MENU_NAME;?></h4>
+						</div>
 
-				</div>
-				<div class="panel-body">
-					<button id="category_add" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+						<div class="panel-body">
+							<div class="dd" id="nestable3" data-key="<?echo $key;?>" style="padding-bottom:100px;">
+								<?echo $tree;?>
+							</div>
+
+						</div>
+						<div class="panel-body">
+							<button id="category_add" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+						</div>
+
+
+					</div>
 				</div>
 			</div>
 			
@@ -29,5 +39,26 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
+<script type="text/javascript">
+$.ajax({
+	type : "GET",
+	url : "/groupware/menu/lists/project",
+	dataType : "json",
+	success : function(json) {
+		var parsed = JSON.parse(json);
+		var newArray = new Array(parsed.length);
+		var i = 0;
+
+		parsed.forEach(function (entry) {
+			entry.children.forEach(function (c) {
+				//alert(c.id);
+			});
+		});
+	},
+	error : function(err) {
+		alert(err.responseText);
+	}
+});
+</script>
 <script src="<?echo $this->config->base_url()?>html/plugins/ui/nestable/jquery.nestable.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_organization.js"></script>

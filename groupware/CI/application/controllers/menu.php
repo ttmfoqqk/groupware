@@ -10,6 +10,9 @@ class Menu extends CI_Controller{
 		case 'department':
 			$menu_name = "부서 분류관리";
 			break;
+		case 'object':
+			$menu_name = "물품 분류관리";
+			break;
 		case 'rule':
 			$menu_name = "회사규정 분류관리";
 			break;
@@ -74,10 +77,32 @@ class Menu extends CI_Controller{
 		//echo json_encode($menuData);
 
         // html 생성
-        $data['tree'] = $this->buildMenu(0, $menuData); 
+        $data['tree'] = $this->buildMenu(0, $menuData, 'html');
 		$data['key']  = $category;
 		
 		$this->load->view('menu/menu_v',$data);
+	}
+
+	public function _lists(){
+		$category = !$this->uri->segment(3) ? 'department' : $this->uri->segment(3);
+		$options = array(
+			'category' => $category
+		);
+		$data['list'] = $this->organization_model->get_organization($options);
+
+		$menuData = array(
+			'items' => array(),
+			'parents' => array()
+		);
+        
+		foreach ($data['list'] as $menuItem ){
+			$menuData['items'][$menuItem['no']] = $menuItem;
+			$menuData['parents'][$menuItem['parent_no']][] = $menuItem['no'];
+		}
+
+        // html 생성
+        $data['tree'] = $this->buildMenu(0, $menuData, 'json');
+		echo json_encode($data['tree']);
 	}
 
 	
@@ -181,7 +206,7 @@ class Menu extends CI_Controller{
 		}
 
         // html 생성
-        $data['tree'] = $this->buildMenu(0, $menuData); 
+        $data['tree'] = $this->buildMenu(0, $menuData, 'html'); 
 		echo $data['tree'];
 	}
 	/* 추가 */
@@ -194,28 +219,45 @@ class Menu extends CI_Controller{
 
 
 	/* 리스트 html 리턴 */
-	function buildMenu($parentId, $menuData){
-        $html = '';        
-
+	function buildMenu($parentId, $menuData, $type){
+		$html = '';        
+		
 		if (isset($menuData['parents'][$parentId])){   
-            
-            $html = '<ol class="dd-list">';
-            foreach ($menuData['parents'][$parentId] as $itemId){
-                $html .= '<li class="dd-item dd3-item" data-id="'.$menuData['items'][$itemId]['no'].'">';
-				$html .=	'<div class="dd-handle dd3-handle">Drag</div>';
-				$html .=	'<div class="dd3-content">';
-				$html .=		'<button type="button" class="btn btn-danger btn-xs mr5 mb10 pull-right delete">삭제</button> ';
-				$html .=		'<button type="button" class="btn btn-primary btn-xs mr5 mb10 pull-right add">추가</button> ';
-				$html .=		'<span class="update-item" style="cursor:pointer;">' . $menuData['items'][$itemId]['name'] . '</span>';
-				$html .=	'</div>';
-                // find childitems recursively
-                $html .= $this->buildMenu($itemId, $menuData);
-                $html .= '</li>';
-            }
-            $html .= '</ol>';
-        }
-        return $html;
-    }
+			if( $type == 'html' ){
+				$html = '<ol class="dd-list">';
+				foreach ($menuData['parents'][$parentId] as $itemId){
+					$html .= '<li class="dd-item dd3-item" data-id="'.$menuData['items'][$itemId]['no'].'">';
+					$html .=	'<div class="dd-handle dd3-handle">Drag</div>';
+					$html .=	'<div class="dd3-content">';
+					$html .=		'<button type="button" class="btn btn-danger btn-xs mr5 mb10 pull-right delete">삭제</button> ';
+					$html .=		'<button type="button" class="btn btn-primary btn-xs mr5 mb10 pull-right add">추가</button> ';
+					$html .=		'<span class="update-item" style="cursor:pointer;">' . $menuData['items'][$itemId]['name'] . '</span>';
+					$html .=	'</div>';
+					// find childitems recursively
+					$html .= $this->buildMenu($itemId, $menuData, $type);
+					$html .= '</li>';
+				}
+				$html .= '</ol>';
+			}elseif( $type == 'json' ){
+				$cnt  = 0;
+				$html = '[';
+				foreach ($menuData['parents'][$parentId] as $itemId){
+					$cnt ++;
+					$children = $this->buildMenu($itemId, $menuData, $type);
+
+					$html .= '{';
+					$html .=	'"id":"'.$menuData['items'][$itemId]['no'].'"';
+					$html .=	',"name":"'.$menuData['items'][$itemId]['name'].'"';
+					if($children){
+						$html .=	',"children":' . $this->buildMenu($itemId, $menuData, $type);
+					}					
+					$html .= '}'. ( $cnt < count($menuData['parents'][$parentId]) ? ',' : '');
+				}
+				$html .= ']';
+			}
+		}
+		return $html;
+	}
 	
 	/* 리스트 무브 업데이트 재귀 */
 	function move_update($parent_id,$json_data){

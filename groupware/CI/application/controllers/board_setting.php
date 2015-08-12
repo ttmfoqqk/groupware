@@ -4,7 +4,7 @@ class Board_setting extends CI_Controller{
        parent::__construct();
 	   set_cookie('left_menu_open_cookie',site_url('board_setting/lists'),'0');
 	   $this->load->model('board_model');
-	   $cur_page = !$this->uri->segment(4) ? 1 : $this->uri->segment(4); // 현재 페이지
+	   $cur_page = !$this->uri->segment(3) ? 1 : $this->uri->segment(3); // 현재 페이지
 	   define('BOARD_PAGE' , $cur_page);
     }
 
