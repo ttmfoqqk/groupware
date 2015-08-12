@@ -6,9 +6,52 @@ class Md_company extends CI_Model{
 		parent::__construct();
 	}
 	
-	public function get($where=NULL, $select ='*', $limit=NULL, $offset=NULL){
+	public function setTable($tableName){
+		$this->TABLE_NAME = $tableName;
+	}
+	
+	public function getAllCount(){
+		return $this->db->count_all($this->TABLE_NAME);
+	}
+	
+	/**
+	 * @param array $where
+	 * @param array $likes
+	 * @return int
+	 */
+	public function getCount($where=NULL, $likes=NULL){
+		if($likes!=NULL){
+			foreach ($likes as $key=>$val){
+				if($val!='')
+					$this->db->like($key, $val);
+			}
+		}
+		if($where != NULL)
+			$this->db->where($where);
+		
+		$this->db->select('count(*) as total');
+		$ret = $this->db->get($this->TABLE_NAME)->row();
+		return $ret->total;
+	}
+	
+	/**
+	 * @param array $where
+	 * @param string | array $select
+	 * @param int $offset
+	 * @param int $limit
+	 * @param array $likes
+	 */
+	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL){
+		if($likes!=NULL){
+			foreach ($likes as $key=>$val){
+				if($val!='')
+					$this->db->like($key, $val);
+			}
+		}
 		$this->db->select($select);
-		$ret = $this->db->get_where($this->TABLE_NAME,$where, $limit, $offset);
+		if($where != NULL)
+			$this->db->where($where);
+		$ret = $this->db->get($this->TABLE_NAME, $offset, $limit);
 		return $ret->result_array();
 	}
 	

@@ -6,8 +6,8 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>게시판 설정</h2>
-					<span class="txt">게시판 설정</span>
+					<h2><?php echo $head_name?></h2>
+					<span class="txt"><?php echo $head_sub_name?></span>
 				</div>
 			</div>
 			<div class="row">
@@ -17,7 +17,7 @@
 					<div class="panel panel-default">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title">회사 관리</h4>
+							<h4 class="panel-title">회사 정보</h4>
 						</div>
 						<div class="panel-body">
 

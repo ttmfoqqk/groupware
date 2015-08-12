@@ -65,6 +65,9 @@ class Company_setting extends CI_Controller{
 			$data['data'] = $this->md_company->getEmptyData();
 			$data['data']['order'] = 0;
 		}
+		
+		$data['head_name'] = '회사정보';
+		$data['head_sub_name'] = '회사 관리';
 		$this->load->view('company/company_write',$data);
 	}
 	

@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>&nbsp;</h2>
+					<h2><?php echo $head_name?></h2>
 				</div>
 			</div>
 			<div class="row">
@@ -22,7 +22,7 @@
 						</div>
 						<div class="panel-body">
 							<!-- 검색 -->
-							<form class="form-horizontal">
+							<form id="qu" class="form-horizontal" method="get"  role="form">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
 									<div class="col-lg-6 col-md-6">
@@ -44,24 +44,24 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">구분</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="구분">
+										<input type="text" class="form-control" id="ft_classify" name="ft_classify" placeholder="구분" value=<?php echo $filter['gubun'] != NULL ? $filter['gubun'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">상호명</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="상호명">
+										<input type="text" class="form-control" id="ft_bizName" name="ft_bizName" placeholder="상호명" value=<?php echo $filter['bizName'] != NULL ? $filter['bizName'] : '';?>>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">사업자번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="사업자번호">
+										<input type="text" class="form-control" id="ft_bizNumber" name="ft_bizNumber" placeholder="사업자번호" value=<?php echo $filter['bizNumber'] != NULL ? $filter['bizNumber'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">전화번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="전화번호">
+										<input type="text" class="form-control" id="ft_phone" name="ft_phone" placeholder="전화번호" value=<?php echo $filter['phone'] != NULL ? $filter['phone'] : '';?>>
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -136,7 +136,7 @@
 									<!-- 리스트 -->
 									<?if (count ( $list ) <= 0) {?>
 									<tr>
-											<td colspan="7">등록된 내용이 없습니다.</td>
+											<td colspan="10">등록된 내용이 없습니다.</td>
 										</tr>
 								<?}?>
 									
@@ -144,7 +144,7 @@
 								</table>
 
 								<div class="panel-body" style="text-align: center;">
-									test pagination 공통 함수 작성 요청<br><?echo $pagination;?></div>
+									<?php echo $table_num?><br><?echo $pagination;?></div>
 								<div class="panel-body pull-right">
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
