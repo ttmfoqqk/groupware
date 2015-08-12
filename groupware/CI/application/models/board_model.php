@@ -35,22 +35,29 @@ class Board_model extends CI_Model{
 	public function get_board_list($option,$limit,$offset){
 		$this->db->select('count(*) as total');
 		$this->db->where('is_delete',0);
-		$query = $this->db->get_where('sw_board_contents',$option );
+		$this->db->where($option['where']);
+		$this->db->like($option['like']);
+
+		$query = $this->db->get('sw_board_contents');
 		$query = $query->row();
 		$result['total'] = $query->total;
 		
 		$this->db->where('is_delete',0);
+		$this->db->where($option['where']);
+		$this->db->like($option['like']);
 		$this->db->order_by('original_no','DESC');
 		$this->db->order_by('order','ASC');
-		$query = $this->db->get_where('sw_board_contents',$option,$limit,$offset);
+
+		$query = $this->db->get('sw_board_contents',$limit,$offset);
 		$result['list'] = $query->result_array();
 
 		$this->db->where('is_delete',0);
 		$this->db->where('is_notice',0);
-		$this->db->where('code', $option['code'] );
+		$this->db->where($option['where']);
 		$this->db->order_by('original_no','DESC');
 		$this->db->order_by('order','ASC');
-		$query = $this->db->get_where('sw_board_contents');
+
+		$query = $this->db->get('sw_board_contents');
 		$result['notice'] = $query->result_array();
 
 		return $result;
@@ -64,14 +71,20 @@ class Board_model extends CI_Model{
 		$result = $this->db->get_where('sw_board_contents',$option);
 		return $result;
 	}
-	public function get_board_insert($option){
+	public function set_board_insert($option){
 		$this->db->set('created', 'NOW()', false);
 		$this->db->insert('sw_board_contents',$option);
 		$result = $this->db->insert_id();
 		return $result;
 	}
-	public function get_board_update($option,$where){
+	public function set_board_update($option,$where){
 		$this->db->update('sw_board_contents',$option,$where);
+	}
+	/* 임시 파일 insert */
+	public function set_board_file_insert($option){
+		$this->db->insert('sw_board_file',$option);
+		$result = $this->db->insert_id();
+		return $result;
 	}
 }
 /* End of file board_model.php */
