@@ -62,7 +62,7 @@ class Board extends CI_Controller{
 		$data['notice']        = $get_board['notice'];  // 공지
 		$data['list']          = $get_board['list'];    // 글목록
 
-		$data['parameters']    = $_SERVER['QUERY_STRING']; // parameters , search 추가시 수정
+		$data['parameters']    = ''; // parameters , search 추가시 수정
 		$data['anchor_url']    = site_url('board/view/'.BOARD_CODE.'/'.BOARD_PAGE); // 글 링크
 		$data['write_url']     = site_url('board/write/'.BOARD_CODE.'/'.BOARD_PAGE); // 쓰기버튼 링크
 
@@ -88,32 +88,34 @@ class Board extends CI_Controller{
 		);
 		$result = $this->board_model->get_board_detail($option,'view');
 		
-		if ($result->num_rows() <= 0){
+		if ($result['data']->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
 		}
 
-		$result = $result->row();
+		$result_data = $result['data']->row();
 		$data['data'] = array(
-			'no' => $result->no,
-			'user_no' => $result->user_no,
-			'user_id' => $result->user_id,
-			'user_name' => $result->user_name,
-			'subject' => $result->subject,
-			'contents' => nl2br($result->contents),
-			'count_hit' => $result->count_hit,
-			'ip' => $result->ip,
-			'created' => $result->created
+			'no' => $result_data->no,
+			'user_no' => $result_data->user_no,
+			'user_id' => $result_data->user_id,
+			'user_name' => $result_data->user_name,
+			'subject' => $result_data->subject,
+			'contents' => nl2br($result_data->contents),
+			'count_hit' => $result_data->count_hit,
+			'ip' => $result_data->ip,
+			'created' => $result_data->created
 		);
-		$data['parameters'] = $_SERVER['QUERY_STRING'];
+		$data['files']      = $result['files'];
+
+		$data['parameters'] = '';
 		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
-		$data['edit_url']   = site_url('board/edit/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
-		$data['reply_url']  = site_url('board/reply/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result->no.'&'.$data['parameters']);
+		$data['edit_url']   = site_url('board/edit/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result_data->no.'&'.$data['parameters']);
+		$data['reply_url']  = site_url('board/reply/'.BOARD_CODE.'/'.BOARD_PAGE.'?no='.$result_data->no.'&'.$data['parameters']);
 
 		$this->load->view('board/default/view_v',$data);
 	}
 
 	public function write(){
-		$data['parameters'] = $_SERVER['QUERY_STRING'];;
+		$data['parameters'] = '';
 		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/write_v',$data);
 	}
@@ -126,30 +128,31 @@ class Board extends CI_Controller{
 		);
 		$result = $this->board_model->get_board_detail($option,'edit');
 		
-		if ($result->num_rows() <= 0){
+		if ($result['data']->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
 		}
 
-		$result = $result->row();
+		$result_data = $result['data']->row();
 
-		if($result->user_id == $this->session->userdata('id')){
+		if($result_data->user_id == $this->session->userdata('id')){
 			('잘못된 접근입니다.');
 		}
 
 		$data['data'] = array(
-			'no' => $result->no,
-			'user_no' => $result->user_no,
-			'user_id' => $result->user_id,
-			'user_name' => $result->user_name,
-			'subject' => $result->subject,
-			'contents' => $result->contents,
-			'count_hit' => $result->count_hit,
-			'ip' => $result->ip,
-			'is_notice' => $result->is_notice,
-			'created' => $result->created
+			'no' => $result_data->no,
+			'user_no' => $result_data->user_no,
+			'user_id' => $result_data->user_id,
+			'user_name' => $result_data->user_name,
+			'subject' => $result_data->subject,
+			'contents' => $result_data->contents,
+			'count_hit' => $result_data->count_hit,
+			'ip' => $result_data->ip,
+			'is_notice' => $result_data->is_notice,
+			'created' => $result_data->created
 		);
-		$data['parameters'] = $_SERVER['QUERY_STRING'];;
-		$data['list_url']  = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
+		$data['files']      = $result['files'];
+		$data['parameters'] = '';
+		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/edit_v',$data);
 	}
 
@@ -163,27 +166,28 @@ class Board extends CI_Controller{
 		);
 		$result = $this->board_model->get_board_detail($option,'edit');
 		
-		if ($result->num_rows() <= 0){
+		if ($result['data']->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
 		}
 
-		$result = $result->row();
+		$result_data = $result['data']->row();
 		$data['data'] = array(
-			'no'          => $result->no,
-			'original_no' => $result->original_no,
-			'depth'       => $result->depth,
-			'order'       => $result->order,
-			'user_no'     => $result->user_no,
-			'user_id'     => $result->user_id,
-			'user_name'   => $result->user_name,
-			'subject'     => $result->subject,
-			'contents'    => $result->contents,
-			'count_hit'   => $result->count_hit,
-			'ip'          => $result->ip,
-			'created'     => $result->created
+			'no'          => $result_data->no,
+			'original_no' => $result_data->original_no,
+			'depth'       => $result_data->depth,
+			'order'       => $result_data->order,
+			'user_no'     => $result_data->user_no,
+			'user_id'     => $result_data->user_id,
+			'user_name'   => $result_data->user_name,
+			'subject'     => $result_data->subject,
+			'contents'    => $result_data->contents,
+			'count_hit'   => $result_data->count_hit,
+			'ip'          => $result_data->ip,
+			'created'     => $result_data->created
 		);
+		$data['files']      = $result['files'];
 
-		$data['parameters'] = $_SERVER['QUERY_STRING'];
+		$data['parameters'] = '';
 		$data['list_url']   = site_url('board/lists/'.BOARD_CODE.'/'.BOARD_PAGE.'?'.$data['parameters']);
 		$this->load->view('board/default/reply_v',$data);
 	}

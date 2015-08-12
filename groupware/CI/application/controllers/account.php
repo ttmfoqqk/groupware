@@ -27,6 +27,16 @@ class Account extends CI_Controller{
 	}
 	public function lists(){
 		$data['list'] = array();
+
+		$config['base_url']    = site_url('purpose/add/');
+		$config['total_rows']  = 0;
+		$config['cur_page']    = $this->uri->segment(3,1);
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+		$data['pagination']    = $this->pagination->create_links();
+
+
 		$this->load->view('marketing/account_v',$data);
 	}
 }

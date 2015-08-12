@@ -38,7 +38,11 @@
 										</tr>
 										<tr>
 											<th>첨부파일</th>
-											<td colspan="5"></td>
+											<td colspan="5">
+											<?foreach($files as $lt){
+												echo '[no : '.$lt['no'].', original_name : '.$lt['original_name'].', upload_name : '.$lt['upload_name'].'] ';
+											}?>
+											</td>
 										</tr>
 										<tr>
 											<th>내용</th>
