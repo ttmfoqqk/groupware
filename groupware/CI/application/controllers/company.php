@@ -30,12 +30,15 @@ class Company extends CI_Controller{
 
 	public function lists(){
 		//필터 설정
+		$start = $this->input->get('ft_start');
+		$end = $this->input->get('ft_end');
 		$classify = $this->input->get('ft_classify');
 		$bizName = $this->input->get('ft_bizName');
 		$bizNumber = $this->input->get('ft_bizNumber');
 		$phone = $this->input->get('ft_phone');
 		
-		$likes['gubun'] = $likes['bizName'] =$likes['bizNumber'] =$likes['phone'] = '';
+		$likes['gubun'] = $likes['bizName'] =$likes['bizNumber'] =$likes['phone'] = $likes['created'] = '';
+		$date['start'] = $date['end']= NULL;
 		if($classify)
 			$likes['gubun'] = $classify;
 		if($bizName)
@@ -46,19 +49,32 @@ class Company extends CI_Controller{
 			$likes['phone'] = $phone;
 		$data['filter'] = $likes;
 		
-		//Pagination, 테이블정보 필요 정보 세팅
-		$where = array('category'=>'company');
+		//Pagination, 테이블정보 필요 설정 세팅
+		if($start && $end){
+			$start = new DateTime($start);
+			$start = $start->format('Y-m-d');
+			$end = new DateTime($end);
+			date_modify($end, '+1 day');
+			$end = $end->format('Y-m-d');
+			$where = array('category'=>'company', 'created >='=>$start, 'created <'=>$end);
+			$end_t = new DateTime($end);
+			date_modify($end_t, '-1 day');
+			$end_t = $end_t->format('Y-m-d');
+			$date['start'] = $start;
+			$date['end'] = $end_t;
+		}
+		else
+			$where = array('category'=>'company');
+		
 		$total = $this->md_company->getCount($where, $likes);
-		$cur_page = !$this->uri->segment(3) ? 1 : $this->uri->segment(3); // 현재 페이지
-		$per_page  = 10; // 글 갯수
-		$offset    = ($per_page * $cur_page)-$per_page;
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
 		
 		//Pagination 설정
 		$config['base_url'] = site_url('company/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
-		$config['per_page'] = $per_page;  // 보여질 갯수
-		$config['uri_segment'] = 3;
-		$config['num_links'] = 4; // 선택 페이지 좌우 링크 갯수
+		$config['uri_segment'] = $uri_segment;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
@@ -66,18 +82,19 @@ class Company extends CI_Controller{
 		$data['list'] = array();
 		$data['action_url'] = site_url('company_setting/proc');
 		$data['action_type'] = 'delete';
-		$result = $this->md_company->get($where, '*', $per_page, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		$result = $this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
 		if (count($result) > 0){
 			foreach ($result as $row)
 			{
 				array_push($data['list'], $row);
 			}
 		}
+		
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
 		
 		//페이지 타이틀 설정
 		$data['head_name'] = "회사정보";
-		
+		$data['date'] = $date;
 		$this->load->view('company/company_v',$data);
 	}
 }

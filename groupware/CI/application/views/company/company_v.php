@@ -22,22 +22,22 @@
 						</div>
 						<div class="panel-body">
 							<!-- 검색 -->
-							<form id="qu" class="form-horizontal" method="get"  role="form">
+							<form id="qu" class="form-horizontal" method="get"  role="form" action="<?echo site_url('company/lists/1')?>">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="start" /> <span
+											<input type="text" class="form-control" name="ft_start" id="ft_start" value=<?php if($date['start'] != '1') echo "'" .$date['start'] . "'";?>/> <span
 												class="input-group-addon">to</span> <input type="text"
-												class="form-control" name="end" />
+												class="form-control" name="ft_end" id="ft_end" value=<?php if($date['end'] != '1') echo "'" .$date['end'] . "'";?>/>
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
-										<button type="button" class="btn btn-sm btn-primary btn-alt">오늘</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">7일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">30일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">날짜초기화</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt init_today">오늘</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt init_seven">7일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt init_thirty">30일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt init_date">날짜초기화</button>
 									</div>
 								</div>
 
@@ -115,10 +115,10 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['gubun'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['bizName'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['bizNumber'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['phone'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['fax'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td class="text-center">
 												<button type="button" class="btn btn-success btn-xs"
 													id="view_staff" onclick="alert('담당자 팝업');">
@@ -170,9 +170,7 @@
 <!-- / page-content -->
 
 <!-- 폼 날짜 -->
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-
+<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+

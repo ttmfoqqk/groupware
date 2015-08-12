@@ -97,8 +97,8 @@ class Company_setting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$data = $this->md_company->getSettingData('', $biz_name, $ceo_name, $classify, $bizType, $bizCondition, 
-					$addr, $phone, $fax, $note, $order, '', $bizNumber);
+			$data = $this->md_company->getSettingData('company', $biz_name, $ceo_name, $classify, $bizType, $bizCondition, 
+					$addr, $phone, $fax, $note, $order, date('Y-m-d H:i:s',now()), $bizNumber); //Y-m-d H:i:s
 			$result = $this->md_company->create($data);
 			alert('등록되었습니다.', site_url('company/index') );
 			
