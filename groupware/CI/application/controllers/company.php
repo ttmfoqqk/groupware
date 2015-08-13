@@ -4,6 +4,7 @@ class Company extends CI_Controller{
 		parent::__construct();
 		login_check();
 		set_cookie('left_menu_open_cookie',site_url('company'),'0');
+		$this->load->model('md_company');
     }
 
 	public function _remap($method){
@@ -28,51 +29,72 @@ class Company extends CI_Controller{
 	}
 
 	public function lists(){
-
-		/*
-			http://codeigniter-kr.org/user_guide_2.1.0/libraries/pagination.html
-			test
-
-			공통 함수 작성 요망
-		*/
-		$config['base_url'] = site_url('company/lists/');
-		$config['total_rows'] = 200; // 전체 글갯수
-		$config['per_page'] = 10;  // 보여질 갯수
-		$config['uri_segment'] = 3;
-		$config['num_links'] = 4; // 선택 페이지 좌우 링크 갯수
+		//필터 설정
+		$start = $this->input->get('ft_start');
+		$end = $this->input->get('ft_end');
+		$classify = $this->input->get('ft_classify');
+		$bizName = $this->input->get('ft_bizName');
+		$bizNumber = $this->input->get('ft_bizNumber');
+		$phone = $this->input->get('ft_phone');
 		
-
-		$config['full_tag_open'] = '<ul class="pagination">';
-		$config['full_tag_close'] = '</ul>';
-
-
-		$config['first_link'] = 'First';
-		$config['first_tag_open'] = '<li class="first">';
-		$config['first_tag_close'] = '</li>';
-
-
-		$config['last_link'] = 'Last';
-		$config['last_tag_open'] = '<li class="last">';
-		$config['last_tag_close'] = '</li>';
-
-		$config['prev_link'] = '<i class="fa fa-angle-left"></i>';
-		$config['prev_tag_open'] = '<li class="prev">';
-		$config['prev_tag_close'] = '</li>';
-
-		$config['next_link'] = '<i class="fa fa-angle-right"></i>';
-		$config['next_tag_open'] = '<li class="next">';
-		$config['next_tag_close'] = '</li>';
-
-		$config['num_tag_open'] = '<li>';
-		$config['num_tag_close'] = '</li>';
-
-		$config['cur_tag_open'] = '<li class="disabled"><a href="#" class="btn btn-primary disabled">';
-		$config['cur_tag_close'] = '</a></li>';
-
+		$likes['gubun'] = $likes['bizName'] =$likes['bizNumber'] =$likes['phone'] = $likes['created'] = '';
+		$date['start'] = $date['end']= NULL;
+		if($classify)
+			$likes['gubun'] = $classify;
+		if($bizName)
+			$likes['bizName'] = $bizName;
+		if($bizNumber)
+			$likes['bizNumber'] = $bizNumber;
+		if($phone)
+			$likes['phone'] = $phone;
+		$data['filter'] = $likes;
+		
+		//Pagination, 테이블정보 필요 설정 세팅
+		if($start && $end){
+			$start = new DateTime($start);
+			$start = $start->format('Y-m-d');
+			$end = new DateTime($end);
+			date_modify($end, '+1 day');
+			$end = $end->format('Y-m-d');
+			$where = array('category'=>'company', 'created >='=>$start, 'created <'=>$end);
+			$end_t = new DateTime($end);
+			date_modify($end_t, '-1 day');
+			$end_t = $end_t->format('Y-m-d');
+			$date['start'] = $start;
+			$date['end'] = $end_t;
+		}
+		else
+			$where = array('category'=>'company');
+		
+		$total = $this->md_company->getCount($where, $likes);
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
+		
+		//Pagination 설정
+		$config['base_url'] = site_url('company/lists/');
+		$config['total_rows'] = $total; // 전체 글갯수
+		$config['uri_segment'] = $uri_segment;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
-
+		
+		//테이블 정보 설정
 		$data['list'] = array();
+		$data['action_url'] = site_url('company_setting/proc');
+		$data['action_type'] = 'delete';
+		$result = $this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		if (count($result) > 0){
+			foreach ($result as $row)
+			{
+				array_push($data['list'], $row);
+			}
+		}
+		
+		$data['table_num'] = $offset + count($result) . ' / ' . $total;
+		
+		//페이지 타이틀 설정
+		$data['head_name'] = "회사정보";
+		$data['date'] = $date;
 		$this->load->view('company/company_v',$data);
 	}
 }
