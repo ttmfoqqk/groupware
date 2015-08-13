@@ -34,7 +34,6 @@
         <meta name="msapplication-TileColor" content="#3399cc" />
     </head>
     <body class="login-page">
-    aaa
         <!-- Start login container -->
         <div class="container login-container">
             <div class="login-panel panel panel-default plain animated bounceIn">

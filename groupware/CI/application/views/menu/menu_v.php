@@ -39,26 +39,6 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-<script type="text/javascript">
-$.ajax({
-	type : "GET",
-	url : "/groupware/menu/lists/project",
-	dataType : "json",
-	success : function(json) {
-		var parsed = JSON.parse(json);
-		var newArray = new Array(parsed.length);
-		var i = 0;
 
-		parsed.forEach(function (entry) {
-			entry.children.forEach(function (c) {
-				//alert(c.id);
-			});
-		});
-	},
-	error : function(err) {
-		alert(err.responseText);
-	}
-});
-</script>
 <script src="<?echo $this->config->base_url()?>html/plugins/ui/nestable/jquery.nestable.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_organization.js"></script>

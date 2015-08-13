@@ -60,7 +60,7 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
+										<select id="menu_department" name="menu_department" class="fancy-select form-control">
 											<option value="담당부서">담당부서</option>
 										</select>
 									</div>
@@ -91,6 +91,8 @@
 							</form>
 							<!-- 검색 -->
 
+							<form id="board-form-list" action="<?echo site_url('project/proc');?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<input type="hidden" name="action_type" id="action_type" value="delete">
 							<table class="table table-bordered" id="tabletools">
 								<thead>
 									<tr>
@@ -113,7 +115,9 @@
 									</tr>
 								</thead>
 								<tbody>
-									<!-- 리스트 -->
+								<?php foreach($list as $lt){
+									$anchor = $anchor_url.'?no='.$lt['no'];
+									?>
 									<tr>
 										<td>
 											<div class="checkbox-custom">
@@ -134,12 +138,22 @@
 											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
-									<!-- 리스트 -->
+								<?php }?>
+								<?
+								if( count($list) <= 0 ){?>
+									<tr>
+										<td colspan="11">등록된 내용이 없습니다.</td>
+									</tr>
+								<?}?>
 								</tbody>
 							</table>
 
 							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
-
+							<div class="panel-body pull-right">
+								<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+								<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $anchor_url;?>';">등록</button>
+							</div>
+							</form>
 						</div>
 					</div>
 					<!-- End .panel -->
@@ -162,3 +176,12 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+		$('#menu_department').create_menu({
+			method : 'department', /* 메뉴명 */
+			value : '' /* selected 할 no 값 */
+		});
+	});
+</script>
