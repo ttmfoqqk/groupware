@@ -24,6 +24,7 @@
 							<form id="company-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="company_no" id="company_no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="page_cate" id="page_cate" value="<?echo $page;?>">
 
 								<div class="form-group">
 									<label for="biz_name" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("bizName");?></label>

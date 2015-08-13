@@ -4,3 +4,16 @@
 a.text-normal{
 	color:#333333;
 }
+
+.modal-dialog.modal70 {
+    width:70% !important;
+}
+
+.modal-mini-dv {
+	width: 50px; 
+	#padding-top:5px;
+}
+
+.modal-inpt {
+	padding-top:5px;
+}

@@ -1,5 +1,8 @@
 <?
 class Partner extends CI_Controller{
+	private $TABLE_NAME = 'sw_information';
+	private $CATEGORY = 'partner';
+	
 	public function __construct() {
 		parent::__construct();
 		login_check();
@@ -35,7 +38,7 @@ class Partner extends CI_Controller{
 		$bizName = $this->input->get('ft_bizName');
 		$bizNumber = $this->input->get('ft_bizNumber');
 		$phone = $this->input->get('ft_phone');
-	
+		
 		$likes['gubun'] = $likes['bizName'] =$likes['bizNumber'] =$likes['phone'] = $likes['created'] = '';
 		$date['start'] = $date['end']= NULL;
 		if($classify)
@@ -47,7 +50,7 @@ class Partner extends CI_Controller{
 		if($phone)
 			$likes['phone'] = $phone;
 		$data['filter'] = $likes;
-	
+		
 		//Pagination, 테이블정보 필요 설정 세팅
 		if($start && $end){
 			$start = new DateTime($start);
@@ -55,7 +58,7 @@ class Partner extends CI_Controller{
 			$end = new DateTime($end);
 			date_modify($end, '+1 day');
 			$end = $end->format('Y-m-d');
-			$where = array('category'=>'company', 'created >='=>$start, 'created <'=>$end);
+			$where = array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
 			$end_t = new DateTime($end);
 			date_modify($end_t, '-1 day');
 			$end_t = $end_t->format('Y-m-d');
@@ -63,20 +66,20 @@ class Partner extends CI_Controller{
 			$date['end'] = $end_t;
 		}
 		else
-			$where = array('category'=>'acount');
-	
+			$where = array('category'=>$this->CATEGORY);
+		
 		$total = $this->md_company->getCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
 		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
-	
+		
 		//Pagination 설정
 		$config['base_url'] = site_url('company/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
 		$config['uri_segment'] = $uri_segment;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
-	
+		
 		//테이블 정보 설정
 		$data['list'] = array();
 		$data['action_url'] = site_url('company_setting/proc');
@@ -88,11 +91,12 @@ class Partner extends CI_Controller{
 				array_push($data['list'], $row);
 			}
 		}
-	
+		
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-	
+		
 		//페이지 타이틀 설정
-		$data['head_name'] = "거래처";
+		$data['head_name'] = "회사정보";
+		$data['page'] = $this->CATEGORY;
 		$data['date'] = $date;
 		$this->load->view('company/company_v',$data);
 	}

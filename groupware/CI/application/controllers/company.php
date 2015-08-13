@@ -1,5 +1,8 @@
 <?
 class Company extends CI_Controller{
+	private $TABLE_NAME = 'sw_information';
+	private $CATEGORY = 'company';
+	
 	public function __construct() {
 		parent::__construct();
 		login_check();
@@ -56,7 +59,7 @@ class Company extends CI_Controller{
 			$end = new DateTime($end);
 			date_modify($end, '+1 day');
 			$end = $end->format('Y-m-d');
-			$where = array('category'=>'company', 'created >='=>$start, 'created <'=>$end);
+			$where = array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
 			$end_t = new DateTime($end);
 			date_modify($end_t, '-1 day');
 			$end_t = $end_t->format('Y-m-d');
@@ -64,7 +67,7 @@ class Company extends CI_Controller{
 			$date['end'] = $end_t;
 		}
 		else
-			$where = array('category'=>'company');
+			$where = array('category'=>$this->CATEGORY);
 		
 		$total = $this->md_company->getCount($where, $likes);
 		$uri_segment = 3;
@@ -72,7 +75,7 @@ class Company extends CI_Controller{
 		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
 		
 		//Pagination 설정
-		$config['base_url'] = site_url('company/lists/');
+		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
 		$config['uri_segment'] = $uri_segment;
 		$this->pagination->initialize($config);
@@ -94,6 +97,7 @@ class Company extends CI_Controller{
 		
 		//페이지 타이틀 설정
 		$data['head_name'] = "회사정보";
+		$data['page'] = $this->CATEGORY;
 		$data['date'] = $date;
 		$this->load->view('company/company_v',$data);
 	}
