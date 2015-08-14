@@ -25,6 +25,7 @@ class Company_setting extends CI_Controller{
 	}
 
 	public function lists(){
+		/*
 		$option = array(
 			'activated'=>0
 		);
@@ -32,9 +33,6 @@ class Company_setting extends CI_Controller{
 		$data['action_url'] = site_url('company_setting/proc');
 		$data['action_type'] = 'delete';
 		
-		/*
-			http://codeigniter-kr.org/user_guide_2.1.0/libraries/pagination.html
-		*/
 		$config['base_url'] = site_url('company_setting/lists');
 		$config['total_rows'] = 200; // 전체 글갯수
 		$config['per_page'] = 10;  // 보여질 갯수
@@ -45,10 +43,12 @@ class Company_setting extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('board/setting/list_v',$data);
+		*/
 	}
 
 	public function write(){
-		$get_no = $page_method = $this->uri->segment(3); //$this->input->post ( 'no' ); //
+		$category = $page_method = $this->uri->segment(3); //$this->input->post ( 'no' ); //
+		$get_no = $page_method = $this->uri->segment(4);
 		$where = array(
 			'no'=>$get_no
 		);
@@ -68,12 +68,14 @@ class Company_setting extends CI_Controller{
 		
 		$data['head_name'] = '회사정보';
 		$data['head_sub_name'] = '회사 관리';
+		$data['page'] = $category;
 		$this->load->view('company/company_write',$data);
 	}
 	
 	public function proc(){
 		$this->load->library('form_validation');
 		
+		$category = $this->input->post('page_cate');
 		$action_type = $this->input->post ( 'action_type' );
 		$company_no = $this->input->post ( 'company_no' );
 		$biz_name = $this->input->post ( 'biz_name' );
@@ -88,7 +90,7 @@ class Company_setting extends CI_Controller{
 		$note = $this->input->post ( 'note' );
 		$order = $this->input->post ( 'order' );
 		if( $action_type == 'create' ){
-				
+			//$category = $this->uri->segment(2);
 			$this->form_validation->set_rules('action_type','폼 액션','required');
 			$this->form_validation->set_rules('biz_name','상호명','required|max_length[20]');
 			$this->form_validation->set_rules('classify','구분','required|max_length[20]');
@@ -99,10 +101,10 @@ class Company_setting extends CI_Controller{
 			
 			$cur = new DateTime();
 			$cur = $cur->format('Y-m-d H:i:s');
-			$data = $this->md_company->getSettingData('company', $biz_name, $ceo_name, $classify, $bizType, $bizCondition, 
+			$data = $this->md_company->getSettingData($category, $biz_name, $ceo_name, $classify, $bizType, $bizCondition, 
 					$addr, $phone, $fax, $note, $order, $cur, $bizNumber); //Y-m-d H:i:s
 			$result = $this->md_company->create($data);
-			alert('등록되었습니다.', site_url('company/index') );
+			alert('등록되었습니다.', site_url($category . '/index') );
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -113,11 +115,11 @@ class Company_setting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$data = $this->md_company->getSettingData('', $biz_name, $ceo_name, $classify, $bizType, $bizCondition,
+			$data = $this->md_company->getSettingData($category, $biz_name, $ceo_name, $classify, $bizType, $bizCondition,
 					$addr, $phone, $fax, $note, $order, '', $bizNumber);
 			
 			$this->md_company->modify(array('no'=>$company_no), $data);
-			alert('수정되었습니다.', site_url('company') );
+			alert('수정되었습니다.' . $category, site_url($category) );
 			
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('company_no','','required');
@@ -125,10 +127,9 @@ class Company_setting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			$set_no = is_array($company_no) ? implode(',',$company_no):$company_no;
-			$where = array('no'=>$set_no);
+			$where = 'no in (' . $set_no . ')';
 			$this->md_company->delete($where);
-				
-			alert('삭제되었습니다.', site_url('company') );
+			alert('삭제되었습니다.' . $category , site_url($category) );
 		}else{
 			alert('잘못된 접근입니다.');
 		}

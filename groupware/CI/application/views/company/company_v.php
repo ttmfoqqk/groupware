@@ -22,46 +22,62 @@
 						</div>
 						<div class="panel-body">
 							<!-- 검색 -->
-							<form id="qu" class="form-horizontal" method="get"  role="form" action="<?echo site_url('company/lists/1')?>">
+							<form id="qu" class="form-horizontal" method="get" role="form"
+								action="<?echo site_url($page . '/lists/1')?>">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="ft_start" id="ft_start" value=<?php if($date['start'] != '1') echo "'" .$date['start'] . "'";?>/> <span
-												class="input-group-addon">to</span> <input type="text"
-												class="form-control" name="ft_end" id="ft_end" value=<?php if($date['end'] != '1') echo "'" .$date['end'] . "'";?>/>
+											<input type="text" class="form-control" name="ft_start"
+												id="ft_start"
+												value=<?php if($date['start'] != '1') echo "'" .$date['start'] . "'";?> />
+											<span class="input-group-addon">to</span> <input type="text"
+												class="form-control" name="ft_end" id="ft_end"
+												value=<?php if($date['end'] != '1') echo "'" .$date['end'] . "'";?> />
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
-										<button type="button" class="btn btn-sm btn-primary btn-alt init_today">오늘</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt init_seven">7일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt init_thirty">30일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt init_date">날짜초기화</button>
+										<button type="button"
+											class="btn btn-sm btn-primary btn-alt init_today">오늘</button>
+										<button type="button"
+											class="btn btn-sm btn-primary btn-alt init_seven">7일</button>
+										<button type="button"
+											class="btn btn-sm btn-primary btn-alt init_thirty">30일</button>
+										<button type="button"
+											class="btn btn-sm btn-primary btn-alt init_date">날짜초기화</button>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">구분</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_classify" name="ft_classify" placeholder="구분" value=<?php echo $filter['gubun'] != NULL ? $filter['gubun'] : '';?>>
+										<input type="text" class="form-control" id="ft_classify"
+											name="ft_classify" placeholder="구분"
+											value=<?php echo $filter['gubun'] != NULL ? $filter['gubun'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">상호명</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_bizName" name="ft_bizName" placeholder="상호명" value=<?php echo $filter['bizName'] != NULL ? $filter['bizName'] : '';?>>
+										<input type="text" class="form-control" id="ft_bizName"
+											name="ft_bizName" placeholder="상호명"
+											value=<?php echo $filter['bizName'] != NULL ? $filter['bizName'] : '';?>>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">사업자번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_bizNumber" name="ft_bizNumber" placeholder="사업자번호" value=<?php echo $filter['bizNumber'] != NULL ? $filter['bizNumber'] : '';?>>
+										<input type="text" class="form-control" id="ft_bizNumber"
+											name="ft_bizNumber" placeholder="사업자번호"
+											value=<?php echo $filter['bizNumber'] != NULL ? $filter['bizNumber'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">전화번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_phone" name="ft_phone" placeholder="전화번호" value=<?php echo $filter['phone'] != NULL ? $filter['phone'] : '';?>>
+										<input type="text" class="form-control" id="ft_phone"
+											name="ft_phone" placeholder="전화번호"
+											value=<?php echo $filter['phone'] != NULL ? $filter['phone'] : '';?>>
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -79,6 +95,8 @@
 								role="form">
 								<input type="hidden" name="action_type" id="action_type"
 									value="<?echo $action_type;?>">
+								<input type="hidden" name="page_cate" id="page_cate"
+									value="<?echo $page;?>">
 								<table class="table table-bordered" id="tabletools">
 									<thead>
 										<tr>
@@ -103,13 +121,16 @@
 										<!-- 리스트 -->
 									<?php
 										foreach ( $list as $lt ) {
-										$anchor_url = site_url ( 'company_setting/write/' . $lt ['no'] );
+										$anchor_url = site_url ( 'company_setting/write/' . $page . '/' . $lt ['no'] );
 										?>
 										<tr>
 											<td>
 												<div class="checkbox-custom">
-													<input id="check<?$lt['no'];?>" name="company_no[]" class="check" type="checkbox" value=<?php echo $lt['no'];?>> <label for="check<?$lt['no'];?>"></label> 
-													<input type="hidden"  value="<?php echo $lt['no'];?>">
+													<input id="check<?$lt['no'];?>" name="company_no[]"
+														class="check" type="checkbox"
+														value=<?php echo $lt['no'];?>> <label
+														for="check<?$lt['no'];?>"></label> <input type="hidden"
+														value="<?php echo $lt['no'];?>">
 												</div>
 											</td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
@@ -121,7 +142,7 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td class="text-center">
 												<button type="button" class="btn btn-success btn-xs"
-													id="view_staff" onclick="alert('담당자 팝업');">
+													id="view_staff" onclick="test();">
 													<i class="glyphicon glyphicon-user"></i>
 												</button>
 											</td>
@@ -149,7 +170,7 @@
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-										onclick="location.href='<?echo site_url('company_setting/write');?>';">등록</button>
+										onclick="location.href='<?echo site_url('company_setting/write/') . '/' . $page;?>';">등록</button>
 								</div>
 							</form>
 						</div>
@@ -158,10 +179,11 @@
 				</div>
 
 
-
 			</div>
-
 			<!-- End .row -->
+			
+			
+
 		</div>
 		<!-- / .page-content-inner -->
 	</div>
@@ -169,8 +191,17 @@
 </div>
 <!-- / page-content -->
 
+
+
 <!-- 폼 날짜 -->
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
+<script
+	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<script
+	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
+
+<!-- Bootbox fast bootstrap modals -->
+<script
+	src="<?echo $this->config->base_url()?>html/plugins/ui/bootbox/bootbox.js"></script>
+
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
 
