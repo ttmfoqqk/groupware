@@ -106,7 +106,7 @@
 										<th class="per10">구분</th>
 										<th class="per10">분류</th>
 										<th >제목</th>
-										<th class="per10">진행기간</th>
+										<th class="per15">진행기간</th>
 										<th class="per10">결재</th>
 										<th class="per10">누락</th>
 										<th class="per10">기안일자</th>
@@ -125,15 +125,15 @@
 												<label for="check"></label>
 											</div>
 										</td>
-										<td>구분</td>
-										<td>마케팅</td>
-										<td>분류</td>
-										<td>제목</td>
-										<td>진행기간</td>
-										<td>결재</td>
-										<td>누락</td>
-										<td>기안일자</td>
-										<td>기안자</td>
+										<td><?echo $lt['order'];?></td>
+										<td><?echo $lt['menu_part_no'];?></td>
+										<td><?echo $lt['menu_no'];?></td>
+										<td><?echo $lt['title'];?></td>
+										<td><?echo substr($lt['sData'],0,10).' ~ '.substr($lt['eData'],0,10);?></td>
+										<td><?echo $lt['pPoint'];?></td>
+										<td><?echo $lt['mPoint'];?></td>
+										<td><?echo substr($lt['created'],0,10);?></td>
+										<td><?echo $lt['user_no'];?></td>
 										<td class="text-center">
 											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>

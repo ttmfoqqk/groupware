@@ -31,6 +31,7 @@ class Project extends CI_Controller{
 		$this->lists();
 	}
 	public function lists(){
+		$this->load->helper('date');
 		$option   = array();
 		$offset   = (PAGING_PER_PAGE * $this->GLOBAL['cur_page'])-PAGING_PER_PAGE;
 
@@ -103,70 +104,91 @@ class Project extends CI_Controller{
 		$this->load->library('form_validation');
 
 
-		$action_type   = $this->input->post('action_type');
-		$board_no      = $this->input->post('board_no');
-		$board_code    = $this->input->post('board_code');
-		$board_type    = $this->input->post('board_type');
-		$board_name    = $this->input->post('board_name');
-		$board_reply   = $this->input->post('board_reply')=='on'?0:1;
-		$board_comment = $this->input->post('board_comment')=='on'?0:1;
-		$board_order   = $this->input->post('board_order');
+		$action_type  = $this->input->post('action_type');
+		$no           = $this->input->post('no');
+		$menu_part_no = $this->input->post('menu_part_no');
+		$menu_no      = $this->input->post('menu_no');
+		$user_no      = $this->input->post('user_no');
+		$title        = $this->input->post('title');
+		$contents     = $this->input->post('contents');
+		$sData        = $this->input->post('sData');
+		$eData        = $this->input->post('eData');
+		$pPoint       = $this->input->post('pPoint');
+		$mPoint       = $this->input->post('mPoint');
+		$order        = $this->input->post('order');
 		
 		if( $action_type == 'create' ){
 			
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('board_code','게시판 코드','required|max_length[20]|alpha_numeric|is_unique[sw_board_list.code]');
-			$this->form_validation->set_rules('board_name','게시판 이름','required|max_length[20]');
-			$this->form_validation->set_rules('board_order','게시판 순서','required|numeric');
+			$this->form_validation->set_rules('menu_part_no','부서','required');
+			$this->form_validation->set_rules('menu_no','분류','required');
+			$this->form_validation->set_rules('title','제목','required|max_length[200]');
+			$this->form_validation->set_rules('sData','진행기간','required');
+			$this->form_validation->set_rules('eData','진행기간','required');
+			$this->form_validation->set_rules('pPoint','결재점수','required|numeric');
+			$this->form_validation->set_rules('mPoint','누락점수','required|numeric');
+			$this->form_validation->set_rules('order','게시판 순서','required|numeric');
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
 
 			$option = array(
-				'code'      =>$board_code,
-				'type'      =>$board_type,
-				'name'      =>$board_name,
-				'activated' =>0,
-				'reply'     =>$board_reply,
-				'comment'   =>$board_comment,
-				'order'     =>$board_order
+				'menu_part_no' =>$menu_part_no,
+				'menu_no'      =>$menu_no,
+				'user_no'      =>$user_no,
+				'title'        =>$title,
+				'contents'     =>$contents,
+				'sData'        =>$sData,
+				'eData'        =>$eData,
+				'pPoint'       =>$pPoint,
+				'mPoint'       =>$mPoint,
+				'order'        =>$order
 			);
-			$result = $this->board_model->get_project_insert($option);
-			alert('등록되었습니다.', site_url('project/lists/'.BOARD_PAGE) );
+			$result = $this->project_model->get_project_insert($option);
+			alert('등록되었습니다.', site_url('project/lists/'.$this->GLOBAL['cur_page']) );
 
 		}elseif( $action_type == 'edit' ){
 			
-			$this->form_validation->set_rules('board_no','게시판 no','required|is_natural_no_zero');
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('board_code','게시판 코드','required|max_length[20]|alpha_numeric');
-			$this->form_validation->set_rules('board_name','게시판 이름','required|max_length[20]');
-			$this->form_validation->set_rules('board_order','게시판 순서','required|numeric');
-			if ($this->form_validation->run() == FALSE){
-				alert('잘못된 접근입니다.');
-			}
-			
-			$option = array(
-				'type'      =>$board_type,
-				'name'      =>$board_name,
-				'reply'     =>$board_reply,
-				'comment'   =>$board_comment,
-				'order'     =>$board_order
-			);
-			$this->board_model->get_setting_update($option,array('no'=>$board_no));
+			$this->form_validation->set_rules('no','코드','required');
+			$this->form_validation->set_rules('menu_part_no','부서','required');
+			$this->form_validation->set_rules('menu_no','분류','required');
+			$this->form_validation->set_rules('title','제목','required|max_length[200]');
+			$this->form_validation->set_rules('sData','진행기간','required');
+			$this->form_validation->set_rules('eData','진행기간','required');
+			$this->form_validation->set_rules('pPoint','결재점수','required|numeric');
+			$this->form_validation->set_rules('mPoint','누락점수','required|numeric');
+			$this->form_validation->set_rules('order','게시판 순서','required|numeric');
 
-			alert('수정되었습니다.', site_url('project/lists/'.BOARD_PAGE) );
-		}elseif( $action_type == 'delete' ){
-			$this->form_validation->set_rules('board_no','게시판 no','required');
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
-			$set_no = is_array($board_no) ? implode(',',$board_no):$board_no;
-			$option = array(
-				'activated'=>1
-			);
-			$this->board_model->get_setting_update($option,'no in('.$set_no.')');
 			
-			alert('삭제되었습니다.', site_url('project/lists/'.BOARD_PAGE) );
+			$option = array(
+				'menu_part_no' =>$menu_part_no,
+				'menu_no'      =>$menu_no,
+				'title'        =>$title,
+				'contents'     =>$contents,
+				'sData'        =>$sData,
+				'eData'        =>$eData,
+				'pPoint'       =>$pPoint,
+				'mPoint'       =>$mPoint,
+				'order'        =>$order
+			);
+			$this->project_model->get_project_update($option,array('no'=>$no));
+
+			alert('수정되었습니다.', site_url('project/lists/'.$this->GLOBAL['cur_page']) );
+		}elseif( $action_type == 'delete' ){
+			$this->form_validation->set_rules('no','no','required');
+			if ($this->form_validation->run() == FALSE){
+				alert('잘못된 접근입니다.');
+			}
+			$set_no = is_array($no) ? implode(',',$no):$no;
+			
+			/* 데이터 삭제 */
+			$this->project_model->get_project_delete($set_no);
+			
+			alert('삭제되었습니다.', site_url('project/lists/'.$this->GLOBAL['cur_page']) );
 		}else{
 			alert('잘못된 접근입니다.');
 		}

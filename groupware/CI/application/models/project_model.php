@@ -20,11 +20,21 @@ class Project_model extends CI_Model{
 		return $result;
 	}
 	public function get_project_insert($option){
+		$this->db->set('created', 'NOW()', false);
 		$this->db->insert('sw_project',$option);
 		return $this->db->insert_id();
 	}
 	public function get_project_update($option,$where){
 		$this->db->update('sw_project',$option,$where);
+	}
+	public function get_project_delete($set_no){
+		$this->db->delete('sw_project','no in('.$set_no.')');
+		$this->get_project_staff($set_no);
+	}
+
+
+	public function get_project_staff($where){
+		$this->db->delete('sw_project_staff',$where);
 	}
 }
 /* End of file project_model.php */

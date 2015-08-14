@@ -25,10 +25,10 @@
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 
 								<div class="form-group">
-									<label for="board_code" class="col-lg-2 col-md-3 control-label">기안부서</label>
+									<label for="menu_part_no" class="col-lg-2 col-md-3 control-label">기안부서</label>
 									<div class="col-lg-10 col-md-9">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="default" <?echo $data['menu_part_no']=='default'?'selected':''; ?>>기안부서</option>
+										<select id="menu_part_no" name="menu_part_no" class="fancy-select form-control">
+											<option value="" <?echo $data['menu_part_no']=='default'?'selected':''; ?>>기안부서</option>
 										</select>
 									</div>
 								</div>
@@ -45,18 +45,18 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-lg-2 col-md-3 control-label" for="board_type">분류</label>
+									<label class="col-lg-2 col-md-3 control-label" for="menu_no">분류</label>
 									<div class="col-lg-10 col-md-9">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
+										<select id="menu_no" name="menu_no" class="fancy-select form-control">
 											<option value="default" <?echo $data['menu_no']=='default'?'selected':''; ?>>분류</option>
 										</select>
 									</div>
 								</div>
 								<!-- End .form-group  -->
 								<div class="form-group">
-									<label for="board_name" class="col-lg-2 col-md-3 control-label">제목</label>
+									<label for="title" class="col-lg-2 col-md-3 control-label">제목</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="board_name" name="board_name" type="text" class="form-control"  placeholder="제목" value="<?echo $data['title'];?>" maxlength="20">
+										<input id="title" name="title" type="text" class="form-control"  placeholder="제목" value="<?echo $data['title'];?>" maxlength="20">
 									</div>
 								</div>
 								<!-- End .form-group  -->
@@ -66,9 +66,9 @@
 										<div class="col-lg-8 col-md-8 row">
 											<div class="input-group col-xs-11">
 												<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-												<input type="text" class="form-control" name="start" />
+												<input type="text" class="form-control" id="sData" name="sData" />
 												<span class="input-group-addon">to</span>
-												<input type="text" class="form-control" name="end" />
+												<input type="text" class="form-control" id="eData" name="eData" />
 											</div>
 										</div>
 										
@@ -81,15 +81,15 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="board_order" class="col-lg-2 col-md-3 control-label">+결재점수</label>
+									<label for="pPoint" class="col-lg-2 col-md-3 control-label">+결재점수</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="board_order" name="board_order" type="text" class="form-control input-mini"  placeholder="결재점수" value="<?echo $data['pPoint'];?>" maxlength="3">
+										<input id="pPoint" name="pPoint" type="text" class="form-control input-mini"  placeholder="결재점수" value="<?echo $data['pPoint'];?>" maxlength="3">
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="board_order" class="col-lg-2 col-md-3 control-label">-누락점수</label>
+									<label for="mPoint" class="col-lg-2 col-md-3 control-label">-누락점수</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="board_order" name="board_order" type="text" class="form-control input-mini"  placeholder="누락점수" value="<?echo $data['mPoint'];?>" maxlength="3">
+										<input id="mPoint" name="mPoint" type="text" class="form-control input-mini"  placeholder="누락점수" value="<?echo $data['mPoint'];?>" maxlength="3">
 									</div>
 								</div>
 								<div class="form-group">
@@ -98,7 +98,7 @@
 										
 										<div class="col-lg-10 col-md-10 row">
 											<div class="input-group col-xs-11">
-												<input id="board_name" name="board_name" type="text" class="form-control"  placeholder="제목" value="" maxlength="20">
+												<input id="document_input" name="document_input" type="text" class="form-control"  placeholder="서식선택" value="" readonly>
 											</div>
 										</div>
 										
@@ -110,19 +110,19 @@
 								</div>
 								<div class="form-group">
 									<div class="col-xs-12">
-										<textarea class="form-control" rows="20"></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="20"></textarea>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-lg-2 col-md-3 control-label" for="">첨부파일</label>
+									<label class="col-lg-2 col-md-3 control-label" for="userfile">첨부파일</label>
 									<div class="col-lg-10 col-md-9">
 										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="board_order" class="col-lg-2 col-md-3 control-label">순서</label>
+									<label for="order" class="col-lg-2 col-md-3 control-label">순서</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="board_order" name="board_order" type="text" class="form-control input-mini"  placeholder="순서" value="<?echo $data['order'];?>" maxlength="3">
+										<input id="order" name="order" type="text" class="form-control input-mini"  placeholder="순서" value="<?echo $data['order'];?>" maxlength="3">
 									</div>
 								</div>
 								<!-- End .form-group  -->
@@ -160,7 +160,18 @@
 <!-- / page-content -->
 
 
-
+<script type="text/javascript">
+$(function(){
+    $('#menu_part_no').create_menu({
+		method : 'department',
+		value  : '<?echo $data["menu_part_no"]?>'
+	});
+	$('#menu_no').create_menu({
+		method : 'project',
+		value  : '<?echo $data["menu_no"]?>'
+	});
+});
+</script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
