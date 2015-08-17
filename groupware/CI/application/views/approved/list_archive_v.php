@@ -16,12 +16,13 @@
 					<div class="panel panel-primary toggle">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><i class="fa fa-circle"></i> 업무목록</h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재목록</h4>
 						</div>
 						<div class="panel-body">
 							
 							<!-- 검색 -->
 							<form class="form-horizontal">
+
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">진행기간</label>
 									<div class="col-lg-6 col-md-6">
@@ -40,7 +41,7 @@
 									</div>
 								</div>
 								<div class="form-group col-lg-12 col-md-12">
-									<label class="col-lg-2 col-md-2 control-label" for="">기안일자</label>
+									<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
@@ -59,7 +60,7 @@
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
-									<div class="col-lg-3 col-md-3">
+									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
 										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
 											<option value="">담당부서</option>
 										</select>
@@ -67,9 +68,24 @@
 
 									<label class="col-lg-2 col-md-2 control-label" for="">담당자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" name="userName" class="form-control" placeholder="담당자" value="<?echo $this->input->get('userName')?>">
+										<input type="text" class="form-control" placeholder="담당자">
 									</div>
 								</div>
+								<div class="form-group col-lg-12 col-md-12">
+									<label class="col-lg-2 col-md-2 control-label" for="">결재부서</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
+										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
+											<option value="">결재부서</option>
+										</select>
+									</div>
+
+									<label class="col-lg-2 col-md-2 control-label" for="">결재자</label>
+									<div class="col-lg-3 col-md-3">
+										<input type="text" class="form-control" placeholder="결재자">
+									</div>
+								</div>
+
+								
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
@@ -79,9 +95,17 @@
 										</select>
 									</div>
 
-									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
+									<label class="col-lg-2 col-md-2 control-label" for="">문서번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" name="title" class="form-control" placeholder="제목" value="<?echo $this->input->get('title')?>">
+										<input type="text" class="form-control" placeholder="문서번호">
+									</div>
+
+									
+								</div>
+								<div class="form-group col-lg-12 col-md-12">
+									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
+									<div class="col-lg-8 col-md-8">
+										<input type="text" class="form-control" placeholder="제목">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -92,10 +116,15 @@
 
 							</form>
 							<!-- 검색 -->
+							<div class="pull-left">
+								<select id="board_type" name="board_type" class="fancy-select form-control">
+									<option value="10">10개</option>
+								</select>
+							</div>
+							<div class="pull-right">
+								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+							</div>
 
-							<form id="project-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
-							<input type="hidden" name="action_type" id="action_type" value="delete">
-							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 							<table class="table table-bordered" id="tabletools">
 								<thead>
 									<tr>
@@ -105,58 +134,44 @@
 												<label for="masterCheck"></label>
 											</div>
 										</th>
-										<th style="width:50px;">순서</th>
-										<th class="per10">담당부서</th>
-										<th class="per10">분류</th>
-										<th >제목</th>
-										<th class="per15">진행기간</th>
-										<th class="per10">결재점수</th>
-										<th class="per10">누락점수</th>
-										<th class="per10">기안일자</th>
-										<th class="per10">기안자</th>
-										<th style="width:60px;">담당자</th>
+										<th style="width:60px;">순서</th>
+										<th class="per8">분류</th>
+										<th>제목</th>
+										<th class="per8">진행기간</th>
+										<th class="per8">결재</th>
+										<th class="per8">누락</th>
+										<th class="per8">등록일자</th>
+										<th width="80px;">담당자</th>
+										<th width="80px;">결재자</th>
 									</tr>
 								</thead>
 								<tbody>
-								<?php foreach($list as $lt){
-									$anchor = $anchor_url.'&no='.$lt['no'];
-									?>
+									<!-- 리스트 -->
 									<tr>
 										<td>
 											<div class="checkbox-custom">
-												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['no'];?>">
+												<input id="check" class="check" type="checkbox" value="option2">
 												<label for="check"></label>
 											</div>
 										</td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['order'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['part_name'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10).' ~ '.substr($lt['eData'],0,10);?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['pPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['mPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['created'],0,10);?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
+										<td>순서</td>
+										<td>분류</td>
+										<td>제목</td>
+										<td>진행기간</td>
+										<td>결재</td>
+										<td>누락</td>
+										<td>등록일자</td>
+										<td>담당자</td>
 										<td class="text-center">
-											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-primary btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
-								<?php }?>
-								<?
-								if( count($list) <= 0 ){?>
-									<tr>
-										<td colspan="11">등록된 내용이 없습니다.</td>
-									</tr>
-								<?}?>
+									<!-- 리스트 -->
 								</tbody>
 							</table>
 
 							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
-							<div class="panel-body pull-right">
-								<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-								<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $write_url;?>';">등록</button>
-							</div>
-							</form>
+
 						</div>
 					</div>
 					<!-- End .panel -->
@@ -177,4 +192,5 @@
 <!-- 폼 날짜 -->
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>
+
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>

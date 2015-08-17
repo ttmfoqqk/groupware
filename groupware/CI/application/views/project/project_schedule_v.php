@@ -27,44 +27,44 @@
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="start" />
+											<input type="text" class="form-control" name="sData" id="sData" value="<?echo $this->input->get('sData')?>" />
 											<span class="input-group-addon">to</span>
-											<input type="text" class="form-control" name="end" />
+											<input type="text" class="form-control" name="eData" id="eData" value="<?echo $this->input->get('eData')?>"/>
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
-										<button type="button" class="btn btn-sm btn-primary btn-alt">오늘</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">7일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">30일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt">날짜초기화</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="담당부서">담당부서</option>
+										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
+											<option value="">담당부서</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">담당자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="담당자">
+										<input type="text" name="userName" class="form-control" placeholder="담당자" value="<?echo $this->input->get('userName')?>">
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="담당부서">분류</option>
+										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+											<option value="">분류</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="제목">
+										<input type="text" name="title" class="form-control" placeholder="제목" value="<?echo $this->input->get('title')?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -100,4 +100,4 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>

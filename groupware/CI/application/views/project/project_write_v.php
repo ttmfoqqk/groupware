@@ -20,15 +20,16 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="board-form-write-setting" action="<?echo site_url('project/proc');?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 								<div class="form-group">
 									<label for="menu_part_no" class="col-lg-2 col-md-3 control-label">기안부서</label>
 									<div class="col-lg-10 col-md-9">
-										<select id="menu_part_no" name="menu_part_no" class="fancy-select form-control">
-											<option value="" <?echo $data['menu_part_no']=='default'?'selected':''; ?>>기안부서</option>
+										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $data['menu_part_no'];?>" class="fancy-select form-control">
+											<option value="">담당부서</option>
 										</select>
 									</div>
 								</div>
@@ -47,8 +48,8 @@
 								<div class="form-group">
 									<label class="col-lg-2 col-md-3 control-label" for="menu_no">분류</label>
 									<div class="col-lg-10 col-md-9">
-										<select id="menu_no" name="menu_no" class="fancy-select form-control">
-											<option value="default" <?echo $data['menu_no']=='default'?'selected':''; ?>>분류</option>
+										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+											<option value="">분류</option>
 										</select>
 									</div>
 								</div>
@@ -64,19 +65,19 @@
 									<label for="" class="col-lg-2 col-md-3 control-label">진행기간</label>
 									<div class="col-lg-10 col-md-9">
 										<div class="col-lg-8 col-md-8 row">
-											<div class="input-group col-xs-11">
+											<div class="input-group col-xs-11 input-daterange">
 												<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-												<input type="text" class="form-control" id="sData" name="sData" />
+												<input type="text" class="form-control" id="sData" name="sData" value="<?echo $data['sData'];?>"/>
 												<span class="input-group-addon">to</span>
-												<input type="text" class="form-control" id="eData" name="eData" />
+												<input type="text" class="form-control" id="eData" name="eData" value="<?echo $data['eData'];?>"/>
 											</div>
 										</div>
 										
 										<div class="col-lg-4 col-md-4 row">
-											<button type="button" class="btn btn-sm btn-primary btn-alt">오늘</button> 
-											<button type="button" class="btn btn-sm btn-primary btn-alt">7일</button> 
-											<button type="button" class="btn btn-sm btn-primary btn-alt">30일</button> 
-											<button type="button" class="btn btn-sm btn-primary btn-alt">날짜초기화</button> 
+											<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsToday">오늘</button>
+											<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsWeek">7일</button>
+											<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsMonth">30일</button>
+											<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsReset">날짜초기화</button>
 										</div>
 									</div>
 								</div>
@@ -110,7 +111,7 @@
 								</div>
 								<div class="form-group">
 									<div class="col-xs-12">
-										<textarea id="contents" name="contents" class="form-control" rows="20"></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="20"><?echo $data['contents']?></textarea>
 									</div>
 								</div>
 								<div class="form-group">
@@ -177,7 +178,4 @@ $(function(){
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>
