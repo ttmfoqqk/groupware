@@ -41,13 +41,17 @@ class Md_company extends CI_Model{
 	 * @param int $limit
 	 * @param array $likes
 	 */
-	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL){
+	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL, $order=FALSE, $no=FALSE){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
 				if($val!='')
 					$this->db->like($key, $val);
 			}
 		}
+		if($order == true)
+			$this->db->order_by('order','ASC');
+		if($no == true)
+			$this->db->order_by('no','DESC');
 		$this->db->select($select);
 		if($where != NULL)
 			$this->db->where($where);
