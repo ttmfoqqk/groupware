@@ -1,9 +1,9 @@
 <?
-class Account extends CI_Controller{
+class Schedule extends CI_Controller{
 	public function __construct() {
 		parent::__construct();
 		login_check();
-		set_cookie('left_menu_open_cookie',site_url('account'),'0');
+		set_cookie('left_menu_open_cookie',site_url('schedule'),'0');
     }
 
 	public function _remap($method){
@@ -27,18 +27,8 @@ class Account extends CI_Controller{
 	}
 	public function lists(){
 		$data['list'] = array();
-
-		$config['base_url']    = site_url('purpose/add/');
-		$config['total_rows']  = 0;
-		$config['cur_page']    = $this->uri->segment(3,1);
-		$config['uri_segment'] = 3;
-
-		$this->pagination->initialize($config);
-		$data['pagination']    = $this->pagination->create_links();
-
-
-		$this->load->view('marketing/account_v',$data);
+		$this->load->view('project/project_schedule_v',$data);
 	}
 }
-/* End of file account.php */
-/* Location: ./controllers/account.php */
+/* End of file Schedule.php */
+/* Location: ./controllers/Schedule.php */

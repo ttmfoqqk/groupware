@@ -68,7 +68,8 @@ class Board_model extends CI_Model{
 			$this->db->query($sql);
 		}
 		$this->db->where('is_delete',0);
-		$result = $this->db->get_where('sw_board_contents',$option);
+		$result['data']  = $this->db->get_where('sw_board_contents',$option);
+		$result['files'] = $this->get_board_file_list(array('parent_no'=>$option['no']));
 		return $result;
 	}
 	public function set_board_insert($option){
@@ -86,6 +87,15 @@ class Board_model extends CI_Model{
 		$result = $this->db->insert_id();
 		return $result;
 	}
+	public function get_board_file_list($option){
+		$query = $this->db->get_where('sw_board_file',$option);
+		$result = $query->result_array();
+		return $result;
+	}
+	/*
+		파일 보기
+		sw_board_file where code , parent_no
+	*/
 }
 /* End of file board_model.php */
 /* Location: ./models/board_model.php */

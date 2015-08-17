@@ -77,14 +77,15 @@
 						<a href="#"><i class="l-basic-server2"></i> <span class="txt">업무관리</span></a>
 						<ul class="sub">
 							<li><a href="<?php echo site_url('menu/lists/project');?>"><span class="txt">업무 분류</span></a></li>
-							<li><a href="<?php echo site_url('project');?>"><span class="txt">업무 정보</span></a></li>
-							<li><a href="<?php echo site_url('project/schedule');?>"><span class="txt">업무 일정</span></a></li>
+							<li><a href="<?php echo site_url('project/');?>"><span class="txt">업무 정보</span></a></li>
+							<li><a href="<?php echo site_url('schedule/');?>"><span class="txt">업무 일정</span></a></li>
 						</ul>
 					</li>
 					<!-- 전자결재 -->
 					<li>
 						<a href="#"><i class="l-basic-todo-pencil"></i> <span class="txt">결재</span></a>
 						<ul class="sub">
+							<li><a href="<?php echo site_url('approved/receive');?>"><span class="txt">등록/보관</span></a></li>
 							<li><a href="<?php echo site_url('approved/receive');?>"><span class="txt">받은 결재</span></a></li>
 							<li><a href="<?php echo site_url('approved/send');?>"><span class="txt">보낸 결재</span></a></li>
 						</ul>

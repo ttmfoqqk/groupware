@@ -186,3 +186,65 @@ $(document).ready(function() {
 
 
 });
+
+/* 메뉴 불러오기 작업중;;;;; */
+(function($){
+	$.fn.create_menu = function(options){
+		var $method = options.method;
+		var $value  = options.value;
+		
+		if( !$method || $method=='undefined' ){
+			alert('method 누락');return false;
+		}
+
+		var url = '/groupware/menu/lists/' + $method;
+		var element = $(this);
+	
+		if(element.length<=0){
+			alert('잘못된 객체');return false;
+		}
+
+		var tagName = element.get(0).tagName;
+		
+		if(tagName != 'SELECT'){
+			alert('select 만 있음;;');return false;
+		}
+
+		$.ajax({
+			type     : 'POST',
+			url      : url,
+			dataType : 'json',
+			success: function(data){
+				$data = eval(data);
+				
+				if(tagName=='SELECT'){
+					var html = create_option($data);
+					element.append(html);
+				}
+			},error:function(err){
+				alert(err.responseText);
+				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
+			}
+		});
+
+		function create_option(json_obj,depth){
+			var output = '';
+			var depth  = !depth ? 0 : depth;
+			var depth_s = '';
+			
+			for(i=0; i<depth; i++){
+				depth_s += '&nbsp;&nbsp;&nbsp;';
+			}
+			depth_s = depth_s ? depth_s+' ▶' : depth_s;
+
+			for (var i in json_obj){
+
+                output+='<option value="'+json_obj[i].id+'" '+ ($value==json_obj[i].id?'selected':'') +'>' + depth_s + json_obj[i].name + '</option>';
+				if(typeof json_obj[i].children == 'object'){
+					output+=create_option(json_obj[i].children,depth+1);
+				}
+            }
+			return output;
+		}
+	}
+})(jQuery);
