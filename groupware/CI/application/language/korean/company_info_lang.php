@@ -10,4 +10,6 @@ $lang['phone'] = '전화번호';
 $lang['fax'] = '팩스번호';
 $lang['note'] = '비고';
 $lang['order'] = '정렬';
+
+$lang['all'] = '전체';
 ?>
