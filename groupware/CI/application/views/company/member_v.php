@@ -29,15 +29,13 @@
 									<label class="col-lg-2 col-md-2 control-label" for="">이름</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_name"
-											name="ft_name" placeholder="이름"
-											>
+											name="ft_name" placeholder="이름" value=<?php echo $filter['name'] != NULL ? $filter['name'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">휴대폰번호</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_phone"
-											name="ft_phone" placeholder="휴대폰번호"
-											>
+											name="ft_phone" placeholder="휴대폰번호" value=<?php echo $filter['phone'] != NULL ? $filter['phone'] : '';?>>
 									</div>
 								</div>
 
@@ -45,15 +43,13 @@
 									<label class="col-lg-2 col-md-2 control-label" for="">이메일</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_email"
-											name="ft_email" placeholder="이메일"
-											>
+											name="ft_email" placeholder="이메일" value=<?php echo $filter['email'] != NULL ? $filter['email'] : '';?>>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">재직여부</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_iswork"
-											name="ft_iswork" placeholder="재직여부"
-											>
+											name="ft_iswork" placeholder="재직여부" value=<?php echo $filter['is_active'] != NULL ? $filter['is_active'] : '';?>>
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -61,6 +57,18 @@
 											색</button>
 									</div>
 								</div>
+								
+								<!-- 테이블 옵션  -->
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?php echo $tb_num;?>>
+										<option value="10" <?=$tb_num == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$tb_num == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+								</div>
+								<!-- END 테이블 옵션  -->
 
 
 							</form>
@@ -151,7 +159,7 @@
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-										onclick="location.href='<?echo site_url('company_setting/write/') . '/' . $page;?>';">등록</button>
+										onclick="location.href='<?echo site_url($page . '/write/');?>';">등록</button>
 								</div>
 							</form>
 						</div>
@@ -172,3 +180,6 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
+
+
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_member.js"></script>

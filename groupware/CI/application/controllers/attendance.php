@@ -84,7 +84,7 @@ class Attendance extends CI_Controller{
 		$data['list'] = array();
 		$data['action_url'] = site_url('company_setting/proc');
 		$data['action_type'] = 'delete';
-		$result = $this->md_attendance->getAttendance($where2, $likes);//$this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		$result = $this->md_attendance->getAttendance($where2, $likes, PAGING_PER_PAGE, $offset);//$this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
 		if (count($result) > 0){
 			foreach ($result as $row)
 			{

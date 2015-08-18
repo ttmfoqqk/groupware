@@ -1,12 +1,12 @@
 <?
-class Md_attendance extends CI_Model{
-	private $TABLE_NAME = 'sw_attendance_history';
+class Md_object extends CI_Model{
+	private $TABLE_NAME = 'sw_object';
 	
 	public function __construct(){
 		parent::__construct();
 	}
 	
-	public function getAttendanceCount($where=NULL, $likes=NULL){
+	public function getObjectCount($where=NULL, $likes=NULL){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
 				if($val!='')
@@ -16,18 +16,17 @@ class Md_attendance extends CI_Model{
 		if($where != NULL)
 			$this->db->where($where);
 	
-		//$this->db->select('h.no, u.name, h.sData, h.eData, h.oData, h.point, h.created, ud.menu_no, m.name as menu_name');
-		$this->db->from('sw_attendance_history h');
-		$this->db->join('sw_user u', 'h.user_no = u.no', 'left outer');
-		$this->db->join('sw_user_department ud', 'u.no = ud.user_no', 'left outer');
-		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left outer');
+		$this->db->select('o.no, o.order, m.name as menu_name, o.name, o.area, o.created, u.name as user_name, o.is_active');
+		$this->db->from('sw_object o');
+		$this->db->join('sw_menu m', 'o.menu_no = m.no', 'left outer');
+		$this->db->join('sw_user u', 'o.user_no = u.no', 'left outer');
 		
 		$this->db->select('count(*) as total');
 		$ret = $this->db->get($this->TABLE_NAME)->row();
 		return $ret->total;
 	}
 	
-	public function getAttendance($where=NULL, $likes=NULL, $offset=NULL, $limit=NULL){
+	public function getObject($where=NULL, $likes=NULL, $offset=NULL, $limit=NULL){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
 				if($val!='')
@@ -36,12 +35,17 @@ class Md_attendance extends CI_Model{
 		}
 		if($where != NULL)
 			$this->db->where($where);
-		
+		/*
 		$this->db->select('h.no, u.name, h.sData, h.eData, h.oData, h.point, h.created, ud.menu_no, m.name as menu_name');
-		$this->db->from('sw_attendance_history h');
+		$this->db->from('sw_object h');
 		$this->db->join('sw_user u', 'h.user_no = u.no', 'left outer');
 		$this->db->join('sw_user_department ud', 'u.no = ud.user_no', 'left outer');
 		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left outer');
+		*/
+		$this->db->select('o.no, o.order, m.name as menu_name, o.name, o.area, o.created, u.name as user_name, o.is_active');
+		$this->db->from('sw_object o');
+		$this->db->join('sw_menu m', 'o.menu_no = m.no', 'left outer');
+		$this->db->join('sw_user u', 'o.user_no = u.no', 'left outer');
 		
 		$ret = $this->db->get($this->TABLE_NAME, $offset, $limit);
 		return $ret->result_array();
