@@ -138,7 +138,7 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['created'],0,10);?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
 								<?php }?>

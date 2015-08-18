@@ -48,7 +48,7 @@
 								<div class="form-group">
 									<label class="col-lg-2 col-md-3 control-label" for="menu_no">분류</label>
 									<div class="col-lg-10 col-md-9">
-										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $data['menu_no'];?>" class="fancy-select form-control">
 											<option value="">분류</option>
 										</select>
 									</div>
@@ -160,19 +160,6 @@
 </div>
 <!-- / page-content -->
 
-
-<script type="text/javascript">
-$(function(){
-    $('#menu_part_no').create_menu({
-		method : 'department',
-		value  : '<?echo $data["menu_part_no"]?>'
-	});
-	$('#menu_no').create_menu({
-		method : 'project',
-		value  : '<?echo $data["menu_no"]?>'
-	});
-});
-</script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>

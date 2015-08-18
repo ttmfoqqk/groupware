@@ -229,6 +229,46 @@ class Project extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 	}
+
+	/* 담당자 */
+	public function _staff_lists(){
+		$project_no = $this->input->post('project_no');
+		$option = array(
+			'project_no'=>$project_no
+		);
+		$result = $this->project_model->get_project_staff_list($option);
+		echo json_encode($result);
+	}
+
+	public function _staff_insert(){
+		$project_no = $this->input->post('project_no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			$i = 0;
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'project_no' => $project_no,
+					'menu_no'    => $key->menu_no,
+					'user_no'    => $key->user_no,
+					'order'      => $i
+				));
+				$i++;
+			}
+			$result = $this->project_model->set_project_staff_insert($option,array('project_no'=>$project_no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
 }
 /* End of file project.php */
 /* Location: ./controllers/project.php */
