@@ -1,7 +1,5 @@
-var koDatePickerOpt = {language : 'ko',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
+var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
 var enDatePickerOpt = {format: 'yyyy-mm-dd',  todayHighlight:true};						//dataPicker option (english)
-
-
 
 $(document).ready(function() {
 	//date range
@@ -31,6 +29,14 @@ $(document).ready(function() {
 		$("input[name$='end']").datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
 	});
 	//END data 세팅 버튼 이벤트
+	
+	//부서필터 리스트 init
+	var $menu_part_no = $('#ft_department');
+	$menu_part_no.create_menu({
+		method : $menu_part_no.attr('data-method'),
+		value : $menu_part_no.attr('data-value')
+	});
+	
 	
 	// 회사관리 상세페이지 삭제
 	$('#contents_setting_delete').on('click',function(){

@@ -42,13 +42,11 @@ class Attendance extends CI_Controller{
 		$start = $this->input->get('ft_start');
 		$end = $this->input->get('ft_end');
 		$department = $this->input->get('ft_department');
-		if($department == "전체")
-			$department = NULL;
 		$userName = $this->input->get('ft_userName');
 		$likes['m.name'] = $likes['u.name']  = '';
 		$date['start'] = $date['end']= NULL;
 		if($department)
-			$likes['m.name'] = $department;
+			$likes['m.no'] = $department;
 		if($userName)
 			$likes['u.name'] = $userName;
 		$data['filter'] = $likes;

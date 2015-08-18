@@ -54,12 +54,8 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">부서</label>
 									<div class="col-lg-3 col-md-3">
-										<select class="fancy-select form-control" id="ft_department" name="ft_department">
-											<option value="<?php echo $this->lang->line('all');?>"><?php echo $this->lang->line('all');?></option>
-											<?php  foreach ( $department as $dp ) {
-											?>
-                                        	<option value=<?php echo $dp['name'];?>><?php echo $dp['name'];?></option>
-                                        	<?php }?>
+										<select class="fancy-select form-control" id="ft_department" name="ft_department" data-method="department" data-value="<?echo $this->input->get('ft_department');?>">
+                                        	<option value="">전체</option>
                                         </select>
 									</div>
 

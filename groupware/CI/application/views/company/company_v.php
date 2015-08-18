@@ -193,12 +193,6 @@
 
 
 
-<!-- 폼 날짜 -->
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
-
 <!-- Bootbox fast bootstrap modals -->
 <script
 	src="<?echo $this->config->base_url()?>html/plugins/ui/bootbox/bootbox.js"></script>

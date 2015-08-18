@@ -1,4 +1,4 @@
-var koDatePickerOpt = {language : 'ko',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
+var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
 var enDatePickerOpt = {format: 'yyyy-mm-dd',  todayHighlight:true};						//dataPicker option (english)
 
 
