@@ -85,9 +85,22 @@
 					<li>
 						<a href="#"><i class="l-basic-todo-pencil"></i> <span class="txt">결재</span></a>
 						<ul class="sub">
-							<li><a href="<?php echo site_url('approved/receive');?>"><span class="txt">등록/보관</span></a></li>
-							<li><a href="<?php echo site_url('approved/receive');?>"><span class="txt">받은 결재</span></a></li>
-							<li><a href="<?php echo site_url('approved/send');?>"><span class="txt">보낸 결재</span></a></li>
+							<li><a href="<?php echo site_url('approved_archive/lists/');?>"><span class="txt">[등록/보관]</span></a></li>
+
+							<li><a href="<?php echo site_url('approved_receive/lists/all/');?>"><span class="txt">[받은 결재]</span></a>
+							<li><a href="<?php echo site_url('approved_receive/lists/a');?>"><span class="txt"> - 작업중(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/b');?>"><span class="txt"> - 결재대기(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/c');?>"><span class="txt"> - 결재완료(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/d');?>"><span class="txt"> - 반려(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/e');?>"><span class="txt"> - 미결재(1)</span></a></li>
+
+							<li><a href="<?php echo site_url('approved_send/lists/all/');?>"><span class="txt">[보낸 결재]</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/a');?>"><span class="txt"> - 작업중(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/b');?>"><span class="txt"> - 결재대기(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/c');?>"><span class="txt"> - 결재완료(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/d');?>"><span class="txt"> - 반려(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/e');?>"><span class="txt"> - 미결재(1)</span></a></li>
+
 						</ul>
 					</li>
 					<!-- develop -->

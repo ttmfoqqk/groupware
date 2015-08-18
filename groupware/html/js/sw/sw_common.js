@@ -183,8 +183,7 @@ $(document).ready(function() {
             highlightClass: 'highlight'
         }
 	});
-
-
+	
 });
 
 /* 메뉴 불러오기 작업중;;;;; */
@@ -192,18 +191,17 @@ $(document).ready(function() {
 	$.fn.create_menu = function(options){
 		var $method = options.method;
 		var $value  = options.value;
+		var element = $(this);
 		
+		if(element.length<=0){
+			alert('잘못된 객체');
+			return false;
+		}
 		if( !$method || $method=='undefined' ){
 			alert('method 누락');return false;
 		}
 
-		var url = '/groupware/menu/lists/' + $method;
-		var element = $(this);
-	
-		if(element.length<=0){
-			alert('잘못된 객체');return false;
-		}
-
+		var url     = '/groupware/menu/lists/' + $method;
 		var tagName = element.get(0).tagName;
 		
 		if(tagName != 'SELECT'){
