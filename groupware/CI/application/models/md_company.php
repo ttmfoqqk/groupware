@@ -107,7 +107,7 @@ class Md_company extends CI_Model{
 		return $data;
 	}
 	
-	public function getUserByDepartment($dptNo){
+	public function getUsersByDepartment($dptNo){
 		$this->db->select('u.no, u.name');
 		$this->db->from('sw_user_department ud');
 		$this->db->join('sw_user u', 'ud.user_no = u.no', 'left');
@@ -119,7 +119,7 @@ class Md_company extends CI_Model{
 		if (count($ret) > 0){
 			return json_encode($ret->result_array());
 		}else
-			return null;
+			return json_encode(array());
 	}
 }
 /* End of file company_model.php */

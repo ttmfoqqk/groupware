@@ -109,6 +109,11 @@ class Member extends CI_Controller{
 		
 	}
 	
+	public function _lists(){
+		$dptNum = $this->input->post('menu_no');
+		echo $this->md_company->getUsersByDepartment($dptNum);
+	}
+	
 	public function proc(){
 		$this->load->library('form_validation');
 		$this->md_company->setTable($this->TABLE_NAME);
