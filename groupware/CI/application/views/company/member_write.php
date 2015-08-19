@@ -32,7 +32,7 @@
 											<div class="col-lg-1"></div>
 											<div class="col-lg-10">
 												<a href="#" class="thumbnail">		
-													<img id="user_pic" alt="" src="<?php if($data['file'] != '') echo $this->config->base_url() . 'upload/member/' . $data['file']?>" style="height: 200px; width: 100%;">
+													<img id="user_pic" alt="" src="<?php if($data['file'] != '') echo $this->config->base_url() . 'upload/member/' . $data['file']?>" style="height: 200px;">
 												</a>
 												<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 											</div>
