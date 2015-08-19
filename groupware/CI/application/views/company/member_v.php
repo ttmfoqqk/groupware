@@ -109,7 +109,7 @@
 										<tr>
 											<td>
 												<div class="checkbox-custom">
-													<input id="check<?$lt['no'];?>" name="company_no[]"
+													<input id="check<?$lt['no'];?>" name="no[]"
 														class="check" type="checkbox"
 														value=<?php echo $lt['no'];?>> <label
 														for="check<?$lt['no'];?>"></label> <input type="hidden"

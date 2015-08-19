@@ -12,10 +12,11 @@ $(document).ready(function() {
 			message: "삭제하시겠습니까?",
 			title: "삭제하시겠습니까?",
 			callback: function(result) {
+				console.log(result);
 		  		//callback result
 				if(result){
 					$('#action_type').val('delete');
-					$('#company-form-write-setting').submit();
+					$('#member-form-write-setting').submit();
 				}
 		    }
 		});

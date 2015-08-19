@@ -51,7 +51,7 @@
 	                                    <div class="form-group">
 	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>비밀번호</label>
 	                                        <div class="col-lg-10 col-md-10">
-	                                            <input type="text" class="form-control" name="pass" id="pass">
+	                                            <input type="password" class="form-control" name="pass" id="pass">
 	                                        </div>
 	                                    </div>
 	                                    <div class="form-group">
@@ -128,11 +128,11 @@
 									</div>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name="sex" value=1 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4">
+                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4">
                                         	<label for="radio4">남자</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
-                                        	<input type="radio" name="sex" value=2 <?=$data['gender'] == '1' ? ' checked="checked"' : '';?> id="radio5">
+                                        	<input type="radio" name="sex" value=1 <?=$data['gender'] == '1' ? ' checked="checked"' : '';?> id="radio5">
                                         	<label for="radio5">여자</label>
                                         </div>
 									</div>

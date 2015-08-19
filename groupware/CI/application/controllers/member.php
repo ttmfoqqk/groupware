@@ -113,6 +113,15 @@ class Member extends CI_Controller{
 		echo $this->md_company->getUsersByDepartment($dptNum);
 	}
 	
+	public function encryp($passwd){
+		$salt   = $this->config->item('encryption_key');
+		$string = $passwd . $salt;
+		for($i=0;$i<10;$i++) {
+			$string = hash('sha512',$string . $passwd . $salt);
+		}
+		return $string;
+	}
+	
 	public function proc(){
 		$this->load->library('form_validation');
 		$this->md_company->setTable($this->TABLE_NAME);
@@ -138,11 +147,14 @@ class Member extends CI_Controller{
 		$order = $this->input->post('order');
 		$inOffice = $this->input->post('in_office');
 		
+		$config['upload_path'] = 'upload/member/';
+		$config['remove_spaces'] = true;
+		
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
 			$this->form_validation->set_rules('action_type','폼 액션','required');
 			$this->form_validation->set_rules('id','아이디','required|max_length[5]');
-			$this->form_validation->set_rules('pass','비밀번호','required|max_length[5]');
+			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');
 			$this->form_validation->set_rules('sel_phone','핸드폰 번호','required');
@@ -159,6 +171,8 @@ class Member extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$passwd = $this->encryp($passwd);
+			
 			$file = NULL;
 			if( isset($_FILES['userfile']) ) {
 				$config['upload_path'] = 'upload/member/';
@@ -169,8 +183,8 @@ class Member extends CI_Controller{
 					
 				if ( !$this->upload->do_upload() ){
 					$file = NULL;
-					$upload_error = $this->upload->display_errors('','') ;
-					alert($upload_error);
+					//$upload_error = $this->upload->display_errors('','') ;
+					//alert($upload_error);
 				}else{
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
@@ -207,7 +221,7 @@ class Member extends CI_Controller{
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
 			$this->form_validation->set_rules('id','아이디','required|max_length[5]');
-			$this->form_validation->set_rules('pass','비밀번호','required|max_length[5]');
+			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');
 			$this->form_validation->set_rules('sel_phone','핸드폰 번호','required');
@@ -220,25 +234,25 @@ class Member extends CI_Controller{
 			$this->form_validation->set_rules('color','색상','required');
 			
 			if ($this->form_validation->run() == FALSE){
+				echo validation_errors();
 				alert('잘못된 접근입니다.');
 			}
-			
-			alert('goood');
-			return;
-			
 			$file = NULL;
+			
+			$passwd = $this->encryp($passwd);
+			
 			if( isset($_FILES['userfile']) ) {
-				$config['upload_path'] = 'upload/member/';
+				
 				$config['allowed_types'] = 'gif|jpg|png';
-				$config['remove_spaces'] = true;
 					
 				$this->load->library('upload', $config);
-					
 				if ( !$this->upload->do_upload() ){
 					$file = NULL;
-					$upload_error = $this->upload->display_errors('','') ;
-					alert($upload_error);
 				}else{
+					//이전파일 삭제하고 업로드
+					$exUserFile = $this->md_company->get(array('no'=>$no), 'file');
+					if(count($exUserFile) > 0 && $exUserFile[0]['file'] != NULL)
+						unlink(realpath($config['upload_path']) . '/' . $exUserFile[0]['file']);
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
 				}
@@ -259,27 +273,36 @@ class Member extends CI_Controller{
 					'gender'=>$sex,
 					'inDate'=>$joinDate,
 					'color'=>$color,
-					'file'=>$file,
 					'order'=>$order,
 					'is_active'=>$inOffice,
 			);
+			if($file != null)
+				$data['file'] = $file;
 			
 			$this->md_company->modify(array('no'=>$no), $data);
 			alert('수정되었습니다.', site_url('member' . '/index') );
 			
 		}elseif( $action_type == 'delete' ){
-			$this->form_validation->set_rules('company_no','','required');
+			$this->form_validation->set_rules('no', 'no','required');
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
 			
-			alert('goood');
-			return;
+			$set_no = is_array($no) ? implode(',',$no):$no;
+			$where = 'no in (' . $set_no . ')';
 			
-			$set_no = is_array($company_no) ? implode(',',$company_no):$company_no;
+			//프로필 삭제
+			$exUserFile = $this->md_company->get($where, 'file');
+			if(count($exUserFile) > 0){
+				for ($i=0 ; $i < count($exUserFile); $i++){
+					if($exUserFile[$i]['file'] != '')
+						unlink(realpath($config['upload_path']) . '/' . $exUserFile[$i]['file']);
+				}
+			}
+			$set_no = is_array($no) ? implode(',',$no):$no;
 			$where = 'no in (' . $set_no . ')';
 			$this->md_company->delete($where);
-			alert('삭제되었습니다.' . $category , site_url($category) );
+			alert('삭제되었습니다.', site_url('member' . '/index') );
 		}else{
 			alert('잘못된 접근입니다.');
 		}

@@ -26,7 +26,7 @@ $(document).ready(function() {
 		  		//callback result
 				if(result){
 					$('#action_type').val('delete');
-					$('#company-form-list').submit();
+					$('#member-form-list').submit();
 				}		  		
 		    }
 		});
@@ -35,13 +35,7 @@ $(document).ready(function() {
 	$('.tb_num').change(function(){
 		$('#qu').submit();
 	});
-	//<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 	
 	
 	$(".input-daterange").datepicker(koDatePickerOpt);
-	/*
-	$('#component-colorpicker').colorpicker({
-    	color: '#1fba5d'
-    });
-    */
 })
