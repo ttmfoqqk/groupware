@@ -103,7 +103,6 @@ class Member extends CI_Controller{
 		$data['action_type'] = 'delete';
 		$data['head_name'] = $this->PAGE_NAME;
 		$data['page'] = $this->CATEGORY;
-		print_r($this->md_company->getUserByDepartment(2));
 		//뷰 로딩
 		$this->load->view('company/member_v',$data);
 		
