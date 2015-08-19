@@ -251,7 +251,7 @@ class Project extends CI_Controller{
 			);
 		}else{
 			$option = array();
-			$i = 0;
+			$i = 1;
 			foreach($json_data as $key) {
 				array_push($option,array(
 					'project_no' => $project_no,

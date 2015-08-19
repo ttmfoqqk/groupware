@@ -151,7 +151,7 @@ $(document).ready(function() {
 /* 담당자 팝업 */
 function staff_modal(no,callback){
 	// base div hide
-	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">loading..</div>';
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
 
 	bootbox.dialog({
 		message: test_html,

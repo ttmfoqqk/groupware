@@ -17,9 +17,8 @@
 			</select>
 		</div>
 		<div class="col-xs-3 text-center">
-			<select name="pop_user_no" data-method="department" data-value="" class="fancy-select form-control">
+			<select name="pop_user_no" data-value="" class="fancy-select form-control">
 				<option value="">선택</option>
-				<option value="1">임시 데이터 관리자 no.1</option>
 			</select>
 		</div>
 		<div class="col-xs-4 text-center">
@@ -81,14 +80,23 @@ function row_counting(){
 
 function set_selectbox(obj){
 	var menu_obj = obj.find('select[name="pop_menu_no"]');
+	var user_obj = obj.find('select[name="pop_user_no"]');
 	var bigo     = obj.find('input[name="pop_bigo"]');
-	menu_obj.each(function(){
+
+	menu_obj.each(function(eq){
 		$this = $(this);
 		$this.create_menu({
 			method : $this.attr('data-method'),
 			value  : $this.attr('data-value')
 		});
+		$this.change(function(){
+			var no = $(this).val();
+			create_user(no,user_obj.filter(':eq('+eq+')'));
+		});
+
+		create_user( $this.attr('data-value') ,user_obj.filter(':eq('+eq+')'));
 	});
+
 	bigo.each(function(){
 		$(this).val( $(this).attr('data-value') );
 	});
@@ -116,6 +124,7 @@ function get_list(){
 				var bigo     = new_row.find('input[name="pop_bigo"]');
 
 				menu_obj.attr('data-value',json[i].menu_no);
+				user_no.attr('data-value',json[i].user_no);
 				bigo.attr('data-value',json[i].bigo);
 
 				clones += new_row.wrapAll('<div>').parent().html();
@@ -213,6 +222,35 @@ function base_show(m){
 		loading_div.show();
 	}
 }
+
+// 유저 select box option 생성
+function create_user(no,obj){
+	no = !no ? 0 : no;
+	obj.html('<option value="">로딩중..</option>');
+
+	var setVal = obj.attr('data-value');
+	$.ajax({
+		type     : 'POST',
+		url      : '/groupware/member/lists/',
+		data     : {
+			menu_no : no
+		},
+		dataType : 'json',
+		success: function(data){
+			var json   = eval(data);
+			var html = '';
+			for (var i in json){
+				html += '<option value="' + json[i].no + '"'+ (setVal==json[i].no?' selected':'') +'>' + json[i].name + '</option>';
+			}
+			html = '<option value="">선택</option>' + html;
+			obj.html(html);
+		},error:function(err){
+			alert(err.responseText);
+			//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
+		}
+	});
+}
+
 
 get_list();
 </script>

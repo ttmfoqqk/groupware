@@ -20,7 +20,7 @@ class Approved_archive extends CI_Controller{
 			'menu_no'      => !$this->input->get('menu_no')      ? '' : $this->input->get('menu_no')      ,
 			'name_sender'  => !$this->input->get('name_sender')  ? '' : $this->input->get('name_sender')  ,
 			'name_receiver'=> !$this->input->get('name_receiver')? '' : $this->input->get('name_receiver'),
-			'no'           => !$this->input->get('no')           ? '' : $this->input->get('no')           ,
+			'doc_no'       => !$this->input->get('doc_no')       ? '' : $this->input->get('doc_no')       ,
 			'title'        => !$this->input->get('title')        ? '' : $this->input->get('title')
 		);
 		//링크용 파라미터 쿼리

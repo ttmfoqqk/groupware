@@ -61,27 +61,27 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
+										<select id="part_sender" name="part_sender" data-method="department" data-value="<?echo $this->input->get('part_sender');?>" class="fancy-select form-control">
 											<option value="">담당부서</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">담당자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="담당자">
+										<input type="text" name="name_sender" class="form-control" placeholder="담당자" value="<?echo $this->input->get('name_sender');?>">
 									</div>
 								</div>
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">결재부서</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
+										<select id="part_receiver" name="part_receiver" data-method="department" data-value="<?echo $this->input->get('part_receiver');?>" class="fancy-select form-control">
 											<option value="">결재부서</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">결재자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="결재자">
+										<input type="text" name="name_receiver" class="form-control" placeholder="결재자" value="<?echo $this->input->get('name_receiver');?>">
 									</div>
 								</div>
 
@@ -97,7 +97,7 @@
 
 									<label class="col-lg-2 col-md-2 control-label" for="">문서번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="문서번호">
+										<input type="text" name=-"doc_no" class="form-control" placeholder="문서번호" value="<?echo $this->input->get('doc_no');?>">
 									</div>
 
 									
@@ -105,7 +105,7 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
 									<div class="col-lg-8 col-md-8">
-										<input type="text" class="form-control" placeholder="제목">
+										<input type="text" name="title" class="form-control" placeholder="제목" value="<?echo $this->input->get('title');?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">

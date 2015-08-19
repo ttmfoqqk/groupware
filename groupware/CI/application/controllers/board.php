@@ -217,7 +217,7 @@ class Board extends CI_Controller{
 			}
 			
 			$file_insert_fg = false;
-			if( isset($_FILES['userfile']) ) {
+			if( $_FILES['userfile']['name'] ) {
 				$config['upload_path'] = 'upload/board/';
 				$config['allowed_types'] = 'gif|jpg|png';
 				$config['encrypt_name'] = true;				
