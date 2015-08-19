@@ -198,4 +198,4 @@
 <!-- / page-content -->
 
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-colorpicker/bootstrap-colorpicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_member.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_member_write.js"></script>

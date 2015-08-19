@@ -40,67 +40,56 @@ class Member extends CI_Controller{
 		$this->load->view('company/member_write',$data);
 	}
 	
+	public function getListFilter(){
+		$likes['name'] = !$this->input->get('ft_name') ? '' : $this->input->get('ft_name');
+		$likes['phone'] = !$this->input->get('ft_phone') ? '' : $this->input->get('ft_phone');
+		$likes['email'] = !$this->input->get('ft_email') ? '' : $this->input->get('ft_email');
+		$likes['is_active'] = !$this->input->get('ft_iswork') ? '' : $this->input->get('ft_iswork');
+		return $likes;
+	}
+	
 	public function lists(){
 		//필터 설정
-		$name = $this->input->get('ft_name');
-		$phone = $this->input->get('ft_phone');
-		$email = $this->input->get('ft_email');
-		$is_active = $this->input->get('ft_iswork');
-		$tb_show_num = $this->input->get('tb_num');
-		
-		$likes['name'] = $likes['phone'] =$likes['email'] =$likes['is_active'] = '';
-		$date['start'] = $date['end']= $data['tb_num'] = NULL;
-		if($name)
-			$likes['name'] = $name;
-		if($phone)
-			$likes['phone'] = $phone;
-		if($email)
-			$likes['email'] = $email;
-		if($is_active)
-			$likes['is_active'] = $is_active;
-		$data['filter'] = $likes;
+		$likes = $this->getListFilter();
+		$data['filter'] = $likes;		//페이지 필터 값  
 		
 		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		$where = NULL;
-		if($tb_show_num){
-			$data['tb_num'] = $page_per_num = $tb_show_num;
-		}
-		else{
-			$data['tb_num'] = $page_per_num = PAGING_PER_PAGE;
-		}
 		
 		$this->md_company->setTable($this->TABLE_NAME);
-		
-		
 		$total = $this->md_company->getCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
 		
 		//Pagination 설정
 		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
 		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
 		//테이블 정보 설정
 		$data['list'] = array();
-		$data['action_url'] = site_url('member/proc');
-		$data['action_type'] = 'delete';
-		$result = $this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		$result = $this->md_company->get($where, '*', $tb_show_num, $offset, $likes);
 		if (count($result) > 0){
 			foreach ($result as $row)
 			{
 				array_push($data['list'], $row);
 			}
 		}
+		$data['table_num'] = $offset + count($result) . ' / ' . $total;	
+		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
 		
-		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-		
-		//페이지 타이틀 설정
+		//페이지 정보 설정
+		$data['action_url'] = site_url('member/proc');
+		$data['action_type'] = 'delete';
 		$data['head_name'] = $this->PAGE_NAME;
 		$data['page'] = $this->CATEGORY;
+		
+		//뷰 로딩
 		$this->load->view('company/member_v',$data);
 		
 	}
