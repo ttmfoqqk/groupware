@@ -33,42 +33,34 @@ class Attendance extends CI_Controller{
 		$this->lists();
 	}
 	
+	public function getListFilter(){
+		$likes['m.name'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
+		$likes['u.name'] =!$this->input->get('ft_userName') ? '' : $this->input->get('ft_userName');
+		return $likes;
+	}
+	
 	public function lists(){
 		$this->CATEGORY = 'attendance';
 		$this->TABLE_NAME = 'sw_attendance_history';
 		$this->PAGE_NAME = '근태현황';
 		
 		//필터 설정
-		$start = $this->input->get('ft_start');
-		$end = $this->input->get('ft_end');
-		$department = $this->input->get('ft_department');
-		$userName = $this->input->get('ft_userName');
-		$likes['m.name'] = $likes['u.name']  = '';
-		$date['start'] = $date['end']= NULL;
-		if($department)
-			$likes['m.no'] = $department;
-		if($userName)
-			$likes['u.name'] = $userName;
-		$data['filter'] = $likes;
+		$likes = $this->getListFilter();
+		$data['filter'] = $likes;		//페이지 필터 값
+		$date['start'] = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$date['end'] = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')));
+		$data['date'] = $date;
+		
 		
 		//Pagination, 테이블정보 필요 설정 세팅
-		if($start && $end){
-			$start = new DateTime($start);
-			$start = $start->format('Y-m-d');
-			$end = new DateTime($end);
-			date_modify($end, '+1 day');
-			$end = $end->format('Y-m-d');
-			$where1 = array('created >='=>$start, 'created <'=>$end);
-			$where2 = array('h.created >='=>$start, 'h.created <'=>$end); //array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
-			$end_t = new DateTime($end);
-			date_modify($end_t, '-1 day');
-			$end_t = $end_t->format('Y-m-d');
-			$date['start'] = $start;
-			$date['end'] = $end_t;
-		}
-		else
-			$where2 = NULL; //array('category'=>$this->CATEGORY);
-		$total = $this->md_attendance->getAttendanceCount($where2, $likes);
+		if($date['start'] && $date['end']){
+			$end = $date['end'];
+			$end = date("Y-m-d", strtotime($end."+1 day"));
+			$where = array('h.created >='=>$date['start'], 'h.created <'=>$end);
+		}else
+			$where = NULL;
+		
+		$total = $this->md_attendance->getAttendanceCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
 		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
@@ -84,7 +76,7 @@ class Attendance extends CI_Controller{
 		$data['list'] = array();
 		$data['action_url'] = site_url('company_setting/proc');
 		$data['action_type'] = 'delete';
-		$result = $this->md_attendance->getAttendance($where2, $likes, PAGING_PER_PAGE, $offset);//$this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		$result = $this->md_attendance->getAttendance($where, $likes, PAGING_PER_PAGE, $offset);
 		if (count($result) > 0){
 			foreach ($result as $row)
 			{

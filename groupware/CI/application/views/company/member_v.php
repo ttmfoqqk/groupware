@@ -23,8 +23,7 @@
 						</div>
 						<div class="panel-body">
 							<!-- 검색 -->
-							<form id="qu" class="form-horizontal" method="get" role="form"
-								>
+							<form id="qu" class="form-horizontal" method="get" role="form" action="<?echo site_url($page . '/lists/1')?>">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">이름</label>
 									<div class="col-lg-3 col-md-3">
@@ -74,7 +73,7 @@
 							</form>
 							<!-- 검색 -->
 
-							<form id="company-form-list" action="<?echo $action_url;?>"
+							<form id="member-form-list" action="<?echo $action_url;?>"
 								method="post" class="form-horizontal group-border stripped"
 								role="form">
 								<input type="hidden" name="action_type" id="action_type"
@@ -105,7 +104,7 @@
 										<!-- 리스트 -->
 									<?php
 										foreach ( $list as $lt ) {
-										$anchor_url = site_url ( 'company_setting/write/' . $page . '/' . $lt ['no'] );
+										$anchor_url = site_url ( 'member/write/' . $lt ['no'] );
 										?>
 										<tr>
 											<td>
@@ -121,7 +120,7 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['phone'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['email'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'] == 0 ? '재직' : '퇴사';?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td class="text-center">
 												<button type="button" class="btn btn-success btn-xs"

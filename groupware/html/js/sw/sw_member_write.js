@@ -1,6 +1,11 @@
 var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
 
 $(document).ready(function() {
+	if($('#action_type').val() == "create")
+		$('#contents_setting_delete').hide();
+	else
+		$('#contents_setting_delete').show();
+	
 	//상세페이지 삭제
 	$('#contents_setting_delete').on('click',function(){
 		bootbox.confirm({
