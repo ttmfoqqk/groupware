@@ -6,37 +6,40 @@
 	<div class="col-xs-1 text-center"> </div>
 </div>
 
+<div id="input-base">
 
-<form id="pop-form" name="pop-form" onsubmit="return false;">
-<!-- input row -->
-<div class="row form-group pop-row">
-	<div class="col-xs-1 text-center" style="line-height:250%;">1순위</div>
-	<div class="col-xs-3 text-center">
-		<select name="pop_menu_no" data-method="department" data-value="" class="fancy-select form-control">
-			<option value="">부서 선택</option>
-		</select>
+	<!-- input row -->
+	<div class="row form-group pop-row" style="padding:5px 0px 5px 0px;">
+		<div class="col-xs-1 text-center" style="line-height:250%;">1순위</div>
+		<div class="col-xs-3 text-center">
+			<select name="pop_menu_no" data-method="department" data-value="" class="fancy-select form-control">
+				<option value="">선택</option>
+			</select>
+		</div>
+		<div class="col-xs-3 text-center">
+			<select name="pop_user_no" data-method="department" data-value="" class="fancy-select form-control">
+				<option value="">선택</option>
+				<option value="1">임시 데이터 관리자 no.1</option>
+			</select>
+		</div>
+		<div class="col-xs-4 text-center">
+			<input type="text" name="pop_bigo" class="form-control" placeholder="비고" data-value="" value="">
+		</div>
+		<div class="col-xs-1 text-center" style="line-height:250%;padding:0%;">
+			<button type="button" class="btn btn-ms btn-primary" onclick="row_controll($(this),'add')"><i class="glyphicon glyphicon-plus"></i></button>
+			<button type="button" class="btn btn-ms btn-danger" onclick="row_controll($(this),'remove')"><i class="glyphicon glyphicon-minus"></i></button>
+		</div>
 	</div>
-	<div class="col-xs-3 text-center">
-		<select name="pop_user_no" data-method="department" data-value="" class="fancy-select form-control">
-			<option value="">담당자 선택</option>
-			<option value="1">임시 데이터 관리자 no.1</option>
-		</select>
-	</div>
-	<div class="col-xs-4 text-center">
-		<input type="text" name="pop_bigo" class="form-control" placeholder="비고" value="<?echo $test?>">
-	</div>
-	<div class="col-xs-1 text-center" style="line-height:250%;padding:0%;">
-		<button type="button" class="btn btn-ms btn-primary" onclick="row_controll($(this),'add')"><i class="glyphicon glyphicon-plus"></i></button>
-		<button type="button" class="btn btn-ms btn-danger" onclick="row_controll($(this),'remove')"><i class="glyphicon glyphicon-minus"></i></button>
-	</div>
+	<!-- input row -->
+
 </div>
-<!-- input row -->
 
-</form>
 
 <script type="text/javascript">
 // 리스트에서 받은 no
 var $project_no = '<?echo $_POST["no"];?>';
+// input-base
+var $input_base = $('#input-base');
 // 최초 html 클론 저장
 var $new_row    = $('.pop-row').clone();
 
@@ -47,13 +50,23 @@ function row_controll(obj,mode){
 	var new_row = $new_row.clone();
 	
 	if( mode == 'add' ){
-		$(new_row).insertAfter(parent);
+		new_row.css('background-color','#82ffab').animate({
+			'background-color':'#ffffff'
+		},500);
+
+		set_selectbox(new_row);
+		$(new_row).insertAfter(parent);		
 	}else if( mode == 'remove' ){
 		if(len <= 1){
-			alert('1개 삭제금지');
+			alert('삭제할수 없습니다.');
 			return false;
 		}else{
-			parent.remove();
+			parent.css('background-color','#ff8282').animate({
+				'opacity':'0',
+				'background-color':'#ffffff'
+			},500,function(){
+				$(this).remove();
+			});
 		}
 	}
 	row_counting();
@@ -63,18 +76,28 @@ function row_controll(obj,mode){
 function row_counting(){
 	$('.pop-row').each(function(eq){
 		$(this).find('div:first').text( (eq+1) + '순위');
+	});
+}
 
-		var pop_menu_no = $(this).find('select[name="pop_menu_no"]');
-		pop_menu_no.create_menu({
-			method : pop_menu_no.attr('data-method'),
-			value  : pop_menu_no.attr('data-value')
+function set_selectbox(obj){
+	var menu_obj = obj.find('select[name="pop_menu_no"]');
+	var bigo     = obj.find('input[name="pop_bigo"]');
+	menu_obj.each(function(){
+		$this = $(this);
+		$this.create_menu({
+			method : $this.attr('data-method'),
+			value  : $this.attr('data-value')
 		});
+	});
+	bigo.each(function(){
+		$(this).val( $(this).attr('data-value') );
 	});
 }
 
 // 리스트 생성
 // number : 기본 리스트 갯수
-function get_list(number){
+function get_list(){
+	var number = 5;
 	$.ajax({
 		type     : 'POST',
 		url      : '/groupware/project/staff_lists/',
@@ -83,24 +106,30 @@ function get_list(number){
 		},
 		dataType : 'json',
 		success: function(data){
-			$data = eval(data);
-			for (var i in $data){
-				var new_row = $new_row.clone();
-				$(new_row).insertAfter($('.pop-row:last'));
+			var json   = eval(data);
+			var clones = '';
+			for (var i in json){
+				var new_row  = $new_row.clone();
+				// value setting
+				var menu_obj = new_row.find('select[name="pop_menu_no"]');
+				var user_no  = new_row.find('select[name="pop_user_no"]');
+				var bigo     = new_row.find('input[name="pop_bigo"]');
 
-				var pop_menu_no = new_row.find('select[name="pop_menu_no"]');
-				pop_menu_no.attr('data-value',$data[i].menu_no);
+				menu_obj.attr('data-value',json[i].menu_no);
+				bigo.attr('data-value',json[i].bigo);
+
+				clones += new_row.wrapAll('<div>').parent().html();
 			}
-			for (var i=$data.length;i<number;i++){
-				var new_row = $new_row.clone();
-				$(new_row).insertAfter($('.pop-row:last'));
+			
+			for (var i=json.length;i<number;i++){
+				clones += $new_row.wrapAll('<div>').parent().html();
 			}
-			// 초기 셋팅된 html 삭제
-			$('.pop-row:first').remove();
+
+			$input_base.html(clones);
+			set_selectbox($input_base);
 			row_counting();
 			// base div show
-			$('#modal-body').show();
-			$('#modal-loading').hide();
+			base_show('show');
 		},error:function(err){
 			alert(err.responseText);
 			//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
@@ -112,44 +141,78 @@ function get_list(number){
 
 // 입력
 function modal_submit(){
-	var data_array = new Array();
 
+	var data_array = new Array();
+	var validate_fg = false;
 	$('.pop-row').each(function(eq){
 		var data_info  = new Object();
-		var menu_no = $(this).find('select[name="pop_menu_no"]').val();
-		var user_no = $(this).find('select[name="pop_user_no"]').val();
-		var bigo    = $(this).find('input[name="pop_bigo"]').val();
+		var menu_no = $(this).find('select[name="pop_menu_no"]');
+		var user_no = $(this).find('select[name="pop_user_no"]');
+		var bigo    = $(this).find('input[name="pop_bigo"]');
 		
-		data_info.menu_no = menu_no;
-		data_info.user_no = user_no;
-		data_info.bigo    = bigo;
-		data_array.push(data_info);
+		if( menu_no.val() || user_no.val() || bigo.val() ){
+			if(!menu_no.val()){
+				alert('부서를 선택해 주세요.');
+				menu_no.focus();
+				validate_fg = false;
+				return false;
+			}
+			if(!user_no.val()){
+				alert('담당자를 선택해 주세요.');
+				user_no.focus();
+				validate_fg = false;
+				return false;
+			}
+		}
+		validate_fg = true;
 
-		// 폼 검증 추가 , 빈 블럭 넘기기
+		if(menu_no.val() && user_no.val()){
+			data_info.menu_no = menu_no.val();
+			data_info.user_no = user_no.val();
+			data_info.bigo    = bigo.val();
+			data_array.push(data_info);
+		}
+
 	});
 	//console.log(JSON.stringify(data_array));return false;
-	
-	$.ajax({
-		type     : 'POST',
-		url      : '/groupware/project/staff_insert/',
-		data     : {
-			project_no : $project_no,
-			json_data  : JSON.stringify(data_array)
-		},
-		dataType : 'json',
-		success: function(data){
-			if(data.result!='ok'){
-				alert(data.result + ',' + data.msg);
-			}else{
-				alert('저장됨');
+	if( validate_fg == true ){
+		$.ajax({
+			type     : 'POST',
+			url      : '/groupware/project/staff_insert/',
+			data     : {
+				project_no : $project_no,
+				json_data  : JSON.stringify(data_array)
+			},
+			dataType : 'json',
+			success: function(data){
+				if(data.result!='ok'){
+					alert(data.result + ',' + data.msg);
+				}else{
+					// 리스트 다시 로딩
+					base_show('hide');
+					get_list();
+					alert('저장됨');
+				}
+			},error:function(err){
+				alert(err.responseText);
+				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
 			}
-		},error:function(err){
-			alert(err.responseText);
-			//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
-		}
-	});
+		});
+	}
+}
+// 베이스,로딩 div
+function base_show(m){
+	var base_div    = $('#modal-body');
+	var loading_div = $('#modal-loading');
+	
+	if(m=='show'){
+		base_div.show();
+		loading_div.hide();
+	}else{
+		base_div.hide();
+		loading_div.show();
+	}
 }
 
-// 리스트 호출 기본 5개
-get_list(5);
+get_list();
 </script>

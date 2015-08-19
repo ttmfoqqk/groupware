@@ -6,7 +6,11 @@ function login_check() {
 
 	if( !$CI->session->userdata('is_login') ){
 		if( $CI->input->is_ajax_request() ){
-			echo json_encode('{"error":"is_login"}');
+			$return = array(
+				'result' => 'error',
+				'msg' => 'is_login'
+			);
+			echo json_encode($return);
 			exit;
 		}else{
 			redirect( 'login?goUrl=' . urlencode($CI->uri->ruri_string()) );

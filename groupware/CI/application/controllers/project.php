@@ -1,10 +1,9 @@
 <?
 class Project extends CI_Controller{
 	private $PAGE_CONFIG;
-
 	public function __construct() {
 		parent::__construct();
-		login_check();
+
 		$this->load->model('project_model');
 		
 		//현재 페이지 
@@ -25,6 +24,7 @@ class Project extends CI_Controller{
     }
 
 	public function _remap($method){
+		login_check();
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
@@ -257,6 +257,7 @@ class Project extends CI_Controller{
 					'project_no' => $project_no,
 					'menu_no'    => $key->menu_no,
 					'user_no'    => $key->user_no,
+					'bigo'       => $key->bigo,
 					'order'      => $i
 				));
 				$i++;
