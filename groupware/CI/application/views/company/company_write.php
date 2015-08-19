@@ -27,7 +27,7 @@
 							<input type="hidden" name="page_cate" id="page_cate" value="<?echo $page;?>">
 
 								<div class="form-group">
-									<label for="biz_name" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("bizName");?></label>
+									<label for="biz_name" class="col-lg-2 col-md-3 control-label"><font class="red">* </font> <?php echo $this->lang->line("bizName");?></label>
 									<div class="col-lg-10 col-md-9">
 										<input id="biz_name" name="biz_name" type="text" class="form-control" placeholder="" value="<?echo $data['bizName'];?>" maxlength="20" <?echo $action_type=='edit'?'readonly':''; ?>>
 									</div>
@@ -48,7 +48,7 @@
 								</div>
 								<!-- End .form-group  -->
 								<div class="form-group">
-									<label for="classify" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("classify");?></label>
+									<label for="classify" class="col-lg-2 col-md-3 control-label"><font class="red">* </font><?php echo $this->lang->line("classify");?></label>
 									<div class="col-lg-10 col-md-9">
 										<input id="classify" name="classify" type="text" class="form-control"  placeholder="" value="<?echo $data['gubun'];?>" maxlength="20">
 									</div>
@@ -76,7 +76,7 @@
 								</div>
 								<!-- End .form-group  -->
 								<div class="form-group">
-									<label for="phone" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("phone");?></label>
+									<label for="phone" class="col-lg-2 col-md-3 control-label"><font class="red">* </font><?php echo $this->lang->line("phone");?></label>
 									<div class="col-lg-10 col-md-9">
 										<input id="phone" name="phone" type="text" class="form-control"  placeholder="" value="<?echo $data['phone'];?>" maxlength="20">
 									</div>

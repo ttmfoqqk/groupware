@@ -26,44 +26,34 @@ class Marketing extends CI_Controller{
 			}
 		}
 	}
-public function index() {
+	
+	public function index() {
 		$this->lists ();
 	}
 
+public function getListFilter(){
+		$likes['gubun'] = !$this->input->get('ft_classify') ? '' : $this->input->get('ft_classify');
+		$likes['bizName'] = !$this->input->get('ft_bizName') ? '' : $this->input->get('ft_bizName');
+		$likes['bizNumber'] = !$this->input->get('ft_bizNumber') ? '' : $this->input->get('ft_bizNumber');
+		$likes['phone'] = !$this->input->get('ft_phone') ? '' : $this->input->get('ft_phone');
+		return $likes;
+	}
+	
 	public function lists(){
 		//필터 설정
-		$start = $this->input->get('ft_start');
-		$end = $this->input->get('ft_end');
-		$classify = $this->input->get('ft_classify');
-		$bizName = $this->input->get('ft_bizName');
-		$bizNumber = $this->input->get('ft_bizNumber');
-		$phone = $this->input->get('ft_phone');
-		
-		$likes['gubun'] = $likes['bizName'] =$likes['bizNumber'] =$likes['phone'] = $likes['created'] = '';
-		$date['start'] = $date['end']= NULL;
-		if($classify)
-			$likes['gubun'] = $classify;
-		if($bizName)
-			$likes['bizName'] = $bizName;
-		if($bizNumber)
-			$likes['bizNumber'] = $bizNumber;
-		if($phone)
-			$likes['phone'] = $phone;
-		$data['filter'] = $likes;
+		$likes = $this->getListFilter();
+		$data['filter'] = $likes;		//페이지 필터 값
+		$date['start'] = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$date['end'] = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')));
+		$data['date'] = $date;
 		
 		//Pagination, 테이블정보 필요 설정 세팅
-		if($start && $end){
-			$start = new DateTime($start);
-			$start = $start->format('Y-m-d');
-			$end = new DateTime($end);
-			date_modify($end, '+1 day');
-			$end = $end->format('Y-m-d');
-			$where = array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
-			$end_t = new DateTime($end);
-			date_modify($end_t, '-1 day');
-			$end_t = $end_t->format('Y-m-d');
-			$date['start'] = $start;
-			$date['end'] = $end_t;
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
+		
+		if($date['start'] && $date['end']){
+			$end = $date['end'];
+			$end = date("Y-m-d", strtotime($end."+1 day"));
+			$where = array('category'=>$this->CATEGORY, 'created >='=>$date['start'], 'created <'=>$end);
 		}
 		else
 			$where = array('category'=>$this->CATEGORY);
@@ -71,33 +61,35 @@ public function index() {
 		$total = $this->md_company->getCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
 		
 		//Pagination 설정
-		$config['base_url'] = site_url('company/lists/');
+		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
 		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
 		//테이블 정보 설정
 		$data['list'] = array();
-		$data['action_url'] = site_url('company_setting/proc');
-		$data['action_type'] = 'delete';
-		$result = $this->md_company->get($where, '*', PAGING_PER_PAGE, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		$result = $this->md_company->get($where, '*', $tb_show_num, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
 		if (count($result) > 0){
 			foreach ($result as $row)
 			{
 				array_push($data['list'], $row);
 			}
 		}
-		
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
+		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
 		
 		//페이지 타이틀 설정
+		$data['action_url'] = site_url('company_setting/proc');
+		$data['action_type'] = 'delete';
 		$data['head_name'] = "고객사 정보";
 		$data['page'] = $this->CATEGORY;
-		$data['date'] = $date;
+		
+		//뷰 로딩
 		$this->load->view('company/company_v',$data);
 	}
 }

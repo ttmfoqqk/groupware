@@ -87,8 +87,21 @@
 								</div>
 
 
+								<!-- 테이블 옵션  -->
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?php echo $tb_num;?>>
+										<option value="10" <?=$tb_num == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$tb_num == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+								</div>
+								<!-- END 테이블 옵션  -->
+								
 							</form>
 							<!-- 검색 -->
+							
 
 							<form id="company-form-list" action="<?echo $action_url;?>"
 								method="post" class="form-horizontal group-border stripped"
@@ -192,12 +205,6 @@
 <!-- / page-content -->
 
 
-
-<!-- 폼 날짜 -->
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
 
 <!-- Bootbox fast bootstrap modals -->
 <script

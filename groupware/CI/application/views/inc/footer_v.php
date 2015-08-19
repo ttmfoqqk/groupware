@@ -42,7 +42,7 @@
 
 		<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
         <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-        
+        <script	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
 
 
         <!-- Remove click delay in touch -->

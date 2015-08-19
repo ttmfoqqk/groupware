@@ -17,3 +17,14 @@ a.text-normal{
 .modal-inpt {
 	padding-top:5px;
 }
+
+.red{
+	color: #f00;
+}
+
+.lb-left-align{
+	text-align:left !important;
+}
+
+.datepicker {z-index: 1151 !important;}	/* datapick가 bootbox에서 사용할때 윈도우 밖에서 날짜가 생성된는것을 수정   */ 
+.bootstrap-timepicker-widget {z-index: 1151 !important;}	/* datapick가 bootbox에서 사용할때 윈도우 밖에서 날짜가 생성된는것을 수정   */ 
