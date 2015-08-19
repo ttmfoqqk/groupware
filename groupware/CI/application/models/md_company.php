@@ -83,8 +83,12 @@ class Md_company extends CI_Model{
 		}
 		return $ret;
 	}
+	
+	//only sw_information
 	public function getSettingData($category, $bizName, $ceoName, $classify, $bizType, 
 			$bizConfition, $addr, $phone, $fax, $note, $order, $created, $bizNumber){
+		if($this->TABLE_NAME != sw_information)
+			return null;
 		$data = array(
 				'category'=>$category,
 				'bizName'=>$bizName,
@@ -101,6 +105,21 @@ class Md_company extends CI_Model{
 				'bizNumber'=>$bizNumber
 		);
 		return $data;
+	}
+	
+	public function getUserByDepartment($dptNo){
+		$this->db->select('u.no, u.name');
+		$this->db->from('sw_user_department ud');
+		$this->db->join('sw_user u', 'ud.user_no = u.no', 'left');
+		$this->db->where('ud.menu_no', $dptNo);
+		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left');
+		
+		
+		$ret = $this->db->get('sw_user_department');
+		if (count($ret) > 0){
+			return json_encode($ret->result_array());
+		}else
+			return null;
 	}
 }
 /* End of file company_model.php */
