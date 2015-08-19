@@ -44,7 +44,8 @@ class Login extends CI_Controller{
 					'is_login'   => true,
 					'no'    => $data['no'],
 					'id'    => $data['id'],
-					'name'  => $data['name']
+					'name'  => $data['name'],
+					'file'	=> $data['file']
 				);
 
 				$this->session->set_userdata($sessiondata);

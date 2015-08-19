@@ -10,7 +10,8 @@
 			</div>
 			<!-- / .sidebar-panel -->
 			<div class="user-info clearfix">
-				<img src="<?echo $this->config->base_url()?>html/img/avatars/128.jpg" alt="avatar">
+				<img style="height: 64px; width: 64px;" src="<?php if($this->session->userdata('file') != NULL) echo $this->config->base_url() . 'upload/member/' . $this->session->userdata('file')?>" alt="avatar">
+				
 				<span class="name"><?php echo $this->session->userdata('name');?></span>
 				<!--div class="btn-group">
 					<button type="button" class="btn btn-default btn-xs"><i class="l-basic-gear"></i>
