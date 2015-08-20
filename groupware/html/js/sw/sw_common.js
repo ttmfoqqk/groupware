@@ -191,6 +191,7 @@ $(document).ready(function() {
 	$.fn.create_menu = function(options){
 		var $method = options.method;
 		var $value  = options.value;
+		var $callback  = options.callback;
 		var element = $(this);
 		
 		if(element.length<=0){
@@ -218,6 +219,10 @@ $(document).ready(function() {
 				if(tagName=='SELECT'){
 					var html = create_option($data);
 					element.append(html);
+				}
+
+				if( typeof $callback == 'function' ){
+					$callback();
 				}
 			},error:function(err){
 				alert(err.responseText);

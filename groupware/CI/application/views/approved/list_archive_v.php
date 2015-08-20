@@ -16,7 +16,7 @@
 					<div class="panel panel-primary toggle">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재목록</h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재 보관함</h4>
 						</div>
 						<div class="panel-body">
 							
@@ -90,14 +90,14 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+										<select id="menu_no" name="menu_no" data-method="project,document" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
 											<option value="">분류</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">문서번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" name=-"doc_no" class="form-control" placeholder="문서번호" value="<?echo $this->input->get('doc_no');?>">
+										<input type="text" name="doc_no" class="form-control" placeholder="문서번호" value="<?echo $this->input->get('doc_no');?>">
 									</div>
 
 									
@@ -124,6 +124,10 @@
 							<div class="pull-right">
 								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
 							</div>
+							
+							<form id="approved-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<input type="hidden" name="action_type" id="action_type" value="delete">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 							<table class="table table-bordered" id="tabletools">
 								<thead>
@@ -146,31 +150,44 @@
 									</tr>
 								</thead>
 								<tbody>
-									<!-- 리스트 -->
+								<?php foreach($list as $lt){
+									$anchor = $anchor_url.'&no='.$lt['no'];
+									?>
 									<tr>
 										<td>
 											<div class="checkbox-custom">
-												<input id="check" class="check" type="checkbox" value="option2">
+												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['no'];?>">
 												<label for="check"></label>
 											</div>
 										</td>
-										<td>순서</td>
-										<td>분류</td>
-										<td>제목</td>
-										<td>진행기간</td>
-										<td>결재</td>
-										<td>누락</td>
-										<td>등록일자</td>
-										<td>담당자</td>
+										<td><?echo $lt['order'];?></td>
+										<td><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></td>
+										<td><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></td>
+										<td><?echo $lt['order'];?></td>
+										<td><?echo $lt['pPoint'];?></td>
+										<td><?echo $lt['mPoint'];?></td>
+										<td><?echo $lt['created'];?></td>
+										<td><?echo $lt['order'];?></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-primary btn-xs" id="view_staff" onclick="alert('담당자 팝업');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
-									<!-- 리스트 -->
+									<?php }?>
+								<?
+								if( count($list) <= 0 ){?>
+									<tr>
+										<td colspan="10">등록된 내용이 없습니다.</td>
+									</tr>
+								<?}?>
 								</tbody>
 							</table>
 
 							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
+							<div class="panel-body pull-right">
+								<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+								<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $write_url;?>';">등록</button>
+							</div>
+							</form>
 
 						</div>
 					</div>
@@ -193,4 +210,4 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_approved.js"></script>

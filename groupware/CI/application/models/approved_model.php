@@ -7,7 +7,6 @@ class Approved_model extends CI_Model{
 		$where = array();
 		foreach($option['where'] as $key=>$val){
 			if($val!=''){
-				$this->db->where($key, $val);
 				$where[$key] = $val;
 			}
 		}
@@ -19,67 +18,70 @@ class Approved_model extends CI_Model{
 		}
 
 		$this->db->select('count(*) as total');
-		$this->db->from('sw_project');
-		$this->db->join('sw_menu a','sw_project.menu_part_no = a.no');
-		$this->db->join('sw_menu b','sw_project.menu_no = b.no');
-		$this->db->join('sw_user c','sw_project.user_no = c.no');
+		$this->db->from('sw_approved AS approved');
+		$this->db->join('(select a.*,b.no as project_menu_no,b.name as project_menu from sw_project a join sw_menu b on a.menu_no=b.no) AS project','approved.project_no = project.no','left');
+		$this->db->join('(select a.*,b.no as document_menu_no,b.name as document_menu from sw_document a join sw_menu b on a.menu_no=b.no) AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
+		$this->db->join('sw_user AS user_sender','status.sender = user_sender.no','left');
+		$this->db->join('sw_user AS user_receiver','status.receiver = user_receiver.no','left');
 		$this->db->where($where);
+		$this->db->where($option['cus_where']);
 		$this->db->like($like);
 		$query = $this->db->get();
 		$query = $query->row();
 		$result['total'] = $query->total;
 
 
-		$this->db->select('sw_project.*');
-		$this->db->select('a.name as part_name');
-		$this->db->select('b.name as menu_name');
-		$this->db->select('c.name as user_name');
-		$this->db->from('sw_project');
-		$this->db->join('sw_menu a','sw_project.menu_part_no = a.no');
-		$this->db->join('sw_menu b','sw_project.menu_no = b.no');
-		$this->db->join('sw_user c','sw_project.user_no = c.no');
-		$this->db->order_by('sw_project.order','ASC');
-		$this->db->order_by('sw_project.no','DESC');
+		$this->db->select('*');
+		$this->db->from('sw_approved AS approved');
+		$this->db->join('(select a.*,b.no as project_menu_no,b.name as project_menu from sw_project a join sw_menu b on a.menu_no=b.no) AS project','approved.project_no = project.no','left');
+		$this->db->join('(select a.*,b.no as document_menu_no,b.name as document_menu from sw_document a join sw_menu b on a.menu_no=b.no) AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
+		$this->db->join('sw_user AS user_sender','status.sender = user_sender.no','left');
+		$this->db->join('sw_user AS user_receiver','status.receiver = user_receiver.no','left');
+		$this->db->order_by('approved.order','ASC');
+		$this->db->order_by('approved.no','DESC');
 		$this->db->where($where);
-		$this->db->like($like);
+		$this->db->where($option['cus_where']);
+		$this->db->like($like);		
 		$this->db->limit($limit,$offset);
 
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();
 		return $result;
 	}
-	public function get_project_detail($option){
-		$result = $this->db->get_where('sw_project',$option);
+	public function get_approved_detail($option){
+		$result = $this->db->get_where('sw_approved',$option);
 		return $result;
 	}
-	public function get_project_insert($option){
+	public function get_approved_insert($option){
 		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_project',$option);
+		$this->db->insert('sw_approved',$option);
 		return $this->db->insert_id();
 	}
-	public function get_project_update($option,$where){
-		$this->db->update('sw_project',$option,$where);
+	public function get_approved_update($option,$where){
+		$this->db->update('sw_approved',$option,$where);
 	}
-	public function get_project_delete($set_no){
-		$this->db->delete('sw_project','no in('.$set_no.')');
-		$this->set_project_staff_delete('project_no in('.$set_no.')');
+	public function get_approved_delete($set_no){
+		$this->db->delete('sw_approved','no in('.$set_no.')');
+		$this->set_approved_staff_delete('approved_no in('.$set_no.')');
 	}
 
 	/* 담당자 */
-	public function get_project_staff_list($option){
+	public function get_approved_staff_list($option){
 		$this->db->order_by('order','ASC');
-		$query  = $this->db->get_where('sw_project_staff',$option);
+		$query  = $this->db->get_where('sw_approved_staff',$option);
 		$result = $query->result_array();
 		return $result;
 	}
 
-	public function set_project_staff_delete($option){
-		$this->db->delete('sw_project_staff',$option);
+	public function set_approved_staff_delete($option){
+		$this->db->delete('sw_approved_staff',$option);
 	}
 
-	public function set_project_staff_insert($option,$staff){
-		$this->set_project_staff_delete($staff);
-		$this->db->insert_batch('sw_project_staff',$option);
+	public function set_approved_staff_insert($option,$staff){
+		$this->set_approved_staff_delete($staff);
+		$this->db->insert_batch('sw_approved_staff',$option);
 	}
 }
 /* End of file approved_model.php */

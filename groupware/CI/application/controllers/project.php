@@ -230,6 +230,36 @@ class Project extends CI_Controller{
 		}
 	}
 
+	public function _lists(){
+		//검색 파라미터
+		$eData  = $this->PAGE_CONFIG['params']['eData'];
+		$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
+		$ewData = $this->PAGE_CONFIG['params']['ewData'];
+		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
+
+		$option['where'] = array(
+			'sw_project.sData >='   => $this->PAGE_CONFIG['params']['sData'],
+			'sw_project.eData <'    => $eData,
+			'sw_project.created >=' => $this->PAGE_CONFIG['params']['swData'],
+			'sw_project.created <'  => $ewData,
+			'menu_part_no'          => $this->PAGE_CONFIG['params']['menu_part_no'],
+			'menu_no'               => $this->PAGE_CONFIG['params']['menu_no']
+		);
+		$option['like'] = array(
+			'c.name' => $this->PAGE_CONFIG['params']['userName'],
+			'title'  => $this->PAGE_CONFIG['params']['title']
+		);
+
+		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
+
+		$data['total']         = $get_data['total'];   // 전체글수
+		$data['list']          = $get_data['list'];    // 글목록
+
+		echo json_encode($data);
+	}
+
+
 	/* 담당자 */
 	public function _staff_lists(){
 		$project_no = $this->input->post('project_no');

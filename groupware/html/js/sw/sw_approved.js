@@ -3,16 +3,40 @@ $(document).ready(function() {
 	/* 리스트 페이지 */
 	
 	// 부서,분류 selectbox
-	var $menu_part_no = $('#menu_part_no');
-	var $menu_no      = $('#menu_no');
-	$menu_part_no.create_menu({
-		method : $menu_part_no.attr('data-method'),
-		value : $menu_part_no.attr('data-value')
-	});
-	$menu_no.create_menu({
-		method : $menu_no.attr('data-method'),
-		value : $menu_no.attr('data-value')
-	});
+	var $part_sender   = $('#part_sender');
+	var $part_receiver = $('#part_receiver');
+	var $menu_no       = $('#menu_no');
+	
+	
+	if($part_sender.length>0){
+		$part_sender.create_menu({
+			method : $part_sender.attr('data-method'),
+			value  : $part_sender.attr('data-value')
+		});
+	}
+
+	if($part_receiver.length>0){
+		$part_receiver.create_menu({
+			method : $part_receiver.attr('data-method'),
+			value  : $part_receiver.attr('data-value')
+		});
+	}
+	
+	if($part_receiver.length>0){
+		var $menu_no_method= $menu_no.attr('data-method').split(',');
+		$menu_no.create_menu({
+			method : $menu_no_method[0],
+			value  : $menu_no.attr('data-value'),
+			callback : function(){
+				$menu_no.create_menu({
+					method : $menu_no_method[1],
+					value  : $menu_no.attr('data-value')
+				});
+			}
+		});
+	}
+	
+
 	// 진행기간,등록일자 input #진행기간[sData,eData] 은 write 에서도 사용
 	var sData  = $('#sData');
 	var eData  = $('#eData');
@@ -140,6 +164,17 @@ $(document).ready(function() {
 				}
 		    }
 		});
+	});
+
+	$('#call-approved-kind').click(function(){
+		var kind = $('#approved-kind').val();
+		if(kind == '0'){
+			$('#project-layout').show();
+			$('#document-layout').hide();
+		}else{
+			$('#project-layout').hide();
+			$('#document-layout').show();
+		}
 	});
 	/* 쓰기 페이지 */
 
