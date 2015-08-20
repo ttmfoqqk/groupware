@@ -50,11 +50,12 @@ class Holiday extends CI_Controller{
 		$this->load->library("Common");
 		
 		$datas = $this->input->post('data');
-		if(count($datas) <= 0){
+		if(count($datas) <= 0 || empty($datas)){
 			echo $this->common->getRet(false, 'No Data');
 		}else{
 			$this->md_company->setTable($this->TABLE_NAME);
 			$this->md_company->deleteAll();
+			
 			foreach ($datas as $data)
 				$this->md_company->create($data);
 			echo $this->common->getRet(true);

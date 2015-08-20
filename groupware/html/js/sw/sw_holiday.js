@@ -55,7 +55,7 @@ function setInputVal(){
 //리스트 생성
 //number : 기본 리스트 갯수
 function list(year){
-	var number = 1;
+	var number = 5;
 	var year = year;
 	$.ajax({
 		type     : 'POST',
@@ -90,7 +90,8 @@ function list(year){
 				addEvent();
 				setInputVal();
 			}else{
-				alert(data.result + ',' + data.msg);
+				console.log(data);
+				alert(data.result + ',' + data.data);
 			}
 		},error:function(err){
 			alert(err.responseText);
@@ -99,35 +100,38 @@ function list(year){
 }
 
 //입력
-var save = function(){
+function save(){
 	var data_array = new Array();
 	var validate_fg = false;
 	$('.tbRow').each(function(eq){
 		var data_info  = new Object();
+		
 		var infoCell  = $(this).find('.tdInfo');
 		var dateCell  = $(this).find('.tdDate');
 		
-		if(!infoCell.val()){
-			alert('내용을 적어주세요.');
-			infoCell.focus();
-			validate_fg = false;
-			return false;
+		if(  infoCell.val() || dateCell.val() ){
+			if(!infoCell.val()){
+				alert('내용을 적어주세요.');
+				infoCell.focus();
+				validate_fg = false;
+				return false;
+			}
+			if(!dateCell.val()){
+				alert('날짜를 선택해 주세요');
+				dateCell.focus();
+				validate_fg = false;
+				return false;
+			}
 		}
-		if(!dateCell.val()){
-			alert('날짜를 선택해 주세요');
-			dateCell.focus();
-			validate_fg = false;
-			return false;
-		}
+		validate_fg = true;
 
 		if(infoCell.val() && dateCell.val()){
-			validate_fg = true;
 			data_info.name = infoCell.val();
 			data_info.date = dateCell.val();
 			data_array.push(data_info);
 		}
+
 	});
-	
 	if( validate_fg == true ){
 		$.ajax({
 			type     : 'POST',
@@ -141,7 +145,7 @@ var save = function(){
 					list();
 					alert('저장됨');
 				}else{
-					alert(data.result + ',' + data.msg);
+					alert(data.result + ',' + data.data);
 				}
 			},error:function(err){
 				alert(err.responseText);
