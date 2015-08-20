@@ -41,17 +41,23 @@ class Md_company extends CI_Model{
 	 * @param int $limit
 	 * @param array $likes
 	 */
-	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL, $order=FALSE, $no=FALSE){
+	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL, $asc=FALSE, $desc=FALSE){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
 				if($val!='')
 					$this->db->like($key, $val);
 			}
 		}
-		if($order == true)
-			$this->db->order_by('order','ASC');
-		if($no == true)
-			$this->db->order_by('no','DESC');
+		
+		if (in_array("order", $this->getFileds())) 
+			$this->db->order_by("order",'ASC');
+		else{
+			if($asc != false)
+				$this->db->order_by($asc,'ASC');
+			if($desc != false)
+				$this->db->order_by($desc,'DESC');
+		}
+		
 		$this->db->select($select);
 		if($where != NULL)
 			$this->db->where($where);
@@ -68,7 +74,11 @@ class Md_company extends CI_Model{
 	}
 	
 	public function delete($where){
-		return $this->db->delete($this->TABLE_NAME, $where);
+		return $this->db->delete($this->TABLE_NAME);
+	}
+	
+	public function deleteAll(){
+		return $this->db->empty_table($this->TABLE_NAME);
 	}
 	
 	public function getFileds(){
