@@ -31,10 +31,10 @@
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 											<input type="text" class="form-control" name="ft_start"
 												id="ft_start"
-												value=<?php if($date['start'] != '1') echo "'" .$date['start'] . "'";?> />
+												value=<?php if($this->input->get('ft_start') != '1') echo "'" .$this->input->get('ft_start') . "'";?> />
 											<span class="input-group-addon">to</span> <input type="text"
 												class="form-control" name="ft_end" id="ft_end"
-												value=<?php if($date['end'] != '1') echo "'" .$date['end'] . "'";?> />
+												value=<?php if($this->input->get('ft_end') != '1') echo "'" .$this->input->get('ft_end') . "'";?> />
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
@@ -54,14 +54,14 @@
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_classify"
 											name="ft_classify" placeholder="구분"
-											value=<?php echo $filter['gubun'] != NULL ? $filter['gubun'] : '';?>>
+											value="<?echo $this->input->get('ft_classify');?>">
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">상호명</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_bizName"
 											name="ft_bizName" placeholder="상호명"
-											value=<?php echo $filter['bizName'] != NULL ? $filter['bizName'] : '';?>>
+											value="<?echo $this->input->get('ft_bizName');?>">
 									</div>
 								</div>
 
@@ -70,14 +70,14 @@
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_bizNumber"
 											name="ft_bizNumber" placeholder="사업자번호"
-											value=<?php echo $filter['bizNumber'] != NULL ? $filter['bizNumber'] : '';?>>
+											value="<?echo $this->input->get('ft_bizNumber');?>">
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">전화번호</label>
 									<div class="col-lg-3 col-md-3">
 										<input type="text" class="form-control" id="ft_phone"
 											name="ft_phone" placeholder="전화번호"
-											value=<?php echo $filter['phone'] != NULL ? $filter['phone'] : '';?>>
+											value="<?echo $this->input->get('ft_phone');?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -89,9 +89,9 @@
 
 								<!-- 테이블 옵션  -->
 								<div class="pull-left">
-									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?php echo $tb_num;?>>
-										<option value="10" <?=$tb_num == '10' ? ' selected="selected"' : '';?>>10개</option>
-										<option value="20" <?=$tb_num == '20' ? ' selected="selected"' : '';?>>20개</option>
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
 									</select>
 								</div>
 								<div class="pull-right">

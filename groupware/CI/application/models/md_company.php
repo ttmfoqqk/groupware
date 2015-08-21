@@ -74,11 +74,17 @@ class Md_company extends CI_Model{
 	}
 	
 	public function delete($where){
+		$this->db->where($where);
 		return $this->db->delete($this->TABLE_NAME);
 	}
 	
 	public function deleteAll(){
 		return $this->db->empty_table($this->TABLE_NAME);
+	}
+	
+	public function deleteIn($key, $val){
+		$this->db->where_in($key,$val);
+		return $this->db->delete($this->TABLE_NAME);
 	}
 	
 	public function getFileds(){

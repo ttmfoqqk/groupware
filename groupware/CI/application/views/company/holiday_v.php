@@ -62,7 +62,7 @@
 											<td><a class="text-normal">
 												<div class="input-daterange input-group">
 													<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-													<input type="text" class="form-control tdDate" name="ft_start"
+													<input type="text" class="form-control tdDate datepick-min" name="ft_start"
 														id="ft_start" data-value="" value="" name="tdDate"/>
 												</div>
 												</a>

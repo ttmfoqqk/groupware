@@ -53,6 +53,7 @@ class Attendance extends CI_Controller{
 		
 		
 		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		if($date['start'] && $date['end']){
 			$end = $date['end'];
 			$end = date("Y-m-d", strtotime($end."+1 day"));
@@ -63,12 +64,13 @@ class Attendance extends CI_Controller{
 		$total = $this->md_attendance->getAttendanceCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = (PAGING_PER_PAGE * $cur_page)-PAGING_PER_PAGE;
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
 		
 		//Pagination 설정
 		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
 		$config['total_rows'] = $total; // 전체 글갯수
 		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
@@ -78,10 +80,7 @@ class Attendance extends CI_Controller{
 		$data['action_type'] = 'delete';
 		$result = $this->md_attendance->getAttendance($where, $likes, PAGING_PER_PAGE, $offset);
 		if (count($result) > 0){
-			foreach ($result as $row)
-			{
-				array_push($data['list'], $row);
-			}
+			$data['list'] = $result;
 		}
 		
 		$data['department'] = array();
@@ -89,13 +88,11 @@ class Attendance extends CI_Controller{
 		$department = $this->md_company->get(array('category'=>'department'));
 		//array_push($data['department'], $this->lang->line('all'));
 		if (count($department) > 0){
-			foreach ($department as $row)
-			{
-				array_push($data['department'], $row);
-			}
+			$data['department'] = $department;
 		}
 		
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
+		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
 		
 		//페이지 타이틀 설정
 		$data['head_name'] = "회사정보";
@@ -116,19 +113,61 @@ class Attendance extends CI_Controller{
 		
 		//테이블 정보 설정
 		$data['list'] = array();
-		$data['action_url'] = site_url('company_setting/proc');
-		$data['action_type'] = 'delete';
+		$data['action_url'] = site_url('attendance/save');
 		$result = $this->md_company->get($where);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
 		if (count($result) > 0){
-			foreach ($result as $row)
-			{
-				array_push($data['list'], $row);
-			}
+			$data['list'] = $result;
 		}
 		
 		//페이지 타이틀 설정
 		$data['head_name'] = $this->PAGE_NAME;
 		$this->load->view('company/attendance_set_v',$data);
+	}
+	
+	public function save(){
+		$this->TABLE_NAME = 'sw_attendance';
+		$this->md_company->setTable($this->TABLE_NAME);
+		
+		$this->load->library('form_validation');
+		
+		$start1 = $this->input->post('start-time1');
+		$end1 = $this->input->post ( 'end-time1' );
+		$late1 = $this->input->post ( 'late_1' );
+		$use1 = $this->input->post ( 'isUsed_1' );
+		
+		$start2 = $this->input->post('start-time2');
+		$end2 = $this->input->post ( 'end-time2' );
+		$late2 = $this->input->post ( 'late_2' );
+		$use2 = $this->input->post ( 'isUsed_2' );
+		
+		$start3 = $this->input->post('start-time3');
+		$end3 = $this->input->post ( 'end-time3' );
+		$late3 = $this->input->post ( 'late_3' );
+		$use3 = $this->input->post ( 'isUsed_3' );
+		
+		$this->form_validation->set_rules('start-time1','주중 출근시간','required');
+		$this->form_validation->set_rules('end-time1','주중 퇴근시간','required');
+		$this->form_validation->set_rules('late_1','주중 지각','required');
+		$this->form_validation->set_rules('isUsed_1','주중 사용여부','required');
+		$this->form_validation->set_rules('start-time2','주중 출근시간','required');
+		$this->form_validation->set_rules('end-time2','주중 퇴근시간','required');
+		$this->form_validation->set_rules('late_2','주중 지각','required');
+		$this->form_validation->set_rules('isUsed_2','주중 사용여부','required');
+		$this->form_validation->set_rules('start-time3','주중 출근시간','required');
+		$this->form_validation->set_rules('end-time3','주중 퇴근시간','required');
+		$this->form_validation->set_rules('late_3','주중 지각','required');
+		$this->form_validation->set_rules('isUsed_3','주중 사용여부','required');
+		
+		if ($this->form_validation->run() == FALSE){
+			echo validation_errors();
+			alert('잘못된 접근입니다.');
+		}
+		
+		$this->md_company->modify(array("no"=>1), array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1));
+		$this->md_company->modify(array("no"=>2), array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2));
+		$this->md_company->modify(array("no"=>3), array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3));
+		
+		alert('수정되었습니다.', site_url('attendance/set') );
 	}
 
 }
