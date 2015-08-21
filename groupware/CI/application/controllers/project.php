@@ -47,15 +47,16 @@ class Project extends CI_Controller{
 		$this->lists();
 	}
 	public function lists(){
-		//검색 파라미터
+		// 검색 파라미터
+		// 해당 일자가 포함된 진행기간 검색 sData,eData
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
+		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'sw_project.sData >='   => $this->PAGE_CONFIG['params']['sData'],
-			'sw_project.eData <'    => $eData,
+			'sw_project.sData <='   => $this->PAGE_CONFIG['params']['sData'],
+			'sw_project.eData >='   => $eData,
 			'sw_project.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'sw_project.created <'  => $ewData,
 			'menu_part_no'          => $this->PAGE_CONFIG['params']['menu_part_no'],
@@ -255,6 +256,15 @@ class Project extends CI_Controller{
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록
+
+		$config['base_url']    = '';
+		$config['total_rows']  = $data['total'];
+		$config['per_page']    = PAGING_PER_PAGE;
+		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
+		$config['uri_segment'] = 3;
+
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
 
 		echo json_encode($data);
 	}

@@ -169,9 +169,11 @@ $(document).ready(function() {
 	$('#call-approved-kind').click(function(){
 		var kind = $('#approved-kind').val();
 		if(kind == '0'){
+			call_data_modal('project');
 			$('#project-layout').show();
 			$('#document-layout').hide();
 		}else{
+			call_data_modal('document');
 			$('#project-layout').hide();
 			$('#document-layout').show();
 		}
@@ -182,40 +184,39 @@ $(document).ready(function() {
 
 });
 
-
 /* 담당자 팝업 */
-function staff_modal(no,callback){
+function call_data_modal(mode){
+	var load_url   = '';
+	var load_title = '';
+	if( mode=='project' ){
+		load_url   = '/groupware/html/pop/approved_call_project.php';
+		load_title = '업무선택';
+	}else if( mode=='document' ){
+		load_url = '/groupware/html/pop/approved_call_document.php';
+		load_title = '서식선택';
+	}else{
+		alert('mode 누락');return false;
+	}
 	// base div hide
-	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
-
+	var base_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+	
 	bootbox.dialog({
-		message: test_html,
-		title: 'title',
+		message: base_html,
+		title: load_title,
 		buttons: {
 			cancel: {
 				label: '닫기',
 				className: "btn-danger"
-			},
-			success: {
-				label: '저장',
-				className: "btn-success",
-				callback: callback
 			}
 		}
 	});
+
 	$('.modal-header').css("background-color","#51bf87 ");
 	$('.modal-header').css("color","white");
 	$('.modal-dialog').addClass('modal70');
 
 	// 팝업 호출
-	$('#modal-body').load('/groupware/html/pop/project_staff.php',{'no':no});
+	$('#modal-body').load(load_url);
 }
 
-function call_staff(no){
-	staff_modal(no,function(){
-		// 팝업창 내부 함수
-		modal_submit();
-		return false;
-	});
-}
 /* 담당자 팝업 */

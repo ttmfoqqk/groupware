@@ -52,15 +52,16 @@ class Approved_archive extends CI_Controller{
 	}
 
 	public function lists(){
-		//검색 파라미터
+		// 검색 파라미터
+		// 해당 일자가 포함된 진행기간 검색 sData,eData
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
+		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'approved.sData >='   => $this->PAGE_CONFIG['params']['sData'],
-			'approved.eData <'    => $eData,
+			'approved.sData <='   => $this->PAGE_CONFIG['params']['sData'],
+			'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
 			'approved.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],

@@ -155,7 +155,7 @@ function staff_modal(no,callback){
 
 	bootbox.dialog({
 		message: test_html,
-		title: 'title',
+		title: '담당자',
 		buttons: {
 			cancel: {
 				label: '닫기',
