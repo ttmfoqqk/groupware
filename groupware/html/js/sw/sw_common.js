@@ -250,4 +250,55 @@ $(document).ready(function() {
 			return output;
 		}
 	}
+	
+	$.fn.create_user = function(options){
+		var $method = options.method;
+		var $value  = options.value;
+		var element = $(this);
+		console.log($value);
+		if(element.length<=0){
+			alert('잘못된 객체');
+			return false;
+		}
+		if( !$method || $method=='undefined' ){
+			alert('method 누락');return false;
+		}
+
+		var url     = '/groupware/member/' + $method;
+		var tagName = element.get(0).tagName;
+		
+		if(tagName != 'SELECT'){
+			alert('select 만 있음;;');return false;
+		}
+
+		$.ajax({
+			type     : 'POST',
+			url      : url,
+			dataType : 'json',
+			success: function(data){
+				$data = eval(data.data);
+				
+				if(tagName=='SELECT'){
+					var html = create_option($data);
+					element.append(html);
+				}
+			},error:function(err){
+				alert(err.responseText);
+				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
+			}
+		});
+
+		function create_option(json_obj){
+			var output = '';
+			
+
+			for (var i in json_obj){
+				console.log(json_obj[i]);
+				console.log($value);
+                output+='<option value="'+json_obj[i].no+'" '+ ($value==json_obj[i].no?'selected':'') +'>' + json_obj[i].name + '</option>';
+            }
+			return output;
+		}
+	}
+	
 })(jQuery);

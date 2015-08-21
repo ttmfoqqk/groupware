@@ -30,3 +30,4 @@ a.text-normal{
 
 .datepicker {z-index: 1151 !important;}	/* datapick가 bootbox에서 사용할때 윈도우 밖에서 날짜가 생성된는것을 수정   */ 
 .bootstrap-timepicker-widget {z-index: 1151 !important;}	/* datapick가 bootbox에서 사용할때 윈도우 밖에서 날짜가 생성된는것을 수정   */ 
+.datepick-min {min-width: 110px;}	//datapicker 최소 사이즈

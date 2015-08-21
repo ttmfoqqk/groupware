@@ -113,6 +113,16 @@ class Member extends CI_Controller{
 		echo $this->md_company->getUsersByDepartment($dptNum);
 	}
 	
+	public function _allList(){
+		$this->md_company->setTable('sw_user');
+		$this->load->library("common");
+		$ret = $this->md_company->get(NULL, 'no, name');
+		if (count($ret) > 0){
+			echo $this->common->getRet(true, $ret);
+		}else
+			echo $this->common->getRet(false, 'no data');
+	}
+	
 	public function encryp($passwd){
 		$salt   = $this->config->item('encryption_key');
 		$string = $passwd . $salt;
@@ -173,8 +183,8 @@ class Member extends CI_Controller{
 			
 			$passwd = $this->encryp($passwd);
 			
-			$file = NULL;
-			if( isset($_FILES['userfile']) ) {
+			$file = $origin_file = NULL;
+			if( $_FILES['userfile']['name'] ) {
 				$config['upload_path'] = 'upload/member/';
 				$config['allowed_types'] = 'gif|jpg|png';
 				$config['remove_spaces'] = true;
@@ -182,12 +192,12 @@ class Member extends CI_Controller{
 				$this->load->library('upload', $config);
 					
 				if ( !$this->upload->do_upload() ){
-					$file = NULL;
-					//$upload_error = $this->upload->display_errors('','') ;
-					//alert($upload_error);
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
 				}else{
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
+					$origin_file = $_FILES['userfile']['name'];
 				}
 			}
 			
@@ -213,6 +223,7 @@ class Member extends CI_Controller{
 					'is_active'=>$inOffice,
 					'created'=>$cur,
 					'position'=>$position,
+					'origin_file' => $origin_file
 			);
 			
 			$result = $this->md_company->create($data);
@@ -220,7 +231,7 @@ class Member extends CI_Controller{
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('id','아이디','required|max_length[5]');
+			$this->form_validation->set_rules('id','아이디','required|max_length[20]');
 			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');
@@ -237,17 +248,18 @@ class Member extends CI_Controller{
 				echo validation_errors();
 				alert('잘못된 접근입니다.');
 			}
-			$file = NULL;
+			$file = $origin_file = NULL;
 			
 			$passwd = $this->encryp($passwd);
 			
-			if( isset($_FILES['userfile']) ) {
+			if( $_FILES['userfile']['name'] ) {
 				
 				$config['allowed_types'] = 'gif|jpg|png';
 					
 				$this->load->library('upload', $config);
 				if ( !$this->upload->do_upload() ){
-					$file = NULL;
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
 				}else{
 					//이전파일 삭제하고 업로드
 					$exUserFile = $this->md_company->get(array('no'=>$no), 'file');
@@ -255,6 +267,7 @@ class Member extends CI_Controller{
 						unlink(realpath($config['upload_path']) . '/' . $exUserFile[0]['file']);
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
+					$origin_file = $_FILES['userfile']['name'];
 				}
 			}
 			
@@ -275,6 +288,7 @@ class Member extends CI_Controller{
 					'color'=>$color,
 					'order'=>$order,
 					'is_active'=>$inOffice,
+					'origin_file' => $origin_file,
 			);
 			if($file != null)
 				$data['file'] = $file;

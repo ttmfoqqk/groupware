@@ -20,31 +20,6 @@ class Company_setting extends CI_Controller{
 			}
 	}
 
-	public function index(){
-		$this->lists();
-	}
-
-	public function lists(){
-		/*
-		$option = array(
-			'activated'=>0
-		);
-		$data['list'] = $this->board_model->get_setting_list($option);
-		$data['action_url'] = site_url('company_setting/proc');
-		$data['action_type'] = 'delete';
-		
-		$config['base_url'] = site_url('company_setting/lists');
-		$config['total_rows'] = 200; // 전체 글갯수
-		$config['per_page'] = 10;  // 보여질 갯수
-		$config['uri_segment'] = 3;
-		$config['num_links'] = 4; // 선택 페이지 좌우 링크 갯수
-
-		$this->pagination->initialize($config);
-		$data['pagination'] = $this->pagination->create_links();
-
-		$this->load->view('board/setting/list_v',$data);
-		*/
-	}
 
 	public function write(){
 		$category = $page_method = $this->uri->segment(3); //$this->input->post ( 'no' ); //

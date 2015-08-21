@@ -42,19 +42,14 @@ class Company extends CI_Controller{
 	public function lists(){
 		//필터 설정
 		$likes = $this->getListFilter();
-		$data['filter'] = $likes;		//페이지 필터 값
-		$date['start'] = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
-		$date['end'] = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')));
-		$data['date'] = $date;
+		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
 		
 		//Pagination, 테이블정보 필요 설정 세팅
 		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		
-		if($date['start'] && $date['end']){
-			$end = $date['end'];
-			$end = date("Y-m-d", strtotime($end."+1 day"));
-			$where = array('category'=>$this->CATEGORY, 'created >='=>$date['start'], 'created <'=>$end);
-		}
+		if($start && $end)
+			$where = array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
 		else
 			$where = array('category'=>$this->CATEGORY);
 		
@@ -75,13 +70,9 @@ class Company extends CI_Controller{
 		$data['list'] = array();
 		$result = $this->md_company->get($where, '*', $tb_show_num, $offset, $likes);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
 		if (count($result) > 0){
-			foreach ($result as $row)
-			{
-				array_push($data['list'], $row);
-			}
+			$data['list'] = $result;
 		}
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
 		
 		//페이지 타이틀 설정
 		$data['action_url'] = site_url('company_setting/proc');

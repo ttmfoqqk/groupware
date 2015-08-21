@@ -69,5 +69,9 @@ $(document).ready(function() {
 		});
 	});
 	
+	$('.tb_num').change(function(){
+		$('#qu').submit();
+	});
+	
 	
 })

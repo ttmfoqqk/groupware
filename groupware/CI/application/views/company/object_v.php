@@ -103,7 +103,7 @@
 							<!-- 검색 -->
 							
 
-							<form id="company-form-list" action="<?echo $action_url;?>"
+							<form id="object-form-list" action="<?echo $action_url;?>"
 								method="post" class="form-horizontal group-border stripped"
 								role="form">
 								<input type="hidden" name="action_type" id="action_type"
@@ -131,12 +131,12 @@
 										<!-- 리스트 -->
 									<?php
 										foreach ( $list as $lt ) {
-										$anchor_url = site_url ( 'object/write/' . $page . '/' . $lt ['no'] );
+										$anchor_url = site_url ( 'object/write/' . $lt ['no'] );
 										?>
 										<tr>
 											<td>
 												<div class="checkbox-custom">
-													<input id="check<?$lt['no'];?>" name="company_no[]"
+													<input id="check<?$lt['no'];?>" name="no[]"
 														class="check" type="checkbox"
 														value=<?php echo $lt['no'];?>> <label
 														for="check<?$lt['no'];?>"></label> <input type="hidden"
@@ -167,7 +167,7 @@
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-										onclick="location.href='<?echo site_url('object/write/') . '/' . $page;?>';">등록</button>
+										onclick="location.href='<?echo site_url('object/write/')?>';">등록</button>
 								</div>
 							</form>
 						</div>

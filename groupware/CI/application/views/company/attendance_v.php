@@ -71,6 +71,18 @@
 											색</button>
 									</div>
 								</div>
+								
+								<!-- 테이블 옵션  -->
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?php echo $tb_num;?>>
+										<option value="10" <?=$tb_num == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$tb_num == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+								</div>
+								<!-- END 테이블 옵션  -->
 
 
 							</form>

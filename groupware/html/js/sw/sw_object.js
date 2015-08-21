@@ -57,7 +57,7 @@ $(document).ready(function() {
 		  		//callback result
 				if(result){
 					$('#action_type').val('delete');
-					$('#company-form-list').submit();
+					$('#object-form-list').submit();
 				}		  		
 		    }
 		});
