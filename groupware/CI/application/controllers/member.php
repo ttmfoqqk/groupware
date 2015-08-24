@@ -159,7 +159,7 @@ class Member extends CI_Controller{
 		
 		$config['upload_path'] = 'upload/member/';
 		$config['remove_spaces'] = true;
-		
+		$config['allowed_types'] = FILE_IMAGE_TYPE;
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -185,10 +185,6 @@ class Member extends CI_Controller{
 			
 			$file = $origin_file = NULL;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path'] = 'upload/member/';
-				$config['allowed_types'] = 'gif|jpg|png';
-				$config['remove_spaces'] = true;
-					
 				$this->load->library('upload', $config);
 					
 				if ( !$this->upload->do_upload() ){
@@ -254,8 +250,6 @@ class Member extends CI_Controller{
 			
 			if( $_FILES['userfile']['name'] ) {
 				
-				$config['allowed_types'] = 'gif|jpg|png';
-					
 				$this->load->library('upload', $config);
 				if ( !$this->upload->do_upload() ){
 					$upload_error = $this->upload->display_errors('','') ;

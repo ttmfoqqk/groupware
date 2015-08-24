@@ -134,7 +134,7 @@ class Document extends CI_Controller{
 		$config['upload_path'] = 'upload/document/';
 		$config['remove_spaces'] = true;
 		$config['encrypt_name'] = true;
-		$config['allowed_types'] = 'gif|jpg|png|zip|docx|txt|xls';
+		$config['allowed_types'] = FILE_ALL_TYPE;
 		if( $action_type == 'create' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
 			$this->form_validation->set_rules('document','분류','required');

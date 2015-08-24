@@ -37,5 +37,10 @@ define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 define('PAGING_PER_PAGE', 10);
+define('FILE_IMAGE_TYPE', 'gif|jpg|png');
+define('FILE_DOC_TYPE', 'docx|doc|txt|xls');
+define('FILE_ZIP_TYPE', 'zip|tar|rar');
+define('FILE_ALL_TYPE', FILE_IMAGE_TYPE . '|' . FILE_DOC_TYPE . '|' . FILE_ZIP_TYPE);
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

@@ -133,7 +133,7 @@ class Object extends CI_Controller{
 		$config['upload_path'] = 'upload/object/';
 		$config['remove_spaces'] = true;
 		$config['encrypt_name'] = true;
-		
+		$config['allowed_types'] = FILE_ALL_TYPE;
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -150,7 +150,6 @@ class Object extends CI_Controller{
 			$file = $origin_file = NULL;
 			
 			if( $_FILES['userfile']['name'] ) {
-				$config['allowed_types'] = 'gif|jpg|png|txt|zip';
 			
 				$this->load->library('upload', $config);
 					
@@ -198,8 +197,6 @@ class Object extends CI_Controller{
 			$file = NULL;
 				
 			if( $_FILES['userfile']['name'] ) {
-				$config['allowed_types'] = 'gif|jpg|png|txt|zip';
-					
 				$this->load->library('upload', $config);
 					
 				if ( !$this->upload->do_upload() ){
