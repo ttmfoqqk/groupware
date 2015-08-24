@@ -151,25 +151,25 @@
 								</thead>
 								<tbody>
 								<?php foreach($list as $lt){
-									$anchor = $anchor_url.'&no='.$lt['no'];
+									$anchor = $anchor_url.'&no='.$lt['approved_no'];
 									?>
 									<tr>
 										<td>
 											<div class="checkbox-custom">
-												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['no'];?>">
+												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['approved_no'];?>">
 												<label for="check"></label>
 											</div>
 										</td>
-										<td><?echo $lt['order'];?></td>
-										<td><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></td>
-										<td><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></td>
-										<td><?echo $lt['order'];?></td>
-										<td><?echo $lt['pPoint'];?></td>
-										<td><?echo $lt['mPoint'];?></td>
-										<td><?echo $lt['created'];?></td>
-										<td><?echo $lt['order'];?></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['orders']?0:$lt['orders']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal">+<?echo $lt['pPoint'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal">-<?echo $lt['mPoint'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['createds'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_default'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['approved_no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
 									<?php }?>

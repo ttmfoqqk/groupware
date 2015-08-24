@@ -23,6 +23,9 @@ class Project_model extends CI_Model{
 		$this->db->join('sw_menu a','sw_project.menu_part_no = a.no');
 		$this->db->join('sw_menu b','sw_project.menu_no = b.no');
 		$this->db->join('sw_user c','sw_project.user_no = c.no');
+		$this->db->join('sw_project_staff d','sw_project.no = d.project_no and d.order=1','left');
+		$this->db->join('sw_menu d1','d.menu_no = d1.no','left');
+		$this->db->join('sw_user d2','d.user_no = d2.no','left');
 		$this->db->where($where);
 		$this->db->like($like);
 		$query = $this->db->get();
@@ -34,10 +37,17 @@ class Project_model extends CI_Model{
 		$this->db->select('a.name as part_name');
 		$this->db->select('b.name as menu_name');
 		$this->db->select('c.name as user_name');
+		$this->db->select('d.user_no as staff_no');
+		$this->db->select('d.menu_no as staff_menu_no');
+		$this->db->select('d1.name as staff_menu_name');
+		$this->db->select('d2.name as staff_name');
 		$this->db->from('sw_project');
 		$this->db->join('sw_menu a','sw_project.menu_part_no = a.no');
 		$this->db->join('sw_menu b','sw_project.menu_no = b.no');
 		$this->db->join('sw_user c','sw_project.user_no = c.no');
+		$this->db->join('sw_project_staff d','sw_project.no = d.project_no and d.order=1','left');
+		$this->db->join('sw_menu d1','d.menu_no = d1.no','left');
+		$this->db->join('sw_user d2','d.user_no = d2.no','left');
 		$this->db->order_by('sw_project.order','ASC');
 		$this->db->order_by('sw_project.no','DESC');
 		$this->db->where($where);
@@ -67,8 +77,16 @@ class Project_model extends CI_Model{
 
 	/* 담당자 */
 	public function get_project_staff_list($option){
-		$this->db->order_by('order','ASC');
-		$query  = $this->db->get_where('sw_project_staff',$option);
+		$this->db->select('staff.*');
+		$this->db->select('menu.name as menu_name');
+		$this->db->select('user.name as user_name');
+		$this->db->from('sw_project_staff as staff');
+		$this->db->join('sw_menu menu','staff.menu_no = menu.no');
+		$this->db->join('sw_user user','staff.user_no = user.no');
+		$this->db->where($option);
+		$this->db->order_by('staff.order','ASC');
+		
+		$query = $this->db->get();
 		$result = $query->result_array();
 		return $result;
 	}

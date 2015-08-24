@@ -24,23 +24,33 @@
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
+
+							<input type="hidden" name="task_no" id="task_no" value="">
+
 							
-							<?if( $action_type != 'edit' ) {?>
+							
+							<?//if( $action_type != 'edit' ) {?>
 							<div class="row pb20">
-								<label for="menu_part_no" class="col-lg-2 col-md-3 control-label">결재 종류</label>
+								<label for="approved_kind" class="col-lg-2 col-md-3 control-label">결재 종류</label>
 								<div class="col-lg-7 col-md-6 col-xs-8">
-									<select id="approved-kind" name="approved-kind" class="fancy-select form-control">
+									<select id="approved_kind" name="approved_kind" class="fancy-select form-control">
 										<option value="0">업무</option>
 										<option value="1">일반</option>
 									</select>
 								</div>
 								<div class="col-lg-3 col-md-3 col-xs-4">
-									<button type="button" class="btn btn-primary btn-alt" id="call-approved-kind">불러오기</button>
+									<button type="button" class="btn btn-primary btn-alt" id="call_approved_kind">불러오기</button>
 								</div>
 							</div>
-							<?}?>
+							<?//}?>
 
 							<!-- 업무보고서 -->
+							<input type="hidden" name="p_department" id="p_department" value="">
+							<input type="hidden" name="p_title" id="p_title" value="">
+							<input type="hidden" name="p_sData" id="p_sData" value="">
+							<input type="hidden" name="p_eData" id="p_eData" value="">
+							<input type="hidden" name="p_file" id="p_file" value="">
+
 							<div style="display:none;" id="project-layout">
 							<div class="panel panel-default">
 								<div class="panel-body">
@@ -51,47 +61,47 @@
 											<tbody>
 												<tr>
 													<th style="width:200px;">문서번호</th>
-													<td style="width:400px;">Jacob Olsen</td>
+													<td id="p_paper_no" style="width:400px;"><?echo $this->session->userdata('no');?></td>
 													<th style="width:200px;">등록일자</th>
 													<td><?echo Date('Y-m-d');?></td>
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td>기획팀</td>
+													<td id="project_department"> </td>
 													<th>담당자</th>
-													<td>홍길동</td>
+													<td id="project_user"> </td>
 												</tr>
 												<tr>
 													<th>분류</th>
-													<td>내부 > 업무</td>
+													<td id="project_menu"> </td>
 													<th>제목</th>
-													<td>7月 바이럴 목표</td>
+													<td id="project_title"> </td>
 												</tr>
 												<tr>
 													<th>내용</th>
-													<td colspan="3">7月 바이럴 목표</td>
+													<td id="project_contents" colspan="3"></td>
 												</tr>
 												<tr>
 													<th>진행기간</th>
-													<td colspan="3">2015-06-19 ~ 2015-08-19</td>
+													<td id="project_date" colspan="3"> </td>
 												</tr>
 												<tr>
 													<th>결재점수</th>
-													<td>1</td>
+													<td id="project_pPoint"> </td>
 													<th>누락점수</th>
-													<td>-1</td>
+													<td id="project_mPoint"> </td>
 												</tr>
 												<tr>
 													<th>첨부파일</th>
-													<td>123</td>
+													<td id="project_file"> </td>
 													<th >순서</th>
-													<td class="p5"><input type="text" name="order" class="form-control input-sm input-mini" value="0"></td>
+													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="0"></td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"></textarea>
+										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"></textarea>
 									</div>
 								</div>
 							</div>
@@ -109,24 +119,24 @@
 											<tbody>
 												<tr>
 													<th style="width:200px;">문서번호</th>
-													<td style="width:400px;">Jacob Olsen</td>
+													<td style="width:400px;"> </td>
 													<th style="width:200px;">등록일자</th>
-													<td>2015-06-19</td>
+													<td><?echo Date('Y-m-d');?></td>
 												</tr>
 												<tr>
 													<th>담당부서</th>
 													<td class="p5">
-														<select id="part_sender" name="part_sender" data-method="department" data-value="<?echo $this->input->get('part_sender');?>" class="fancy-select form-control input-sm">
+														<select id="d_department" name="d_department" data-method="department" data-value="<?echo $this->input->get('document_department');?>" class="fancy-select form-control input-sm">
 															<option value="">담당부서</option>
 														</select>
 													</td>
 													<th>담당자</th>
-													<td>홍길동</td>
+													<td id="document_user"> </td>
 												</tr>
 												<tr>
 													<th>제목</th>
 													<td colspan="3" class="p5">
-														<input type="text" name="title" class="form-control input-sm" placeholder="제목" value="<?echo $this->input->get('title');?>">
+														<input id="d_title" name="d_title" type="text" class="form-control input-sm" placeholder="제목" value="<?echo $this->input->get('title');?>">
 													</td>
 												</tr>
 												<tr>
@@ -136,9 +146,9 @@
 														<div class="col-xs-6 col-md-6 row">
 															<div class="input-daterange input-group">
 																<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-																<input type="text" class="form-control input-sm" name="sData" id="sData" value="<?echo $this->input->get('sData')?>" />
+																<input type="text" class="form-control input-sm" name="d_sData" id="d_sData" value="<?echo $this->input->get('sData')?>" />
 																<span class="input-group-addon">to</span>
-																<input type="text" class="form-control input-sm" name="eData" id="eData" value="<?echo $this->input->get('eData')?>"/>
+																<input type="text" class="form-control input-sm" name="d_eData" id="d_eData" value="<?echo $this->input->get('eData')?>"/>
 															</div>
 														</div>
 														<div class="col-xs-6 col-md-6">
@@ -153,16 +163,16 @@
 												<tr>
 													<th>첨부파일</th>
 													<td class="p5">
-														<input type="file" id="userfile" name="userfile" class="filestyle" data-size="sm" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+														<input type="file" id="d_file" name="d_file" class="filestyle" data-size="sm" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 													</td>
 													<th>순서</th>
-													<td class="p5"><input type="text" name="order" class="form-control input-sm input-mini" value="0"></td>
+													<td class="p5"><input type="text" id="d_order" name="d_order" class="form-control input-sm input-mini" value="0"></td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"></textarea>
+										<textarea id="d_contents" name="d_contents" class="form-control" rows="10" placeholder="내용"></textarea>
 									</div>
 								</div>
 							</div>

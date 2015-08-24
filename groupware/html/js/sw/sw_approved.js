@@ -166,25 +166,30 @@ $(document).ready(function() {
 		});
 	});
 
-	$('#call-approved-kind').click(function(){
-		var kind = $('#approved-kind').val();
+	$('#call_approved_kind').click(function(){
+		var kind = $('#approved_kind').val();
 		if(kind == '0'){
 			call_data_modal('project');
-			$('#project-layout').show();
-			$('#document-layout').hide();
 		}else{
 			call_data_modal('document');
-			$('#project-layout').hide();
-			$('#document-layout').show();
 		}
 	});
 	/* 쓰기 페이지 */
 
-	
-
 });
 
-/* 담당자 팝업 */
+
+function show_paper(mode){
+	if(mode=='project'){
+		$('#project-layout').show();
+		$('#document-layout').hide();
+	}else if(mode=='document'){
+		$('#project-layout').hide();
+		$('#document-layout').show();
+	}
+}
+
+/* 문서 팝업 */
 function call_data_modal(mode){
 	var load_url   = '';
 	var load_title = '';
@@ -220,3 +225,42 @@ function call_data_modal(mode){
 }
 
 /* 담당자 팝업 */
+
+
+/* 담당자 팝업 */
+function call_project_staff_modal(no,callback){
+	// base div hide
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+
+	bootbox.dialog({
+		message: test_html,
+		title: '결재자',
+		buttons: {
+			cancel: {
+				label: '닫기',
+				className: "btn-danger"
+			},
+			success: {
+				label: '결재 요청',
+				className: "btn-success",
+				callback: callback
+			}
+		}
+	});
+	$('.modal-header').css("background-color","#51bf87 ");
+	$('.modal-header').css("color","white");
+	//$('.modal-dialog').addClass('modal70');
+
+	// 팝업 호출
+	$('#modal-body').load('/groupware/html/pop/approved_call_project_staff.php',{'no':no});
+}
+
+function call_project_staff(project_no,approved_no){
+	call_project_staff_modal(project_no,function(){
+		if(confirm('결재를 등록하시겠습니까?')){
+			application_approved(approved_no);
+		}else{
+			return false;
+		}
+	});
+}

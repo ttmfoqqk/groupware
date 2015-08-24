@@ -244,7 +244,8 @@ class Project extends CI_Controller{
 			'sw_project.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'sw_project.created <'  => $ewData,
 			'menu_part_no'          => $this->PAGE_CONFIG['params']['menu_part_no'],
-			'menu_no'               => $this->PAGE_CONFIG['params']['menu_no']
+			'menu_no'               => $this->PAGE_CONFIG['params']['menu_no'],
+			'd.user_no'             => $this->session->userdata('no')
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],

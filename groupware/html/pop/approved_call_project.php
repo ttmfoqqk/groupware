@@ -78,44 +78,49 @@ function get_list( pagination ){
 			var pagination = json.pagination;
 			var html = '';
 			var temp = '';
+			
+			if(list.length>0){
+				for (var i in list){
+					var no      = list[i].no;
+					var menu    = list[i].menu_name;
+					var title   = list[i].title;
+					var sDate   = list[i].sData;
+					var eDate   = list[i].eData;
+					var pPoint  = list[i].pPoint;
+					var mPoint  = list[i].mPoint;
+					var created = list[i].created;
+					var user    = list[i].user_name;
 
-			for (var i in list){
-				var no      = list[i].no;
-				var menu    = list[i].menu_name;
-				var title   = list[i].title;
-				var sDate   = list[i].sData;
-				var eDate   = list[i].eData;
-				var pPoint  = list[i].pPoint;
-				var mPoint  = list[i].mPoint;
-				var created = list[i].created;
-				var user    = list[i].user_name;
+					template = $list_template;
+					template = template.replace(/{eq}/gi      ,i);
+					template = template.replace(/{menu}/gi    ,menu);
+					template = template.replace(/{title}/gi   ,title);
+					template = template.replace(/{sDate}/gi   ,sDate.substring(0,10));
+					template = template.replace(/{eDate}/gi   ,eDate.substring(0,10));
+					template = template.replace(/{pPoint}/gi  ,pPoint);
+					template = template.replace(/{mPoint}/gi  ,mPoint);
+					template = template.replace(/{created}/gi ,created.substring(0,10));
+					template = template.replace(/{user}/gi    ,user);
 
-				template = $list_template;
-				template = template.replace(/{eq}/gi      ,i);
-				template = template.replace(/{menu}/gi    ,menu);
-				template = template.replace(/{title}/gi   ,title);
-				template = template.replace(/{sDate}/gi   ,sDate.substring(0,10));
-				template = template.replace(/{eDate}/gi   ,eDate.substring(0,10));
-				template = template.replace(/{pPoint}/gi  ,pPoint);
-				template = template.replace(/{mPoint}/gi  ,mPoint);
-				template = template.replace(/{created}/gi ,created.substring(0,10));
-				template = template.replace(/{user}/gi    ,user);
+					html += template;
+				}
+				$table_list.html(html);
+				$table_list.find('a').bind('click',function(e){
+					e.preventDefault();
+					var eq = $(this).attr('data-eq');
+					onlick(list[eq]);
+				});
 
-				html += template;
+				$pagination.html(pagination);
+				$pagination.find('a').bind('click',function(e){
+					e.preventDefault();
+					var p = $(this).attr('href').replace('/','');
+					get_list(p);
+				});
+			}else{
+				$table_list.html('<tr><td colspan="7">할당된 업무가 없습니다.</td></tr>');
+				$pagination.html(pagination);
 			}
-			$table_list.html(html);
-			$table_list.find('a').bind('click',function(e){
-				e.preventDefault();
-				var eq = $(this).attr('data-eq');
-				onlick(list[eq]);
-			});
-
-			$pagination.html(pagination);
-			$pagination.find('a').bind('click',function(e){
-				e.preventDefault();
-				var p = $(this).attr('href').replace('/','');
-				get_list(p);
-			});
 
 			base_show('show');
 		},error:function(err){
@@ -130,14 +135,39 @@ function onlick(data){
 		var no      = data.no;
 		var menu    = data.menu_name;
 		var title   = data.title;
-		var sDate   = data.sData;
-		var eDate   = data.eData;
+		var sDate   = data.sData.substring(0,10);
+		var eDate   = data.eData.substring(0,10);
 		var pPoint  = data.pPoint;
 		var mPoint  = data.mPoint;
+		var file    = data.file;
 		var created = data.created;
-		var user    = data.user_name;
+		
+		var staff_no        = data.staff_no;
+		var staff_name      = data.staff_name;
+		var staff_menu_no   = data.staff_menu_no;
+		var staff_menu_name = data.staff_menu_name;
 	}
-	alert('title : `' + title + '` , html 적용');
+	
+	show_paper('project');
+
+	$('#task_no').val(no);
+	$('#p_department').val(staff_menu_no);
+	$('#p_title').val(title);
+	$('#p_sData').val(sDate);
+	$('#p_eData').val(eDate);
+	$('#p_file').val(file);
+
+	$('#p_paper_no').text('-');
+	$('#project_department').text(staff_menu_name);
+	$('#project_user').text(staff_name);
+	$('#project_menu').text(menu);
+	$('#project_title').text(title);
+	$('#project_contents').text('approved_contents 참조');
+	$('#project_date').text(sDate +' ~ '+ eDate);
+	$('#project_pPoint').text('+'+pPoint);
+	$('#project_mPoint').text('-'+mPoint);
+	$('#project_file').text(file);
+	
 	bootbox.hideAll();
 }
 
