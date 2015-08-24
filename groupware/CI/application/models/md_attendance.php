@@ -17,13 +17,12 @@ class Md_attendance extends CI_Model{
 			$this->db->where($where);
 	
 		//$this->db->select('h.no, u.name, h.sData, h.eData, h.oData, h.point, h.created, ud.menu_no, m.name as menu_name');
-		$this->db->from('sw_attendance_history h');
 		$this->db->join('sw_user u', 'h.user_no = u.no', 'left outer');
 		$this->db->join('sw_user_department ud', 'u.no = ud.user_no', 'left outer');
 		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left outer');
 		
 		$this->db->select('count(*) as total');
-		$ret = $this->db->get($this->TABLE_NAME)->row();
+		$ret = $this->db->get('sw_attendance_history h')->row();
 		return $ret->total;
 	}
 	
@@ -38,79 +37,12 @@ class Md_attendance extends CI_Model{
 			$this->db->where($where);
 		
 		$this->db->select('h.no, u.name, h.sData, h.eData, h.oData, h.point, h.created, ud.menu_no, m.name as menu_name');
-		$this->db->from('sw_attendance_history h');
 		$this->db->join('sw_user u', 'h.user_no = u.no', 'left outer');
 		$this->db->join('sw_user_department ud', 'u.no = ud.user_no', 'left outer');
 		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left outer');
 		
-		$ret = $this->db->get($this->TABLE_NAME, $offset, $limit);
+		$ret = $this->db->get('sw_attendance_history h', $offset, $limit);
 		return $ret->result_array();
-	}
-	
-	
-	public function getAllCount(){
-		return $this->db->count_all($this->TABLE_NAME);
-	}
-	
-	/**
-	 * @param array $where
-	 * @param array $likes
-	 * @return int
-	 */
-	public function getCount($where=NULL, $likes=NULL){
-		if($likes!=NULL){
-			foreach ($likes as $key=>$val){
-				if($val!='')
-					$this->db->like($key, $val);
-			}
-		}
-		if($where != NULL)
-			$this->db->where($where);
-		
-		$this->db->select('count(*) as total');
-		$ret = $this->db->get($this->TABLE_NAME)->row();
-		return $ret->total;
-	}
-	
-	/**
-	 * @param array $where
-	 * @param string | array $select
-	 * @param int $offset
-	 * @param int $limit
-	 * @param array $likes
-	 */
-	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL, $order=FALSE, $no=FALSE){
-		if($likes!=NULL){
-			foreach ($likes as $key=>$val){
-				if($val!='')
-					$this->db->like($key, $val);
-			}
-		}
-		if($order == true)
-			$this->db->order_by('order','ASC');
-		if($no == true)
-			$this->db->order_by('no','DESC');
-		$this->db->select($select);
-		if($where != NULL)
-			$this->db->where($where);
-		$ret = $this->db->get($this->TABLE_NAME, $offset, $limit);
-		return $ret->result_array();
-	}
-	
-	public function create($data){
-		return $this->db->insert($this->TABLE_NAME,$data);
-	}
-	
-	public function modify($where, $data){
-		return $this->db->update($this->TABLE_NAME, $data, $where);
-	}
-	
-	public function delete($where){
-		return $this->db->delete($this->TABLE_NAME, $where);
-	}
-	
-	public function getFileds(){
-		return $this->db->list_fields($this->TABLE_NAME);
 	}
 	
 }

@@ -88,13 +88,9 @@
 							</form>
 							<!-- 검색 -->
 
-							<form id="company-form-list" action="<?echo $action_url;?>"
+							<form id="company-form-list" 
 								method="post" class="form-horizontal group-border stripped"
 								role="form">
-								<input type="hidden" name="action_type" id="action_type"
-									value="<?echo $action_type;?>">
-								<input type="hidden" name="page_cate" id="page_cate"
-									value="<?echo $page;?>">
 								<table class="table table-bordered" id="tabletools">
 									<thead>
 										<tr>
