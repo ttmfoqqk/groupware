@@ -76,8 +76,8 @@
 									<div class="col-lg-3 col-md-3">
 										<select class="fancy-select form-control" id="ft_active" name="ft_active" data-value="<?echo $this->input->get('ft_active');?>">
                                         	<option value="">전체</option>
-                                        	<option value=0>사용</option>
-                                        	<option value=1>미사용</option>
+                                        	<option value=0 <?=$this->input->get('ft_active') == '0' ? ' selected="selected"' : '';?>>사용</option>
+                                        	<option value=1 <?=$this->input->get('ft_active') == '1' ? ' selected="selected"' : '';?>>미사용</option>
                                         </select>
 									</div>
 
@@ -149,7 +149,7 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['menu_name'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'] ? "미사용" : "사용";?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['user_name'];?></a></td>
 										</tr>

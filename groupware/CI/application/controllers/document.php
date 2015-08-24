@@ -117,7 +117,7 @@ class Document extends CI_Controller{
 		}
 		$data['head_name'] = '회사서식 관리';
 		
-		$this->load->view('company/document_write',$data);
+		$this->load->view('document/document_write',$data);
 	}
 	
 	public function proc(){
