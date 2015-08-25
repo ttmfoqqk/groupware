@@ -86,8 +86,8 @@
                         <ul class="dropdown-menu right dropdown-notification" role="menu">
                             <li><a href="#" class="dropdown-menu-header">Notifications</a></li>
                             <li><a href="<?echo site_url('board/lists/notice');?>"><i class="l-basic-elaboration-message-dots"></i> 2 공지사항</a></li>
-                            <li><a href="<?echo site_url('approved/send');?>"><i class="l-basic-elaboration-mail-upload"></i> 보낸 결재</a></li>
-                            <li><a href="<?echo site_url('approved/receive');?>"><i class="l-basic-elaboration-mail-download"></i> 받은 확인</a></li>
+                            <li><a href="<?echo site_url('approved_send/lists/all');?>"><i class="l-basic-elaboration-mail-upload"></i> 보낸 결재</a></li>
+                            <li><a href="<?echo site_url('approved_receive/lists/all');?>"><i class="l-basic-elaboration-mail-download"></i> 받은 확인</a></li>
                         </ul>
                     </li>
                     <li>

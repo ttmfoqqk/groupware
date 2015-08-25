@@ -22,16 +22,19 @@ $(document).ready(function() {
 		});
 	}
 	
-	if($part_receiver.length>0){
-		var $menu_no_method= $menu_no.attr('data-method').split(',');
+	if($part_receiver.length>0 && $menu_no.length>0){
+		var $menu_no_method = $menu_no.attr('data-method').split(',');
+		
 		$menu_no.create_menu({
 			method : $menu_no_method[0],
 			value  : $menu_no.attr('data-value'),
 			callback : function(){
-				$menu_no.create_menu({
-					method : $menu_no_method[1],
-					value  : $menu_no.attr('data-value')
-				});
+				if($menu_no_method.length>1){
+					$menu_no.create_menu({
+						method : $menu_no_method[1],
+						value  : $menu_no.attr('data-value')
+					});
+				}
 			}
 		});
 	}
@@ -241,7 +244,7 @@ function call_project_staff_modal(no,callback){
 				className: "btn-danger"
 			},
 			success: {
-				label: '결재 요청',
+				label: '결재 등록',
 				className: "btn-success",
 				callback: callback
 			}

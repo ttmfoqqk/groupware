@@ -54,6 +54,23 @@ class Approved_model extends CI_Model{
 		return $result;
 	}
 	public function get_approved_detail($option){
+		$this->db->select('*, approved.no as no , approved.order as approved_order ,approved.menu_no as menu_no , approved.project_no as project_no');
+
+		$this->db->select('project.title as project_title , project.sData as project_sData , project.eData as project_eData , project.contents as project_contents ');
+		$this->db->select('project.file as project_file');
+
+		$this->db->select('document.name as document_title');
+		$this->db->select('department.name as department');
+		$this->db->select('project_menu.name as project_menu_name');
+		$this->db->select('approved_contents.contents as approved_contents');
+		$this->db->from('sw_approved as approved');
+		$this->db->join('sw_approved_contents AS approved_contents','approved.no = approved_contents.approved_no','left');
+		$this->db->join('sw_menu AS department','approved.menu_no = department.no');
+		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
+		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
+
+		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no');
+
 		$result = $this->db->get_where('sw_approved',$option);
 		return $result;
 	}
@@ -91,7 +108,6 @@ class Approved_model extends CI_Model{
 
 	public function set_approved_staff_insert($option,$staff){
 		$this->set_approved_staff_delete($staff);
-		$this->db->set('created', 'NOW()', false);
 		$this->db->insert_batch('sw_approved_status',$option);
 	}
 }

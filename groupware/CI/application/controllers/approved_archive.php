@@ -103,7 +103,7 @@ class Approved_archive extends CI_Controller{
 	}
 	public function write(){
 		$no     = $this->input->get('no');
-		$option = array('no'=>$no);
+		$option = array('approved.no'=>$no);
 		$result = $this->approved_model->get_approved_detail($option);
 
 		$data['action_type'] = 'create';
@@ -111,7 +111,7 @@ class Approved_archive extends CI_Controller{
 		$data['action_url']  = site_url('approved_archive/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 
 		$data['data'] = array(
-			'no'         => NULL,
+			'no'         => '-',
 			'kind'       => NULL,
 			'project_no' => NULL,
 			'user_no'    => NULL,
@@ -121,7 +121,18 @@ class Approved_archive extends CI_Controller{
 			'eData'      => NULL,
 			'file'       => NULL,
 			'order'      => 0,
-			'created'    => NULL
+			'created'    => NULL,
+			'department' => NULL,
+			'project_title' => NULL,
+			'project_sData' => NULL,
+			'project_eData' => NULL,
+			'pPoint' => NULL,
+			'mPoint' => NULL,
+			'order' => 0,
+			'project_menu_name'=>NULL,
+			'project_contents'=>NULL,
+			'project_file'=>NULL,
+			'approved_contents'=>NULL,
 		);
 		if ($result->num_rows() > 0){
 			$result = $result->row();
@@ -138,7 +149,19 @@ class Approved_archive extends CI_Controller{
 				'eData'      => substr($result->eData,0,10),
 				'file'       => $result->file,
 				'order'      => $result->order,
-				'created'    => substr($result->created,0,10)
+				'created'    => substr($result->created,0,10),
+				'department' => $result->department,
+				'project_title' => $result->project_title,
+				'project_sData' => substr($result->project_sData,0,10),
+				'project_eData' => substr($result->project_eData,0,10),
+				'pPoint'        => $result->pPoint,
+				'mPoint'        => $result->mPoint,
+				'order'         => $result->approved_order,
+				'project_menu_name'=>$result->project_menu_name,
+				'project_contents'=>$result->project_contents,
+				'project_file'=>$result->project_file,
+				'approved_contents'=>$result->approved_contents,
+				
 			);
 		}
 		$data['list_url']  = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
@@ -219,16 +242,24 @@ class Approved_archive extends CI_Controller{
 			}
 			alert('등록되었습니다.', site_url('approved_archive/lists/') ); //신규 등록 첫페이지로
 		}elseif( $action_type == 'edit' ){
-			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('no','결재 no','required');
-			$this->form_validation->set_rules('approved_kind','결재 종류','required');
-			$this->form_validation->set_rules('task_no','업무/문서 no','required');
-			$this->form_validation->set_rules('department','담당부서','required');
-			$this->form_validation->set_rules('title','제목','required|max_length[200]');
-			$this->form_validation->set_rules('contents','내용','required');
-			$this->form_validation->set_rules('sData','진행기간','required');
-			$this->form_validation->set_rules('eData','진행기간','required');
-			$this->form_validation->set_rules('order','순서','required|numeric');
+
+			if( $approved_kind == '0' ){
+				$this->form_validation->set_rules('no','결재 no','required');
+				$this->form_validation->set_rules('p_department','담당부서','required');
+				$this->form_validation->set_rules('p_title','제목','required|max_length[200]');
+				//$this->form_validation->set_rules('p_contents','내용','required');
+				$this->form_validation->set_rules('p_sData','진행기간','required');
+				$this->form_validation->set_rules('p_eData','진행기간','required');
+				$this->form_validation->set_rules('p_order','순서','required|numeric');
+			}else{
+				$this->form_validation->set_rules('no','결재 no','required');
+				$this->form_validation->set_rules('d_department','담당부서','required');
+				$this->form_validation->set_rules('d_title','제목','required|max_length[200]');
+				//$this->form_validation->set_rules('d_contents','내용','required');
+				$this->form_validation->set_rules('d_sData','진행기간','required');
+				$this->form_validation->set_rules('d_eData','진행기간','required');
+				$this->form_validation->set_rules('d_order','순서','required|numeric');
+			}
 
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
@@ -240,7 +271,7 @@ class Approved_archive extends CI_Controller{
 				'title'      =>$title,
 				'sData'      =>$sData,
 				'eData'      =>$eData,
-				'order'      =>$mPoint
+				'order'      =>$order
 			);
 			$this->approved_model->set_approved_update($option,array('no'=>$no));
 
@@ -291,7 +322,7 @@ class Approved_archive extends CI_Controller{
 					'receiver'      => $json_data[$i+1]->user_no,
 					'part_sender'   => $json_data[$i]->menu_no,
 					'part_receiver' => $json_data[$i+1]->menu_no,
-					'status'        => 'A',
+					'status'        => 'a',
 					'order'         => $json_data[$i]->order
 				));
 			}

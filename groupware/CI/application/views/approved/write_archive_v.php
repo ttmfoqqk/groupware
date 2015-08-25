@@ -25,11 +25,11 @@
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
-							<input type="hidden" name="task_no" id="task_no" value="">
+							<input type="hidden" name="task_no" id="task_no" value="<?echo $data['project_no'];?>">
 
 							
 							
-							<?//if( $action_type != 'edit' ) {?>
+							<?if( $action_type == 'create' ) {?>
 							<div class="row pb20">
 								<label for="approved_kind" class="col-lg-2 col-md-3 control-label">결재 종류</label>
 								<div class="col-lg-7 col-md-6 col-xs-8">
@@ -42,16 +42,22 @@
 									<button type="button" class="btn btn-primary btn-alt" id="call_approved_kind">불러오기</button>
 								</div>
 							</div>
-							<?//}?>
+							<?}else{?>
+							<div class="row pb20">
+								<div class="col-lg-3 col-md-3 col-xs-4">
+									<input type="hidden" id="approved_kind" name="approved_kind" value="<?echo $data['kind'];?>">
+									<button type="button" class="btn btn-primary btn-alt" id="call_approved_kind">업무 불러오기</button>
+								</div>
+							</div>
+							<?}?>
 
 							<!-- 업무보고서 -->
-							<input type="hidden" name="p_department" id="p_department" value="">
-							<input type="hidden" name="p_title" id="p_title" value="">
-							<input type="hidden" name="p_sData" id="p_sData" value="">
-							<input type="hidden" name="p_eData" id="p_eData" value="">
-							<input type="hidden" name="p_file" id="p_file" value="">
+							<input type="hidden" name="p_department" id="p_department" value="<?echo $data['menu_no'];?>">
+							<input type="hidden" name="p_title" id="p_title" value="<?echo $data['project_title'];?>">
+							<input type="hidden" name="p_sData" id="p_sData" value="<?echo $data['project_sData'];?>">
+							<input type="hidden" name="p_eData" id="p_eData" value="<?echo $data['project_eData'];?>">
 
-							<div style="display:none;" id="project-layout">
+							<div style="<?echo ($data['kind'] == '0' ? '' : 'display:none;'); ?>" id="project-layout">
 							<div class="panel panel-default">
 								<div class="panel-body">
 									<h3 class="text-center mb25">업무보고서</h3>
@@ -61,47 +67,47 @@
 											<tbody>
 												<tr>
 													<th style="width:200px;">문서번호</th>
-													<td id="p_paper_no" style="width:400px;"><?echo $this->session->userdata('no');?></td>
+													<td id="p_paper_no" style="width:400px;"><?echo $data['no'];?></td>
 													<th style="width:200px;">등록일자</th>
-													<td><?echo Date('Y-m-d');?></td>
+													<td><?echo $data['created'];?></td>
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td id="project_department"> </td>
+													<td id="project_department"><?echo $data['department'];?></td>
 													<th>담당자</th>
-													<td id="project_user"> </td>
+													<td id="project_user"><?echo $this->session->userdata('name');?></td>
 												</tr>
 												<tr>
 													<th>분류</th>
-													<td id="project_menu"> </td>
+													<td id="project_menu"><?echo $data['project_menu_name']?></td>
 													<th>제목</th>
-													<td id="project_title"> </td>
+													<td id="project_title"><?echo $data['project_title'];?></td>
 												</tr>
 												<tr>
 													<th>내용</th>
-													<td id="project_contents" colspan="3"></td>
+													<td id="project_contents" colspan="3"><?echo $data['project_contents'];?></td>
 												</tr>
 												<tr>
 													<th>진행기간</th>
-													<td id="project_date" colspan="3"> </td>
+													<td id="project_date" colspan="3"><?echo $data['project_sData'].' ~ '.$data['project_eData'];?></td>
 												</tr>
 												<tr>
 													<th>결재점수</th>
-													<td id="project_pPoint"> </td>
+													<td id="project_pPoint">+<?echo $data['pPoint'];?></td>
 													<th>누락점수</th>
-													<td id="project_mPoint"> </td>
+													<td id="project_mPoint">-<?echo $data['mPoint'];?></td>
 												</tr>
 												<tr>
 													<th>첨부파일</th>
-													<td id="project_file"> </td>
+													<td id="project_file"><?echo $data['project_file'];?></td>
 													<th >순서</th>
-													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="0"></td>
+													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"></textarea>
+										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['approved_contents'];?></textarea>
 									</div>
 								</div>
 							</div>
