@@ -76,8 +76,6 @@ class Attendance extends CI_Controller{
 		
 		//테이블 정보 설정
 		$data['list'] = array();
-		$data['action_url'] = site_url('company_setting/proc');
-		$data['action_type'] = 'delete';
 		$result = $this->md_attendance->getAttendance($where, $likes, PAGING_PER_PAGE, $offset);
 		if (count($result) > 0){
 			$data['list'] = $result;

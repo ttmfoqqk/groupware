@@ -1,6 +1,5 @@
 var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
 
-//------------- list.js -------------//
 $(document).ready(function() {
 	//date range
 	$(".input-daterange").datepicker(koDatePickerOpt);
@@ -40,21 +39,22 @@ $(document).ready(function() {
 		  		//callback result
 				if(result){
 					$('#action_type').val('delete');
-					$('#document-form-list').submit();
+					$('#rule-form-list').submit();
 				}		  		
 		    }
 		});
 	});
 	
 	//분류필터 리스트 init
-	var $menu_part_no = $('#ft_document');
+	var $menu_part_no = $('#ft_rule');
 	$menu_part_no.create_menu({
 		method : $menu_part_no.attr('data-method'),
 		value : $menu_part_no.attr('data-value')
 	});
 	
+	
 	$('.tb_num').change(function(){
 		$('#qu').submit();
 	});
-
-});
+	
+})
