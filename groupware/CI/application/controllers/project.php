@@ -55,12 +55,12 @@ class Project extends CI_Controller{
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'sw_project.sData <='   => $this->PAGE_CONFIG['params']['sData'],
-			'sw_project.eData >='   => $eData,
-			'sw_project.created >=' => $this->PAGE_CONFIG['params']['swData'],
-			'sw_project.created <'  => $ewData,
-			'menu_part_no'          => $this->PAGE_CONFIG['params']['menu_part_no'],
-			'menu_no'               => $this->PAGE_CONFIG['params']['menu_no']
+			'sw_project.sData <='     => $this->PAGE_CONFIG['params']['sData'],
+			'sw_project.eData >='     => $eData,
+			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
+			'sw_project.created <'    => $ewData,
+			'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
+			'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no']
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],

@@ -25,6 +25,21 @@ class Approved_receive extends CI_Controller{
 			'doc_no'       => !$this->input->get('doc_no')       ? '' : $this->input->get('doc_no')       ,
 			'title'        => !$this->input->get('title')        ? '' : $this->input->get('title')
 		);
+
+		$this->PAGE_CONFIG['status'] = '';
+		switch( $this->PAGE_CONFIG['set_page'] ) {
+			case "all" :
+				$this->PAGE_CONFIG['status'] = '';
+				break;
+			case "ao" :
+				$this->PAGE_CONFIG['status'] = 'a';
+				// or created ? 결재를 미룬것 추가하기
+				break;
+			default :
+				$this->PAGE_CONFIG['status'] = $this->PAGE_CONFIG['set_page'];
+		}
+
+
 		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
@@ -61,18 +76,7 @@ class Approved_receive extends CI_Controller{
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
-		$status = '';
-		switch( $this->PAGE_CONFIG['set_page'] ) {
-			case "all" :
-				$status = '';
-				break;
-			case "ao" :
-				$status = 'a';
-				// or created ? 결재를 미룬것 추가하기
-				break;
-			default :
-				$status = $this->PAGE_CONFIG['set_page'];
-		}
+		
 
 		$option['where'] = array(
 			'approved.sData <='   => $this->PAGE_CONFIG['params']['sData'],
@@ -83,7 +87,7 @@ class Approved_receive extends CI_Controller{
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
 			'status.part_sender'  => $this->PAGE_CONFIG['params']['part_sender'],
 			'status.receiver'     => $this->session->userdata('no'),
-			'status.status'       => $status
+			'status.status'       => $this->PAGE_CONFIG['status']
 		);
 		
 		$option['cus_where'] = "status.approved_no is not null ";
@@ -99,7 +103,7 @@ class Approved_receive extends CI_Controller{
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['anchor_url']    = site_url('approved_receive/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$data['parameters']);
+		$data['anchor_url']    = site_url('approved_receive/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['action_url']    = site_url('approved_receive/proc/' .$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']);
 
 		$config['base_url']    = site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page']);
@@ -112,6 +116,68 @@ class Approved_receive extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_receive_v',$data);
+	}
+
+	public function write(){
+		$data['action_type'] = 'create';
+		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
+		$data['action_url']  = site_url('approved_send/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']    = site_url('approved_send/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		
+		$no = $this->input->get('no');
+		$option = array(
+			'approved.no'     => $no,
+			'status.receiver' => $this->session->userdata('no'),
+			'status.status'   => $this->PAGE_CONFIG['status']
+		);
+		$result = $this->approved_model->get_approved_detail($option);
+
+		if ($result->num_rows() <= 0){
+			alert('잘못된 접근입니다.');
+		}
+		
+		$result = $result->row();
+
+
+		$data['data'] = array(
+			'no'         => $result->no,
+			'kind'       => $result->kind,
+			'project_no' => $result->project_no,
+			'user_no'    => $result->user_no,
+			'menu_no'    => $result->menu_no,
+			'title'      => $result->title,
+			'sData'      => substr($result->sData,0,10),
+			'eData'      => substr($result->eData,0,10),
+			'file'       => $result->file,
+			'order'      => $result->order,
+			'created'    => substr($result->created,0,10),
+			'department'        => $result->sender_department,
+			'sender'            => $result->sender_name,
+			'project_title'     => $result->project_title,
+			'project_sData'     => substr($result->project_sData,0,10),
+			'project_eData'     => substr($result->project_eData,0,10),
+			'pPoint'            => $result->pPoint,
+			'mPoint'            => $result->mPoint,
+			'order'             => $result->order,
+			'project_menu_name' => $result->project_menu_name,
+			'project_contents'  => nl2br($result->project_contents),
+			'project_file'      => $result->project_file,
+			'approved_contents' => $result->approved_contents,
+		);
+
+		/* 결재자들 */
+		$option = array(
+			'approved_no' => $result->no
+		);
+		$data['approved_list'] = $this->approved_model->get_approved_staff_list($option);
+		
+		/* 내용들 */
+		$option = array(
+			'approved_no' => $result->no
+		);
+		$data['contents_list'] = $this->approved_model->get_approved_contents_list($option);
+
+		$this->load->view('approved/view_project_v',$data);
 	}
 }
 /* End of file approved_receive.php */

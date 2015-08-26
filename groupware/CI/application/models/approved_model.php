@@ -53,25 +53,37 @@ class Approved_model extends CI_Model{
 		$result['list'] = $query->result_array();
 		return $result;
 	}
-	public function get_approved_detail($option){
-		$this->db->select('*, approved.no as no , approved.order as approved_order ,approved.menu_no as menu_no , approved.project_no as project_no');
+	public function get_approved_detail($option=null){
+		$this->db->select('approved.*');
+		$this->db->select('approved_contents.contents as approved_contents');
 
-		$this->db->select('project.title as project_title , project.sData as project_sData , project.eData as project_eData , project.contents as project_contents ');
+		$this->db->select('project.title as project_title');
+		$this->db->select('project.sData as project_sData , project.eData as project_eData');
+		$this->db->select('project.contents as project_contents ');
+		$this->db->select('project.pPoint, project.mPoint');
 		$this->db->select('project.file as project_file');
 
-		$this->db->select('document.name as document_title');
 		$this->db->select('department.name as department');
 		$this->db->select('project_menu.name as project_menu_name');
-		$this->db->select('approved_contents.contents as approved_contents');
+
+		$this->db->select('document.name as document_title');
+
+		$this->db->select('sender_department.name as sender_department');
+		$this->db->select('sender_name.name as sender_name');
+
 		$this->db->from('sw_approved as approved');
-		$this->db->join('sw_approved_contents AS approved_contents','approved.no = approved_contents.approved_no','left');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
+		$this->db->join('sw_menu AS sender_department','status.sender = sender_department.no');
+		$this->db->join('sw_user AS sender_name','status.sender = sender_name.no');
+
 		$this->db->join('sw_menu AS department','approved.menu_no = department.no');
+		$this->db->join('sw_approved_contents AS approved_contents','approved.no = approved_contents.approved_no and status.sender = approved_contents.user_no','left');
 		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
-
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no');
-
-		$result = $this->db->get_where('sw_approved',$option);
+		$this->db->where($option);
+		
+		$result = $this->db->get();
 		return $result;
 	}
 
@@ -96,8 +108,13 @@ class Approved_model extends CI_Model{
 
 	/* 담당자 */
 	public function get_approved_staff_list($option){
+		$this->db->select('status.* , user.name as user_name');
+		$this->db->from('sw_approved_status as status');
+		$this->db->join('sw_user AS user','status.receiver = user.no');
+		$this->db->where($option);
 		$this->db->order_by('order','ASC');
-		$query  = $this->db->get_where('sw_approved_status',$option);
+
+		$query  = $this->db->get();
 		$result = $query->result_array();
 		return $result;
 	}
@@ -109,6 +126,20 @@ class Approved_model extends CI_Model{
 	public function set_approved_staff_insert($option,$staff){
 		$this->set_approved_staff_delete($staff);
 		$this->db->insert_batch('sw_approved_status',$option);
+	}
+
+	
+	/* 내용 */
+	public function get_approved_contents_list($option){
+		$this->db->select('contents.* , user.name as user_name');
+		$this->db->from('sw_approved_contents as contents');
+		$this->db->join('sw_user AS user','contents.user_no = user.no');
+		$this->db->where($option);
+		$this->db->order_by('created','ASC');
+
+		$query  = $this->db->get();
+		$result = $query->result_array();
+		return $result;
 	}
 }
 /* End of file approved_model.php */

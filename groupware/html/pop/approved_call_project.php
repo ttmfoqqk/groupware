@@ -163,7 +163,7 @@ function onlick(data){
 	$('#project_user').text(staff_name);
 	$('#project_menu').text(menu);
 	$('#project_title').text(title);
-	$('#project_contents').text(contents);
+	$('#project_contents').html( contents.replace(/\r\n/gi, "<br>") );
 	$('#project_date').text(sDate +' ~ '+ eDate);
 	$('#project_pPoint').text('+'+pPoint);
 	$('#project_mPoint').text('-'+mPoint);

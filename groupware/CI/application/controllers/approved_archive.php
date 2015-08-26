@@ -109,6 +109,7 @@ class Approved_archive extends CI_Controller{
 		$data['action_type'] = 'create';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
 		$data['action_url']  = site_url('approved_archive/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']    = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 
 		$data['data'] = array(
 			'no'         => '-',
@@ -121,7 +122,7 @@ class Approved_archive extends CI_Controller{
 			'eData'      => NULL,
 			'file'       => NULL,
 			'order'      => 0,
-			'created'    => NULL,
+			'created'    => Date('Y-m-d'),
 			'department' => NULL,
 			'project_title' => NULL,
 			'project_sData' => NULL,
@@ -150,22 +151,24 @@ class Approved_archive extends CI_Controller{
 				'file'       => $result->file,
 				'order'      => $result->order,
 				'created'    => substr($result->created,0,10),
-				'department' => $result->department,
-				'project_title' => $result->project_title,
-				'project_sData' => substr($result->project_sData,0,10),
-				'project_eData' => substr($result->project_eData,0,10),
-				'pPoint'        => $result->pPoint,
-				'mPoint'        => $result->mPoint,
-				'order'         => $result->approved_order,
-				'project_menu_name'=>$result->project_menu_name,
-				'project_contents'=>$result->project_contents,
-				'project_file'=>$result->project_file,
-				'approved_contents'=>$result->approved_contents,
+				'department'        => $result->department,
+				'project_title'     => $result->project_title,
+				'project_sData'     => substr($result->project_sData,0,10),
+				'project_eData'     => substr($result->project_eData,0,10),
+				'pPoint'            => $result->pPoint,
+				'mPoint'            => $result->mPoint,
+				'order'             => $result->order,
+				'project_menu_name' => $result->project_menu_name,
+				'project_contents'  => nl2br($result->project_contents),
+				'project_file'      => $result->project_file,
+				'approved_contents' => $result->approved_contents,
 				
 			);
 		}
-		$data['list_url']  = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		
 		$this->load->view('approved/write_archive_v',$data);
+
+		//echo $this->db->last_query();
 	}
 	public function proc(){
 		$this->load->library('form_validation');
@@ -242,6 +245,10 @@ class Approved_archive extends CI_Controller{
 			}
 			alert('등록되었습니다.', site_url('approved_archive/lists/') ); //신규 등록 첫페이지로
 		}elseif( $action_type == 'edit' ){
+			
+			$this->form_validation->set_rules('action_type','폼 액션','required');
+			$this->form_validation->set_rules('approved_kind','결재 종류','required');
+			$this->form_validation->set_rules('task_no','업무/문서 no','required');
 
 			if( $approved_kind == '0' ){
 				$this->form_validation->set_rules('no','결재 no','required');
@@ -277,10 +284,13 @@ class Approved_archive extends CI_Controller{
 
 			alert('수정되었습니다.', site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
+
 			$this->form_validation->set_rules('no','no','required');
+
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+
 			$set_no = is_array($no) ? implode(',',$no):$no;
 			
 			/* 데이터 삭제 */
@@ -296,7 +306,7 @@ class Approved_archive extends CI_Controller{
 	public function _staff_lists(){
 		$approved_no = $this->input->post('approved_no');
 		$option = array(
-			'project_no'=>$project_no
+			'approved_no'=>$approved_no
 		);
 		$result = $this->approved_model->get_approved_staff_list($option);
 		echo json_encode($result);
