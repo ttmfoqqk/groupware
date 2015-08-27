@@ -155,15 +155,33 @@ $(document).ready(function() {
 		eData.datepicker('setDate', "");
 	});
 
-	$('#contents_setting_delete').on('click',function(){
+	$('#approved_write_send').on('click',function(){
 		bootbox.confirm({
-			message: "삭제하시겠습니까?",
-			title: "삭제하시겠습니까?",
+			message: "결재 요청하시겠습니까?",
+			title: "결재 요청하시겠습니까?",
 			callback: function(result) {
 		  		//callback result
 				if(result){
-					$('#action_type').val('delete');
-					$('#approved-form-write-setting').submit();
+					$('#action_type').val('send');
+					$('#approved-form-send').submit();
+				}
+		    }
+		});
+	});
+
+	$('#approved_write_receive').on('click',function(){
+		bootbox.confirm({
+			message: "결재 하시겠습니까?",
+			title: "결재 하시겠습니까?",
+			callback: function(result) {
+		  		//callback result
+				if(result){
+					if( !$('#status').val() ){
+						alert('결재 상태를 선택하세요.');
+					}else{
+						$('#action_type').val('receive');
+						$('#approved-form-send').submit();
+					}
 				}
 		    }
 		});

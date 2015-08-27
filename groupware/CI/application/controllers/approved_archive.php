@@ -326,13 +326,18 @@ class Approved_archive extends CI_Controller{
 			
 			$option = array();
 			for( $i=0; $i < count($json_data)-1; $i++ ){
+				if($i == 0){
+					$status = 'a';
+				}else{
+					$status = NULL;
+				}
 				array_push($option,array(
 					'approved_no'   => $approved_no,					
 					'sender'        => $json_data[$i]->user_no,
 					'receiver'      => $json_data[$i+1]->user_no,
 					'part_sender'   => $json_data[$i]->menu_no,
 					'part_receiver' => $json_data[$i+1]->menu_no,
-					'status'        => 'a',
+					'status'        => $status,
 					'order'         => $json_data[$i]->order
 				));
 			}

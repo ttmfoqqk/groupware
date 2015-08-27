@@ -35,6 +35,7 @@ class Approved_model extends CI_Model{
 
 		$this->db->select('*');
 		$this->db->select('approved.no as approved_no, approved.order as orders, approved.created as createds ,user_default.name as user_default');
+		$this->db->select('status.status');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('(select a.*,b.no as project_menu_no,b.name as project_menu from sw_project a join sw_menu b on a.menu_no=b.no) AS project','approved.project_no = project.no','left');
 		$this->db->join('(select a.*,b.no as document_menu_no,b.name as document_menu from sw_document a join sw_menu b on a.menu_no=b.no) AS document','approved.project_no = document.no','left');
@@ -54,6 +55,13 @@ class Approved_model extends CI_Model{
 		return $result;
 	}
 	public function get_approved_detail($option=null){
+		
+		foreach($option as $key=>$val){
+			if($val!=''){
+				$option[$key] = $val;
+			}
+		}
+
 		$this->db->select('approved.*');
 		$this->db->select('approved_contents.contents as approved_contents');
 
@@ -70,6 +78,8 @@ class Approved_model extends CI_Model{
 
 		$this->db->select('sender_department.name as sender_department');
 		$this->db->select('sender_name.name as sender_name');
+
+		$this->db->select('status.status as status');
 
 		$this->db->from('sw_approved as approved');
 		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
@@ -126,6 +136,9 @@ class Approved_model extends CI_Model{
 	public function set_approved_staff_insert($option,$staff){
 		$this->set_approved_staff_delete($staff);
 		$this->db->insert_batch('sw_approved_status',$option);
+	}
+	public function set_approved_staff_update($option,$where){
+		$this->db->update('sw_approved_status',$option,$where);
 	}
 
 	

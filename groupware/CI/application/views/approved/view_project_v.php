@@ -20,7 +20,7 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="approved-form-send" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
@@ -85,8 +85,8 @@
 																<div style="border-bottom:1px solid #ddd;" class="p5 pb10 m0">직급</div>
 																<div class="p5 m5" style="height:80px;">
 																	<p><?echo $lt['user_name'];?></p>
-																	<?if( $lt['receiver']==$this->session->userdata('no') ){?>
-																	<select id="approved_kind" name="approved_kind" class="fancy-select form-control">
+																	<?if( $app_type == 'receive' && $data['status']=='b' && $lt['receiver']==$this->session->userdata('no') ){?>
+																	<select id="status" name="status" class="fancy-select form-control">
 																		<option value="">선택</option>
 																		<option value="c">결재</option>
 																		<option value="d">반려</option>
@@ -139,15 +139,21 @@
 							</div>
 							
 							
-							
-							<div class="panel-body pull-left">
-								<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
-							</div>
-							<div class="panel-body pull-right">
-								<?if( $action_type == 'edit' ) {?>
-								<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-								<?}?>
-								<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+							<div class="col-xs-10 col-xs-offset-1">
+								<div class="panel-body pull-left">
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
+								</div>
+								<div class="panel-body pull-right">
+									<?if( $app_type == 'send' && $data['status']=='a' ) {?>
+									<button id="approved_write_send" type="button" class="btn btn-danger btn-alt mr5 mb10">결재 요청</button>
+									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<?}?>
+
+									<?if( $app_type == 'receive' && $data['status']=='b' ) {?>
+									<button id="approved_write_receive" type="button" class="btn btn-danger btn-alt mr5 mb10">결재 하기</button>
+									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<?}?>
+								</div>
 							</div>
 
 							</form>

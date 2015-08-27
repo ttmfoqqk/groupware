@@ -119,10 +119,11 @@ class Approved_receive extends CI_Controller{
 	}
 
 	public function write(){
-		$data['action_type'] = 'create';
+		$data['action_type'] = 'edit';
+		$data['app_type']    = 'receive';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']  = site_url('approved_send/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
-		$data['list_url']    = site_url('approved_send/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$data['action_url']  = site_url('approved_receive/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']    = site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		
 		$no = $this->input->get('no');
 		$option = array(
@@ -163,6 +164,7 @@ class Approved_receive extends CI_Controller{
 			'project_contents'  => nl2br($result->project_contents),
 			'project_file'      => $result->project_file,
 			'approved_contents' => $result->approved_contents,
+			'status'            => $result->status,
 		);
 
 		/* 결재자들 */
@@ -178,6 +180,50 @@ class Approved_receive extends CI_Controller{
 		$data['contents_list'] = $this->approved_model->get_approved_contents_list($option);
 
 		$this->load->view('approved/view_project_v',$data);
+	}
+
+	public function proc(){
+		$this->load->library('form_validation');
+		$action_type = $this->input->post('action_type');
+		$no          = $this->input->post('no');
+		$status      = $this->input->post('status');
+		$parameters  = urldecode($this->input->post('parameters'));
+		
+		if( $action_type == 'receive' ){
+			$this->form_validation->set_rules('action_type','폼 액션','required');
+			$this->form_validation->set_rules('no','no','required');
+			$this->form_validation->set_rules('status','결재 상태','required');
+			if ($this->form_validation->run() == FALSE){
+				alert('잘못된 접근입니다.');
+			}
+			
+			// 히스토리 , 날짜등 업데이트 여부 확인
+			// 결재 완료/반려
+			$option = array(
+				'status' => $status
+			);
+			$where = array(
+				'approved_no' =>$no,
+				'receiver'    =>$this->session->userdata('no')
+			);
+			$this->approved_model->set_approved_staff_update($option,$where);
+			
+			if( $status == 'c' ){
+				// 결재 신청
+				$option = array(
+					'status' => 'a'
+				);
+				$where = array(
+					'approved_no' =>$no,
+					'sender'      =>$this->session->userdata('no')
+				);
+				$this->approved_model->set_approved_staff_update($option,$where);
+			}
+
+			alert('결재 되었습니다.', site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
+		}else{
+			alert('잘못된 접근입니다.');
+		}
 	}
 }
 /* End of file approved_receive.php */
