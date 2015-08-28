@@ -93,6 +93,93 @@ class Company extends CI_Controller{
 		//뷰 로딩
 		$this->load->view('company/company_v',$data);
 	}
+
+	/* 담당자 */
+	public function _staff_lists(){
+		$no = $this->input->post('no');
+		$option = array(
+			'information_no'=>$no
+		);
+		$result = $this->md_company->get_staff_list($option);
+		echo json_encode($result);
+	}
+
+	public function _staff_insert(){
+		$no = $this->input->post('no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			$i = 1;
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'information_no' => $no,
+					'name'     => $key->name,
+					'part'     => $key->part,
+					'position' => $key->position,
+					'phone'    => $key->phone,
+					'ext'      => $key->ext,
+					'email'    => $key->email,
+					'order'    => (is_numeric($key->order) ? $key->order : 0)
+				));
+				$i++;
+			}
+			$result = $this->md_company->set_staff_insert($option,array('information_no'=>$no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
+
+
+	/* 사이트 */
+	public function _site_lists(){
+		$no = $this->input->post('no');
+		$option = array(
+			'information_no'=>$no
+		);
+		$result = $this->md_company->get_site_list($option);
+		echo json_encode($result);
+	}
+
+	public function _site_insert(){
+		$no = $this->input->post('no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			$i = 1;
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'information_no' => $no,
+					'url'            => $key->url,
+					'id'             => $key->id,
+					'pwd'            => $key->pwd,
+					'bigo'           => $key->bigo,
+					'order'          => (is_numeric($key->order) ? $key->order : 0)
+				));
+				$i++;
+			}
+			$result = $this->md_company->set_site_insert($option,array('information_no'=>$no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
 }
 /* End of file company.php */
 /* Location: ./controllers/company.php */

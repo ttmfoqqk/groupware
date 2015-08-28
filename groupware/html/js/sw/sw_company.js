@@ -189,4 +189,44 @@ $(document).ready(function() {
 		$('#qu').submit();
 	});
 	
-})
+});
+
+/* 담당자 팝업 */
+function staff_modal(no,page,callback){
+	// base div hide
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+	var title = page=='staff'?'담당자':'사이트';
+	bootbox.dialog({
+		message: test_html,
+		title: title,
+		buttons: {
+			cancel: {
+				label: '닫기',
+				className: "btn-danger"
+			},
+			success: {
+				label: '저장',
+				className: "btn-success",
+				callback: callback
+			}
+		}
+	});
+	$('.modal-header').css("background-color","#51bf87 ");
+	$('.modal-header').css("color","white");
+	$('.modal-dialog').addClass('modal70');
+
+	// 팝업 호출
+	if(page=='staff'){
+		$('#modal-body').load('/groupware/html/pop/information_staff.php',{'no':no});
+	}else{
+		$('#modal-body').load('/groupware/html/pop/information_site.php',{'no':no});
+	}
+}
+
+function call_staff(no,page){
+	staff_modal(no,page,function(){
+		// 팝업창 내부 함수
+		modal_submit();
+		return false;
+	});
+}
