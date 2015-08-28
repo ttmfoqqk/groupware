@@ -103,7 +103,7 @@ class Md_company extends CI_Model{
 	//only sw_information
 	public function getSettingData($category, $bizName, $ceoName, $classify, $bizType, 
 			$bizConfition, $addr, $phone, $fax, $note, $order, $created, $bizNumber){
-		if($this->TABLE_NAME != sw_information)
+		if($this->TABLE_NAME != 'sw_information')
 			return null;
 		$data = array(
 				'category'=>$category,
@@ -125,13 +125,11 @@ class Md_company extends CI_Model{
 	
 	public function getUsersByDepartment($dptNo){
 		$this->db->select('u.no, u.name');
-		$this->db->from('sw_user_department ud');
 		$this->db->join('sw_user u', 'ud.user_no = u.no', 'left');
 		$this->db->where('ud.menu_no', $dptNo);
 		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left');
 		
-		
-		$ret = $this->db->get('sw_user_department');
+		$ret = $this->db->get('sw_user_department ud');
 		if (count($ret) > 0){
 			return json_encode($ret->result_array());
 		}else

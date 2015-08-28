@@ -255,7 +255,6 @@ $(document).ready(function() {
 		var $method = options.method;
 		var $value  = options.value;
 		var element = $(this);
-		console.log($value);
 		if(element.length<=0){
 			alert('잘못된 객체');
 			return false;

@@ -72,8 +72,8 @@
 												<div class="btn btn-danger " onclick="row_controll($(this), 'rm')">-</div>
 											</td>
 										</tr>
-									<!-- 리스트 -->
-								</tbody>
+										<!-- 리스트 -->
+									</tbody>
 								</table>
 								
 								<!--

@@ -96,8 +96,8 @@
 											<th class="per15">재직여부</th>
 											<th class="per15">등록일자</th>
 											<th style="width: 60px;">권한</th>
-											<th style="width: 60px;">담당자</th>
-											<th style="width: 60px;">사이트</th>
+											<th style="width: 60px;">부서/직급</th>
+											<th style="width: 60px;">연차등록</th>
 										</tr>
 									</thead>
 									<tbody>

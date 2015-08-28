@@ -46,6 +46,16 @@ class Project extends CI_Controller{
 	public function index(){
 		$this->lists();
 	}
+	
+	public function _mlists(){
+		$this->load->library('common');
+		$get_data = $this->project_model->get_project_list();
+		if(count($get_data['list']) > 0)
+			$this->common->getRet(true, $get_data['list']);
+		else 
+			$this->common->getRet(false, 'No data');
+	}
+	
 	public function lists(){
 		// 검색 파라미터
 		// 해당 일자가 포함된 진행기간 검색 sData,eData
