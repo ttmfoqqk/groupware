@@ -39,6 +39,16 @@ class Company extends CI_Controller{
 		return $likes;
 	}
 	
+	public function _marketingList(){
+		$this->load->library('common');
+		
+		$result = $this->md_company->get(array('category'=>'marketing'), 'no, bizName');	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		if (count($result) > 0){
+			echo $this->common->getRet(true, $result);
+		}else
+			echo $this->common->getRet(false, 'No data');
+	}
+	
 	public function lists(){
 		//필터 설정
 		$likes = $this->getListFilter();

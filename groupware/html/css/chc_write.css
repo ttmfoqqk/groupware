@@ -1,0 +1,8 @@
+th.th-size{ min-width:100px; width:100px;}
+td.empty{border-left:1px solid #ffffff !important; border-right:1px solid #ffffff !important; }
+
+td.nr-pd {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
