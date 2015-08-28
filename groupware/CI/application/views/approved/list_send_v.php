@@ -123,6 +123,7 @@
 											</div>
 										</th-->
 										<th style="width:60px;">순서</th>
+										<th style="width:100px;">문서번호</th>
 										<th class="per8">분류</th>
 										<th>제목</th>
 										<th class="per8">진행기간</th>
@@ -144,6 +145,7 @@
 											</div>
 										</td-->
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['orders']?0:$lt['orders']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['approved_no']; ?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>

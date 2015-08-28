@@ -7,7 +7,8 @@
         <!-- Mobile specific metas -->
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
         <!-- Force IE9 to render in normal mode -->
-        <!--[if IE]><meta http-equiv="x-ua-compatible" content="IE=9" /><![endif]-->
+        
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="author" content="" />
         <meta name="description" content="" />
         <meta name="keywords" content="" />

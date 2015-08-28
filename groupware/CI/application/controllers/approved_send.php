@@ -93,7 +93,7 @@ class Approved_send extends CI_Controller{
 		$option['cus_where'] = "status.approved_no is not null ";
 
 		$option['like'] = array(
-			'name_receiver.name' => $this->PAGE_CONFIG['params']['name_receiver'],
+			'user_receiver.name' => $this->PAGE_CONFIG['params']['name_receiver'],
 			'approved.title'     => $this->PAGE_CONFIG['params']['title'],
 		);
 
