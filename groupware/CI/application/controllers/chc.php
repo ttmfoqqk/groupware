@@ -34,31 +34,49 @@ class Chc extends CI_Controller{
 	}
 	
 	public function getLikeFilter(){
-		$likes['i.bizName'] = !$this->input->get('ft_userName') ? '' : $this->input->get('ft_userName');
+		//$likes['p.menu_part_no'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
+		$likes['u.name'] = !$this->input->get('ft_userName') ? '' : $this->input->get('ft_userName');
 		$likes['i.bizName'] = !$this->input->get('ft_customer') ? '' : $this->input->get('ft_customer');
 		$likes['c.keyword'] = !$this->input->get('ft_keyword') ? '' : $this->input->get('ft_keyword');
-		$likes['p.name'] = !$this->input->get('ft_title') ? '' : $this->input->get('ft_title');
+		$likes['m.name'] = !$this->input->get('ft_title') ? '' : $this->input->get('ft_title');
 		return $likes;
 	}
 	
 	public function getWhereFilter(){
+		$where['p.menu_part_no'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
 		
+		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
+		$rank = !$this->input->get('ft_rank') ? NULL : $this->input->get('ft_rank');
+		
+		if($start && $end){
+			$where['c.created >='] = $start;
+			$where['c.created <'] = $end;
+		}
+		
+		if($rank){
+			if($rank == 6){
+				$where['c.rank >='] = $rank;
+			}else if($rank == 7){
+				$where['c.rank >'] = 5;
+				$where['c.rank <='] = 10;
+			}else if($rank == 8){
+				$where['c.rank'] = '0';			//0 처리, 11위 이상 랭킹 처리
+			}
+			else 
+				$where['c.rank'] = $rank;
+		}
+		return $where;
 	}
 	
 	public function lists(){
 		//필터 설정
 		$likes = $this->getLikeFilter();
-		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
-		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
 		
 		//Pagination, 테이블정보 필요 설정 세팅
 		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		
-		if($start && $end)
-			$where = array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
-		else
-			$where = NULL;
-		
+		$where = $this->getWhereFilter();
 		$total = $this->md_chc->getCount($where, $likes);
 		$uri_segment = 3;
 		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
@@ -79,13 +97,13 @@ class Chc extends CI_Controller{
 			$data['list'] = $result;
 		}
 		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-		
+
 		//페이지 타이틀 설정
 		$data['action_url'] = site_url('chc/proc');
 		$data['action_type'] = 'delete';
 		$data['head_name'] = "CHC";
 		$data['page'] = $this->CATEGORY;
-		$this->_expData();
+
 		//뷰 로딩
 		$this->load->view('marketing/chc_v',$data);
 	}
@@ -112,6 +130,169 @@ class Chc extends CI_Controller{
 		
 		//뷰 로딩
 		$this->load->view('marketing/chc_write',$data);
+	}
+	
+	public function checkKind($kind){
+		if($kind == '지식인')
+			$kind = 'kin';
+		else if($kind == '블로그')
+			$kind = 'blog';
+		else if($kind == '카페')
+			$kind = 'cafe';
+		else if($kind == '모바일')
+			$kind = 'm';
+		else{
+			$kind = null;
+		}
+		return $kind;
+	}
+	
+	function proc(){
+		$this->load->library('form_validation');
+		$this->load->model('md_company');
+		$this->md_company->setTable($this->TABLE_NAME);
+		
+		$no = $this->input->post('no');
+		$action_type = $this->input->post ( 'action_type' );
+		$projectNo = $this->input->post('project_no');
+		$customerNo = $this->input->post('ft_commpany');
+		$keyword = $this->input->post('keyword');
+		$url = $this->input->post('url');
+		$ip = $this->input->post('ip');
+		$order = $this->input->post('order');
+		$accountNos = $this->input->post('selIdd');
+		$idUsed = $this->input->post('is_request');
+		$kind = $this->input->post('menu_k');
+		$is_active = $this->input->post('is_active');
+		
+		
+		if( $action_type == 'create' ){
+			if($kind = $this->checkKind($kind) != null){
+			}else
+				alert("분류가 잘 못 되었습니다");
+			
+			$this->form_validation->set_rules('action_type','폼 액션','required');
+			$this->form_validation->set_rules('project_no','프로젝트','required');
+			$this->form_validation->set_rules('is_active','프로젝트 진행여부','required');
+			$this->form_validation->set_rules('ft_commpany','고객사','required');
+			$this->form_validation->set_rules('keyword','키워드','required');
+			$this->form_validation->set_rules('url','URL','required');
+			$this->form_validation->set_rules('ip','IP','required');
+				
+			if ($this->form_validation->run() == FALSE){
+				echo validation_errors();
+				alert('잘못된 접근입니다.');
+			}
+			
+			//chc 등록
+			$cur = new DateTime();
+			$cur = $cur->format('Y-m-d H:i:s');
+			$data = array(
+					'project_no' => $projectNo,
+					'keyword' => $keyword,
+					'url' => $url,
+					'ip' => $ip,
+					'kind' => $kind,
+					'order' => $order,
+					'status' => $is_active,
+					'customer_no' => $customerNo,
+					'created' => $cur,
+			);
+			$chcNo = $this->md_company->create($data);
+			
+			//chc_history 등록
+			$this->md_company->setTable("sw_chc_history");
+			$data = array(
+					'chc_no'=>$chcNo, 
+					'url'=>$url, 
+					'created'=>$cur
+			);
+			$this->md_company->create($data);
+			
+			if($kind == 'kin'){
+				//account 등록 (지식인 일떄만)
+				$this->md_company->setTable("sw_account");
+				$i = 0;
+				foreach ($accountNos as $accountNo){
+					if($accountNo != "" && $accountNo != null)
+						$this->md_company->modify(array('no'=>$accountNo), array('chc_no'=>$chcNo, 'is_using_question'=>$idUsed[$i], 'used'=>$cur));
+					$i = $i +1 ;
+				}
+			}
+			alert('등록되었습니다.', site_url('chc') );
+				
+		}elseif( $action_type == 'edit' ){
+			if($kind = $this->checkKind($kind) != null){
+			}else
+				alert("분류가 잘 못 되었습니다");
+			
+			$this->form_validation->set_rules('action_type','폼 액션','required');
+			$this->form_validation->set_rules('url','URL','required');
+			$this->form_validation->set_rules('ip','IP','required');
+				
+			if ($this->form_validation->run() == FALSE){
+				echo validation_errors();
+				alert('잘못된 접근입니다.');
+			}
+		
+			//chc 변경
+			$cur = new DateTime();
+			$cur = $cur->format('Y-m-d H:i:s');
+			$data = array(
+					'url' => $url,
+					'ip' => $ip,
+					'order' => $order,
+			);
+			$this->md_company->modify(array('no'=>$no), $data);
+			
+			//chc_history 등록
+			$this->md_company->setTable("sw_chc_history");
+			$data = array(
+					'chc_no'=>$no, 
+					'url'=>$url, 
+					'created'=>$cur
+			);
+			$rets = $this->md_company->get(array('chc_no'=>$no));
+			$isSame = false;
+			if(count($rets) > 0){
+				foreach ($rets as $ret){
+					if($ret['url'] == $url){
+						$isSame = true;
+						break;
+					}
+				}
+			}
+			if($isSame == false)
+				$this->md_company->create($data);
+			
+			if($kind == 'kin' && !empty($accountNos)){
+				//account 등록 (지식인 일떄만)
+				$this->md_company->setTable("sw_account");
+				$i = 0;
+				foreach ($accountNos as $accountNo){
+					if($accountNo != "" && $accountNo != null)
+						$this->md_company->modify(array('no'=>$accountNo), array('chc_no'=>$no, 'is_using_question'=>isset($idUsed[$i])?$idUsed[$i] : 1, 'used'=>$cur));
+					$i = $i +1 ;
+				}
+			}
+			alert('수정되었습니다.', site_url('chc') );
+			//echo '<script>javascript:window.history.go(-3);</script>';
+				
+		}elseif( $action_type == 'delete' ){
+			$this->form_validation->set_rules('no', 'no','required');
+			if ($this->form_validation->run() == FALSE){
+				echo validation_errors();
+				alert('잘못된 접근입니다.');
+			}
+		
+			$set_no = is_array($no) ? implode(',',$no):$no;
+			$where = 'no in (' . $set_no . ')';
+		
+			$this->md_company->deleteIn('no', $no);
+			alert('삭제되었습니다.', site_url('chc') );
+		}else{
+			alert('잘못된 접근입니다.');
+		}
 	}
 	
 	function _expData(){

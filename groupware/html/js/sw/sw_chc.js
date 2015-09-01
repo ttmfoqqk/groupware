@@ -39,20 +39,24 @@ $(document).ready(function() {
 		  		//callback result
 				if(result){
 					$('#action_type').val('delete');
-					$('#rule-form-list').submit();
+					$('#chc-form-list').submit();
 				}		  		
 		    }
 		});
 	});
 	
-	/*
-	//분류필터 리스트 init
-	var $menu_part_no = $('#ft_rule');
+	//부서필터 리스트 init
+	var $menu_part_no = $('#ft_department');
 	$menu_part_no.create_menu({
 		method : $menu_part_no.attr('data-method'),
 		value : $menu_part_no.attr('data-value')
 	});
-	*/
+	
+	//분류필터 init
+	$("#ft_title").val($("#ft_title").attr('data-value')).attr("selected", "selected");
+	
+	//랭킹필터 init
+	$("#ft_rank").val($("#ft_rank").attr('data-value')).attr("selected", "selected");
 	
 	$('.tb_num').change(function(){
 		$('#qu').submit();
@@ -77,21 +81,24 @@ function customModal(msg, title, label, callback){
 }
 
 function getExpGraphTag(){
-	tt = '  <div class="row"><div class="col-lg-3">	\
-		<div class="form-group">	\
-	<label class="col-lg-3 col-md-3 control-label" for="">' + "날짜" + '</label>	\
-	<div class="col-lg-9 col-md-9">	\
-		<div class="input-daterange input-group">	\
-			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>	\
-			<input type="text" class="form-control" name="start2" />	\
-		</div>	\
-	</div>	\
-</div>	\
-</div>  <button  type="button" id="expGraphSearch_btn" class="btn btn-primary btn-alt">' + "검색" + '</button> \
-<button  type="button" id="expGraphSearch_before" class="btn btn-primary btn-alt">' + "이전" + '</button>\
-<button  type="button" id="expGraphSearch_next" class="btn btn-primary btn-alt">' + "다음" + '</button>\
-</div> \
-<div class="row"> <div id="exp_graph" style="width: 100%; height:250px;"></div></div>';
+	tt = 
+		'<div class="row">	\
+			<div class="col-lg-3">	\
+			 	<div class="form-group">	\
+					<label class="col-lg-3 col-md-3 control-label" for="">' + "날짜" + '</label>	\
+					<div class="col-lg-9 col-md-9">	\
+						<div class="input-daterange input-group">	\
+							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>	\
+							<input type="text" class="form-control" name="start2" />	\
+						</div>	\
+					</div>	\
+				</div>	\
+			</div> \
+			<button  type="button" id="expGraphSearch_btn" class="btn btn-primary btn-alt">' + "검색" + '</button> \
+			<button  type="button" id="expGraphSearch_before" class="btn btn-primary btn-alt">' + "이전" + '</button>\
+			<button  type="button" id="expGraphSearch_next" class="btn btn-primary btn-alt">' + "다음" + '</button>\
+		</div> \
+		<div class="row"> <div id="exp_graph" style="width: 100%; height:250px;"></div></div>';
 	return tt;
 }
 
@@ -125,8 +132,6 @@ function expInfoKeyword(jobId){
 		$("input[name$='start2']").datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
 		drawGraphKwdInfo(jobId, $("input[name$='start2']").val());
 	});
-	
-	
 }
 
 function drawGraphKwdInfo(jobId, date){

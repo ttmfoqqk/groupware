@@ -153,11 +153,12 @@ function onlick(data){
 	$('#created').text(created);
 	$('#department').text(staff_menu_name);
 	$('#user').text(staff_name);
-	$('#menu').text(menu);
+	$('#menu_kind').text(menu);
 	$('#title').text(title);
 	$('#period').text(sDate +' ~ '+ eDate);
 	$('#pPoint').text('+'+pPoint);
 	$('#mPoint').text('-'+mPoint);
+	$('#menu_k').val(menu);
 	
 	bootbox.hideAll();
 }

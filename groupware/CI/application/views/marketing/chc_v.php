@@ -53,9 +53,9 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="board_type" name="board_type"
+										<select id="ft_department" name="ft_department" data-method="department" data-value="<?echo $this->input->get('ft_department');?>"
 											class="fancy-select form-control">
-											<option value="">담당부서</option>
+											<option value="">전체</option>
 										</select>
 									</div>
 
@@ -78,16 +78,32 @@
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
-									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
+									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="제목" id="ft_title" name="ft_title" value="<?echo $this->input->get('ft_title');?>">
+										<select id="ft_title" name="ft_title"  data-value="<?echo $this->input->get('ft_title');?>"
+											class="fancy-select form-control">
+											<option value="">전체</option>
+											<option >지식인</option>
+											<option >블로그</option>
+											<option >카페</option>
+											<option >모바일</option>
+										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">네이버순위</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type"
+										<select id="ft_rank" name="ft_rank" data-value="<?echo $this->input->get('ft_rank');?>"
 											class="fancy-select form-control">
-											<option value="">네이버순위</option>
+											<option value="">전체</option>
+											<option value=1>1위</option>
+											<option value=2>2위</option>
+											<option value=3>3위</option>
+											<option value=4>4위</option>
+											<option value=5>5위</option>
+											<option value=7>6위 ~10위</option>
+											<option value=6>6위 이상</option>
+											<option value=8>10위 이상</option>
+											<option value=-1>체크 실패</option>
 										</select>
 									</div>
 
@@ -112,94 +128,101 @@
 								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
 							</div>
 							<!-- END 테이블 옵션  -->
-
-							<table class="table table-bordered" id="tabletools">
-								<thead>
-									<tr>
-										<th style="width: 45px;">
-											<div class="checkbox-custom">
-												<input class="check-all" type="checkbox" id="masterCheck"
-													value="option1"> <label for="masterCheck"></label>
-											</div>
-										</th>
-										<th style="min-width: 60px;">순서</th>
-										<th style="min-width: 100px; width:100px;">등록일자</th>
-										<th style="min-width: 80px; width:80px;">분류</th>
-										<th style="min-width: 150px;">제목</th>
-										<th style="min-width: 100px;">고객사</th>
-										<th style="min-width: 150px;">키워드</th>
-										<th style="min-width: 250px;">URL</th>
-										<th style="min-width: 70px;">답변수</th>
-										<th style="min-width: 210px;">진행기간</th>
-										<th style="min-width: 60px;">순위</th>
-										<th style="min-width: 70px;">노출률</th>
-										<th style="min-width: 70px;" >작업수</th>
-										<th style="min-width: 70px;">그래프</th>
-									</tr>
-								</thead>
-								<tbody>
-								<!-- 리스트 -->
-									<?php
-										foreach ( $list as $lt ) {
-										$anchor_url = site_url ( 'chc/write/'. $lt ['no'] );
-										?>
+							
+							<form id="chc-form-list" action="<?echo $action_url;?>"
+								method="post" class="form-horizontal group-border stripped"
+								role="form">
+								<input type="hidden" name="action_type" id="action_type"
+									value="<?echo $action_type;?>">
+									
+									
+								<table class="table table-bordered" id="tabletools">
+									<thead>
 										<tr>
-											<td>
+											<th style="width: 45px;">
 												<div class="checkbox-custom">
-													<input id="check<?$lt['no'];?>" name="no[]"
-														class="check" type="checkbox"
-														value=<?php echo $lt['no'];?>> <label
-														for="check<?$lt['no'];?>"></label> <input type="hidden"
-														value="<?php echo $lt['no'];?>">
+													<input class="check-all" type="checkbox" id="masterCheck"
+														value="option1"> <label for="masterCheck"></label>
 												</div>
-											</td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['menu_kind'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['title'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['bizName'];?></a></td>
-											<td><a target="_blank" href="<?if($lt['kind'] == 'kin') echo "http://kin.search.naver.com/search.naver?where=kin&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
-												elseif($lt['kind'] == 'blog') echo "http://cafeblog.search.naver.com/search.naver?where=post&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
-												elseif($lt['kind'] == 'cafe') echo "http://cafeblog.search.naver.com/search.naver?where=article&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
-												elseif($lt['kind'] == 'm') echo "http://m.search.naver.com/search.naver?query=" . $lt['keyword'];?>" 
-												class="text-normal"><?php echo $lt['keyword'];?></a></td>
-											<td><a target="_blank" style="display:block;width:300px;word-wrap: break-word;" href="<?echo $lt['url'];;?>" class="text-normal"><?php echo $lt['url'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo '-';?></a></td>
-											<td>
-												<a href="<?echo $anchor_url;?>" class="text-normal">
-													<?php echo date("Y-m-d", strtotime($lt['sData'])) . ' ~ ' . date("Y-m-d", strtotime($lt['eData']));?>
-												</a>
-											</td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['rank'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo '-' ;?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo '-' ;?></a></td>
-											<td class="text-center">
-												<button type="button" class="btn btn-success btn-xs"
-													id="view_staff" onclick="<?php echo 'expInfoKeyword(' . $lt['no'] . ')';?>">
-													<i class="glyphicon glyphicon-signal"></i>
-												</button>
-											</td>
+											</th>
+											<th style="min-width: 60px;">순서</th>
+											<th style="min-width: 100px; width:100px;">등록일자</th>
+											<th style="min-width: 80px; width:80px;">분류</th>
+											<th style="min-width: 150px;">제목</th>
+											<th style="min-width: 100px;">고객사</th>
+											<th style="min-width: 150px;">키워드</th>
+											<th style="min-width: 250px;">URL</th>
+											<th style="min-width: 70px;">답변수</th>
+											<th style="min-width: 210px;">진행기간</th>
+											<th style="min-width: 60px;">순위</th>
+											<th style="min-width: 70px;">노출률</th>
+											<th style="min-width: 70px;" >작업수</th>
+											<th style="min-width: 70px;">그래프</th>
 										</tr>
-									<?php }?>
+									</thead>
+									<tbody>
 									<!-- 리스트 -->
-									<?if (count ( $list ) <= 0) {?>
-									<tr>
-										<td colspan="10">등록된 내용이 없습니다.</td>
-									</tr>
-								<?}?>
-								<!-- 리스트 -->
-								</tbody>
-							</table>
-
-							<div class="panel-body" style="text-align: center;">
-									<?php echo $table_num?><br><?echo $pagination;?></div>
-							<div class="panel-body pull-right">
-								<button id="btn_list_delete" type="button"
-									class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-								<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-									onclick="location.href='<?echo site_url('chc/write/');?>';">등록</button>
-							</div>
-
+										<?php
+											foreach ( $list as $lt ) {
+											$anchor_url = site_url ( 'chc/write/'. $lt ['no'] );
+											?>
+											<tr>
+												<td>
+													<div class="checkbox-custom">
+														<input id="check<?$lt['no'];?>" name="no[]"
+															class="check" type="checkbox"
+															value=<?php echo $lt['no'];?>> <label
+															for="check<?$lt['no'];?>"></label> <input type="hidden"
+															value="<?php echo $lt['no'];?>">
+													</div>
+												</td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['menu_kind'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['title'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['bizName'];?></a></td>
+												<td><a target="_blank" href="<?if($lt['kind'] == 'kin') echo "http://kin.search.naver.com/search.naver?where=kin&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
+													elseif($lt['kind'] == 'blog') echo "http://cafeblog.search.naver.com/search.naver?where=post&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
+													elseif($lt['kind'] == 'cafe') echo "http://cafeblog.search.naver.com/search.naver?where=article&sm=tab_jum&ie=utf8&query=" . $lt['keyword'];
+													elseif($lt['kind'] == 'm') echo "http://m.search.naver.com/search.naver?query=" . $lt['keyword'];?>" 
+													class=""><?php echo $lt['keyword'];?></a></td>
+												<td><a target="_blank" style="display:block;width:300px;word-wrap: break-word;" href="<?echo $lt['url'];;?>" class=""><?php echo $lt['url'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo count($lt['response']);?></a></td>
+												<td>
+													<a href="<?echo $anchor_url;?>" class="text-normal">
+														<?php echo date("Y-m-d", strtotime($lt['sData'])) . ' ~ ' . date("Y-m-d", strtotime($lt['eData']));?>
+													</a>
+												</td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['rank'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['exposeRate'] . '%' ;?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo count($lt['history']) ;?></a></td>
+												<td class="text-center">
+													<button type="button" class="btn btn-success btn-xs"
+														id="view_staff" onclick="<?php echo 'expInfoKeyword(' . $lt['no'] . ')';?>">
+														<i class="glyphicon glyphicon-signal"></i>
+													</button>
+												</td>
+											</tr>
+										<?php }?>
+										<!-- 리스트 -->
+										<?if (count ( $list ) <= 0) {?>
+										<tr>
+											<td colspan="14">등록된 내용이 없습니다.</td>
+										</tr>
+									<?}?>
+									<!-- 리스트 -->
+									</tbody>
+								</table>
+	
+								<div class="panel-body" style="text-align: center;">
+										<?php echo $table_num?><br><?echo $pagination;?></div>
+								<div class="panel-body pull-right">
+									<button id="btn_list_delete" type="button"
+										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
+										onclick="location.href='<?echo site_url('chc/write/');?>';">등록</button>
+								</div>
+							</form>
 
 						</div>
 					</div>

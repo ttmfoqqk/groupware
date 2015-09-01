@@ -8,6 +8,7 @@ class Account extends CI_Controller{
 		login_check();
 		set_cookie('left_menu_open_cookie',site_url('account'),'0');
 		$this->load->model('md_company');
+		$this->md_company->setTable($this->TABLE_NAME);
     }
 
 	public function _remap($method){
@@ -44,19 +45,44 @@ class Account extends CI_Controller{
 		$this->load->view('marketing/account_v',$data);
 	}
 	
-	public function _lists(){
-		$no = !$this->input->post('accountNo') ? NULL : $this->input->post('accountNo');
-		if($no == NULL)
-			$where = NULL;
-		else 
-			$where = array('no'=>$no);
+	public function _selectList(){
 		$this->load->library('common');
-		$this->md_company->setTable($this->TABLE_NAME);
-		$ret = $this->md_company->get($where);
 		
+		$no = !$this->input->post('accountNo') ? NULL : $this->input->post('accountNo');
+		$chc_no = !$this->input->post('chcNo') ? false : $this->input->post('chcNo');
+		
+		if($no == NULL)
+			if($chc_no){
+				$where = "chc_no =" . $chc_no . " OR chc_no is NULL";
+			}
+			else
+				$where = "chc_no is NULL";
+		else{
+			$where = array('no'=>$no);
+		}
+		
+		$ret = $this->md_company->get($where);
 		if(count($ret) > 0){
 			echo $this->common->getRet(true, $ret);
 		}else 
+			echo $this->common->getRet(false, 'No ID');
+	}
+	
+	public function _usedlist(){
+		$this->load->library('common');
+		$chcNo = !$this->input->post('chcNo') ? NULL : $this->input->post('chcNo');
+		
+		if($chcNo != NULL)
+			$where = "chc_no =" . $chcNo;// . " OR chc_no is NULL";
+		else{
+			echo $this->common->getRet(false, 'No Id List');
+			return;
+		}
+		
+		$ret = $this->md_company->get($where);
+		if(count($ret) > 0){
+			echo $this->common->getRet(true, $ret);
+		}else
 			echo $this->common->getRet(false, 'No data');
 	}
 }
