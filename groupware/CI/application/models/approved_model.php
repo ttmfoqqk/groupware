@@ -35,6 +35,7 @@ class Approved_model extends CI_Model{
 
 		$this->db->select('*');
 		$this->db->select('approved.no as approved_no, approved.order as orders, approved.created as createds ,user_default.name as user_default');
+		$this->db->select('status.status');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('(select a.*,b.no as project_menu_no,b.name as project_menu from sw_project a join sw_menu b on a.menu_no=b.no) AS project','approved.project_no = project.no','left');
 		$this->db->join('(select a.*,b.no as document_menu_no,b.name as document_menu from sw_document a join sw_menu b on a.menu_no=b.no) AS document','approved.project_no = document.no','left');
@@ -53,8 +54,46 @@ class Approved_model extends CI_Model{
 		$result['list'] = $query->result_array();
 		return $result;
 	}
-	public function get_approved_detail($option){
-		$result = $this->db->get_where('sw_approved',$option);
+	public function get_approved_detail($option=null){
+		
+		foreach($option as $key=>$val){
+			if($val!=''){
+				$option[$key] = $val;
+			}
+		}
+
+		$this->db->select('approved.*');
+		$this->db->select('approved_contents.contents as approved_contents');
+
+		$this->db->select('project.title as project_title');
+		$this->db->select('project.sData as project_sData , project.eData as project_eData');
+		$this->db->select('project.contents as project_contents ');
+		$this->db->select('project.pPoint, project.mPoint');
+		$this->db->select('project.file as project_file');
+
+		$this->db->select('department.name as department');
+		$this->db->select('project_menu.name as project_menu_name');
+
+		$this->db->select('document.name as document_title');
+
+		$this->db->select('sender_department.name as sender_department');
+		$this->db->select('sender_name.name as sender_name');
+
+		$this->db->select('status.status as status');
+
+		$this->db->from('sw_approved as approved');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
+		$this->db->join('sw_menu AS sender_department','status.sender = sender_department.no');
+		$this->db->join('sw_user AS sender_name','status.sender = sender_name.no');
+
+		$this->db->join('sw_menu AS department','approved.menu_no = department.no');
+		$this->db->join('sw_approved_contents AS approved_contents','approved.no = approved_contents.approved_no and status.sender = approved_contents.user_no','left');
+		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
+		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no');
+		$this->db->where($option);
+		
+		$result = $this->db->get();
 		return $result;
 	}
 
@@ -79,8 +118,13 @@ class Approved_model extends CI_Model{
 
 	/* 담당자 */
 	public function get_approved_staff_list($option){
+		$this->db->select('status.* , user.name as user_name');
+		$this->db->from('sw_approved_status as status');
+		$this->db->join('sw_user AS user','status.receiver = user.no');
+		$this->db->where($option);
 		$this->db->order_by('order','ASC');
-		$query  = $this->db->get_where('sw_approved_status',$option);
+
+		$query  = $this->db->get();
 		$result = $query->result_array();
 		return $result;
 	}
@@ -91,8 +135,24 @@ class Approved_model extends CI_Model{
 
 	public function set_approved_staff_insert($option,$staff){
 		$this->set_approved_staff_delete($staff);
-		$this->db->set('created', 'NOW()', false);
 		$this->db->insert_batch('sw_approved_status',$option);
+	}
+	public function set_approved_staff_update($option,$where){
+		$this->db->update('sw_approved_status',$option,$where);
+	}
+
+	
+	/* 내용 */
+	public function get_approved_contents_list($option){
+		$this->db->select('contents.* , user.name as user_name');
+		$this->db->from('sw_approved_contents as contents');
+		$this->db->join('sw_user AS user','contents.user_no = user.no');
+		$this->db->where($option);
+		$this->db->order_by('created','ASC');
+
+		$query  = $this->db->get();
+		$result = $query->result_array();
+		return $result;
 	}
 }
 /* End of file approved_model.php */

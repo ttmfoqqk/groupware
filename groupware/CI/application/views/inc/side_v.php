@@ -83,24 +83,34 @@
 						</ul>
 					</li>
 					<!-- 전자결재 -->
+					<?
+					$approved_json = json_decode(APPROVED_COUNT_JSON);
+					foreach($approved_json->sender as $key=>$value){
+						$cnt_s[$key]=($value > 0 ? '('.$value.')' : '');
+					}
+					foreach($approved_json->receiver as $key=>$value){
+						$cnt_r[$key]=($value > 0 ? '('.$value.')' : '');
+					}
+					?>
 					<li>
 						<a href="#"><i class="l-basic-todo-pencil"></i> <span class="txt">결재</span></a>
 						<ul class="sub">
+						
 							<li><a href="<?php echo site_url('approved_archive/lists/');?>"><span class="txt">[등록/보관]</span></a></li>
 
 							<li><a href="<?php echo site_url('approved_receive/lists/all/');?>"><span class="txt">[받은 결재]</span></a>
-							<li><a href="<?php echo site_url('approved_receive/lists/a');?>"><span class="txt"> - 작업중(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_receive/lists/b');?>"><span class="txt"> - 결재대기(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_receive/lists/c');?>"><span class="txt"> - 결재완료(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_receive/lists/d');?>"><span class="txt"> - 반려(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_receive/lists/e');?>"><span class="txt"> - 미결재(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/a/');?>"><span class="txt"> - 작업중 <span class="text-danger"><?echo $cnt_r['a'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/b/');?>"><span class="txt"> - 결재대기 <span class="text-danger"><?echo $cnt_r['b'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/c/');?>"><span class="txt"> - 결재완료 <span class="text-danger"><?echo $cnt_r['c'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/d/');?>"><span class="txt"> - 반려 <span class="text-danger"><?echo $cnt_r['d'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_receive/lists/ao/');?>"><span class="txt"> - 미결재 <span class="text-danger"><?echo $cnt_r['ao'];?></span></span></a></li>
 
 							<li><a href="<?php echo site_url('approved_send/lists/all/');?>"><span class="txt">[보낸 결재]</span></a></li>
-							<li><a href="<?php echo site_url('approved_send/lists/a');?>"><span class="txt"> - 작업중(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_send/lists/b');?>"><span class="txt"> - 결재대기(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_send/lists/c');?>"><span class="txt"> - 결재완료(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_send/lists/d');?>"><span class="txt"> - 반려(1)</span></a></li>
-							<li><a href="<?php echo site_url('approved_send/lists/e');?>"><span class="txt"> - 미결재(1)</span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/a/');?>"><span class="txt">  - 작업중 <span class="text-danger"><?echo $cnt_s['a'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/b/');?>"><span class="txt">  - 결재대기 <span class="text-danger"><?echo $cnt_s['b'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/c/');?>"><span class="txt">  - 결재완료 <span class="text-danger"><?echo $cnt_s['c'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/d/');?>"><span class="txt">  - 반려 <span class="text-danger"><?echo $cnt_s['d'];?></span></span></a></li>
+							<li><a href="<?php echo site_url('approved_send/lists/ao/');?>"><span class="txt"> - 미결재 <span class="text-danger"><?echo $cnt_s['ao'];?></span></span></a></li>
 
 						</ul>
 					</li>

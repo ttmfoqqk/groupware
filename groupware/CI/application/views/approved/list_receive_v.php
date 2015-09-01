@@ -61,14 +61,14 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="menu_part_no" name="menu_part_no" data-method="department" data-value="<?echo $this->input->get('menu_part_no');?>" class="fancy-select form-control">
+										<select id="part_sender" name="part_sender" data-method="department" data-value="<?echo $this->input->get('part_sender');?>" class="fancy-select form-control">
 											<option value="">담당부서</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">담당자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="담당자">
+										<input type="text" name="name_sender" id="name_sender" class="form-control" placeholder="담당자" value="<?echo $this->input->get('name_sender');?>">
 									</div>
 								</div>
 
@@ -84,15 +84,14 @@
 
 									<label class="col-lg-2 col-md-2 control-label" for="">문서번호</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="문서번호">
+										<input type="text" name="doc_no" id="doc_no" class="form-control" placeholder="문서번호" value="<?echo $this->input->get('doc_no');?>">
 									</div>
-
 									
 								</div>
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
 									<div class="col-lg-8 col-md-8">
-										<input type="text" class="form-control" placeholder="제목">
+										<input type="text" id="title" name="title" class="form-control" placeholder="제목" value="<?echo $this->input->get('title')?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -112,15 +111,19 @@
 								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
 							</div>
 
-							<table class="table table-bordered" id="tabletools">
+							<form id="approved-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<input type="hidden" name="action_type" id="action_type" value="delete">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
+
+							<table class="table table-bordered" id="tabletools" >
 								<thead>
 									<tr>
-										<th style="width:45px;">
+										<!--th style="width:45px;">
 											<div class="checkbox-custom">
 												<input class="check-all" type="checkbox" id="masterCheck" value="option1">
 												<label for="masterCheck"></label>
 											</div>
-										</th>
+										</th-->
 										<th style="width:60px;">순서</th>
 										<th class="per8">분류</th>
 										<th>제목</th>
@@ -132,24 +135,32 @@
 									</tr>
 								</thead>
 								<tbody>
-									<!-- 리스트 -->
+								<?php foreach($list as $lt){
+									$anchor = $anchor_url.'&no='.$lt['approved_no'];
+									?>
 									<tr>
-										<td>
+										<!--td>
 											<div class="checkbox-custom">
 												<input id="check" class="check" type="checkbox" value="option2">
 												<label for="check"></label>
 											</div>
-										</td>
-										<td>순서</td>
-										<td>분류</td>
-										<td>제목</td>
-										<td>진행기간</td>
-										<td>결재</td>
-										<td>누락</td>
-										<td>등록일자</td>
-										<td>담당자</td>
+										</td-->
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['orders']?0:$lt['orders']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal">+<?echo $lt['pPoint'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal">-<?echo $lt['mPoint'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['createds'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_default'];?></a></td>
 									</tr>
-									<!-- 리스트 -->
+									<?php }?>
+								<?
+								if( count($list) <= 0 ){?>
+									<tr>
+										<td colspan="8">등록된 내용이 없습니다.</td>
+									</tr>
+								<?}?>
 								</tbody>
 							</table>
 
@@ -176,4 +187,4 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_approved.js"></script>

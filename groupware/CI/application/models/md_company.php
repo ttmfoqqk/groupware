@@ -136,6 +136,87 @@ class Md_company extends CI_Model{
 		}else
 			return json_encode(array());
 	}
+
+
+	/* 담당자 */
+	public function get_staff_list($option){
+		$this->db->from('sw_information_staff');
+		$this->db->where($option);
+		$this->db->order_by('order','ASC');
+		$this->db->order_by('name','ASC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+
+	public function set_staff_delete($option){
+		$this->db->delete('sw_information_staff',$option);
+	}
+
+	public function set_staff_insert($option,$staff){
+		$this->set_staff_delete($staff);
+		$this->db->insert_batch('sw_information_staff',$option);
+	}
+
+	/* 사이트 */
+	public function get_site_list($option){
+		$this->db->from('sw_information_site');
+		$this->db->where($option);
+		$this->db->order_by('order','ASC');
+		$this->db->order_by('url','ASC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+
+	public function set_site_delete($option){
+		$this->db->delete('sw_information_site',$option);
+	}
+
+	public function set_site_insert($option,$staff){
+		$this->set_site_delete($staff);
+		$this->db->insert_batch('sw_information_site',$option);
+	}
+
+
+	/* 사원->부서 */
+	public function get_department_list($option){
+		$this->db->from('sw_user_department');
+		$this->db->where($option);
+		$this->db->order_by('order','ASC');
+		$this->db->order_by('position','ASC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+	public function set_department_delete($option){
+		$this->db->delete('sw_user_department',$option);
+	}
+	public function set_department_insert($option,$staff){
+		$this->set_department_delete($staff);
+		$this->db->insert_batch('sw_user_department',$option);
+	}
+	/* 사원->연차 */
+	public function get_annual_list($option){
+		$this->db->from('sw_user_annual');
+		$this->db->where($option);
+		$this->db->order_by('order','ASC');
+		$this->db->order_by('data','DESC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+	public function set_annual_delete($option){
+		$this->db->delete('sw_user_annual',$option);
+	}
+	public function set_annual_insert($option,$staff){
+		$this->set_annual_delete($staff);
+		$this->db->insert_batch('sw_user_annual',$option);
+	}
 }
 /* End of file company_model.php */
 /* Location: ./models/company_model.php */

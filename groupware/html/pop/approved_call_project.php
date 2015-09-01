@@ -135,6 +135,7 @@ function onlick(data){
 		var no      = data.no;
 		var menu    = data.menu_name;
 		var title   = data.title;
+		var contents= data.contents;
 		var sDate   = data.sData.substring(0,10);
 		var eDate   = data.eData.substring(0,10);
 		var pPoint  = data.pPoint;
@@ -157,12 +158,12 @@ function onlick(data){
 	$('#p_eData').val(eDate);
 	$('#p_file').val(file);
 
-	$('#p_paper_no').text('-');
+	//$('#p_paper_no').text('-');
 	$('#project_department').text(staff_menu_name);
 	$('#project_user').text(staff_name);
 	$('#project_menu').text(menu);
 	$('#project_title').text(title);
-	$('#project_contents').text('approved_contents 참조');
+	$('#project_contents').html( contents.replace(/\r\n/gi, "<br>") );
 	$('#project_date').text(sDate +' ~ '+ eDate);
 	$('#project_pPoint').text('+'+pPoint);
 	$('#project_mPoint').text('-'+mPoint);

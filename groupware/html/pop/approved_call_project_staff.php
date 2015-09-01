@@ -59,9 +59,7 @@ function get_list(){
 }
 
 function application_approved(approved_no){
-	//alert( JSON.stringify($data) );
-	//location.reload();
-	
+
 	base_show('hide');
 	$.ajax({
 		type     : 'POST',
@@ -77,6 +75,7 @@ function application_approved(approved_no){
 			}else{
 				base_show('show');
 				alert('저장됨');
+				location.reload();
 
 			}
 		},error:function(err){

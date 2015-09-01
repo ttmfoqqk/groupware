@@ -40,24 +40,24 @@
 								</thead>
 								<tbody>
 									<tr>
-										<td>작업중 <span class="text-danger">( 1 )</span></td>
-										<td>작업중 <span class="text-danger">( 1 )</span></td>
+										<td><a href="<?echo $anchor_s['a'];?>" class="text-normal">작업중 <span class="<?echo $class_s['a'];?>">( <?echo $sender['a'];?> )</span></a></td>
+										<td><a href="<?echo $anchor_r['a'];?>" class="text-normal">작업중 <span class="<?echo $class_r['a'];?>">( <?echo $receiver['a'];?> )</span></a></td>
 									</tr>
 									<tr>
-										<td>결재대기 <span class="text-danger">( 1 )</span></td>
-										<td>결재대기 <span class="text-danger">( 1 )</span></td>
+										<td><a href="<?echo $anchor_s['b'];?>" class="text-normal">결재대기 <span class="<?echo $class_s['b'];?>">( <?echo $sender['b'];?> )</span></a></td>
+										<td><a href="<?echo $anchor_r['b'];?>" class="text-normal">결재대기 <span class="<?echo $class_r['b'];?>">( <?echo $receiver['b'];?> )</span></a></td>
 									</tr>
 									<tr>
-										<td>결재완료 <span class="text-danger">( 1 )</span></td>
-										<td>결재완료 <span class="text-danger">( 1 )</span></td>
+										<td><a href="<?echo $anchor_s['c'];?>" class="text-normal">결재완료 <span class="<?echo $class_s['c'];?>">( <?echo $sender['c'];?> )</span></a></td>
+										<td><a href="<?echo $anchor_r['c'];?>" class="text-normal">결재완료 <span class="<?echo $class_r['c'];?>">( <?echo $receiver['c'];?> )</span></a></td>
 									</tr>
 									<tr>
-										<td>반려 <span class="text-danger">( 1 )</span></td>
-										<td>반려 <span class="text-danger">( 1 )</span></td>
+										<td><a href="<?echo $anchor_s['d'];?>" class="text-normal">반려 <span class="<?echo $class_s['d'];?>">( <?echo $sender['d'];?> )</span></a></td>
+										<td><a href="<?echo $anchor_r['d'];?>" class="text-normal">반려 <span class="<?echo $class_r['d'];?>">( <?echo $receiver['d'];?> )</span></a></td>
 									</tr>
 									<tr>
-										<td>미결재 <span class="text-danger">( 1 )</span></td>
-										<td>미결재 <span class="text-danger">( 1 )</span></td>
+										<td><a href="<?echo $anchor_s['ao'];?>" class="text-normal">미결재 <span class="<?echo $class_s['ao'];?>">( <?echo $sender['ao'];?> )</span></a></td>
+										<td><a href="<?echo $anchor_r['ao'];?>" class="text-normal">미결재 <span class="<?echo $class_r['ao'];?>">( <?echo $receiver['ao'];?> )</span></a></td>
 									</tr>
 								</tbody>
 							</table>

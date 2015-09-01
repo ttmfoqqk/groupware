@@ -96,8 +96,8 @@
 											<th class="per15">재직여부</th>
 											<th class="per15">등록일자</th>
 											<th style="width: 60px;">권한</th>
-											<th style="width: 60px;">부서/직급</th>
-											<th style="width: 60px;">연차등록</th>
+											<th style="width: 80px;">부서/직급</th>
+											<th style="width: 80px;">연차등록</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -123,21 +123,18 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'] == 0 ? '재직' : '퇴사';?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td class="text-center">
-												<button type="button" class="btn btn-success btn-xs"
-													id="view_auth" onclick="test();">
+												<button type="button" class="btn btn-success btn-xs" onclick="call_staff('<?echo $lt['no'];?>','permission');">
+													<i class="glyphicon glyphicon-lock"></i>
+												</button>
+											</td>
+											<td class="text-center">
+												<button type="button" class="btn btn-success btn-xs" onclick="call_staff('<?echo $lt['no'];?>','department');">
 													<i class="glyphicon glyphicon-user"></i>
 												</button>
 											</td>
 											<td class="text-center">
-												<button type="button" class="btn btn-success btn-xs"
-													id="view_depart" onclick="test();">
-													<i class="glyphicon glyphicon-user"></i>
-												</button>
-											</td>
-											<td class="text-center">
-												<button type="button" class="btn btn-primary btn-xs"
-													id="view_year" onclick="alert('담당자 팝업');">
-													<i class="glyphicon glyphicon-globe"></i>
+												<button type="button" class="btn btn-success btn-xs" onclick="call_staff('<?echo $lt['no'];?>','annual');">
+													<i class="glyphicon glyphicon-calendar"></i>
 												</button>
 											</td>
 										</tr>

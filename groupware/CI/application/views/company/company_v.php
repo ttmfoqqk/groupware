@@ -154,14 +154,12 @@
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['fax'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
 											<td class="text-center">
-												<button type="button" class="btn btn-success btn-xs"
-													id="view_staff" onclick="test();">
+												<button type="button" class="btn btn-success btn-xs" onclick="call_staff('<?echo $lt['no'];?>','staff');">
 													<i class="glyphicon glyphicon-user"></i>
 												</button>
 											</td>
 											<td class="text-center">
-												<button type="button" class="btn btn-primary btn-xs"
-													id="view_staff" onclick="alert('담당자 팝업');">
+												<button type="button" class="btn btn-primary btn-xs" onclick="call_staff('<?echo $lt['no'];?>','site');">
 													<i class="glyphicon glyphicon-globe"></i>
 												</button>
 											</td>

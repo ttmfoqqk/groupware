@@ -7,7 +7,8 @@
         <!-- Mobile specific metas -->
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
         <!-- Force IE9 to render in normal mode -->
-        <!--[if IE]><meta http-equiv="x-ua-compatible" content="IE=9" /><![endif]-->
+        
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="author" content="" />
         <meta name="description" content="" />
         <meta name="keywords" content="" />
@@ -86,8 +87,8 @@
                         <ul class="dropdown-menu right dropdown-notification" role="menu">
                             <li><a href="#" class="dropdown-menu-header">Notifications</a></li>
                             <li><a href="<?echo site_url('board/lists/notice');?>"><i class="l-basic-elaboration-message-dots"></i> 2 공지사항</a></li>
-                            <li><a href="<?echo site_url('approved/send');?>"><i class="l-basic-elaboration-mail-upload"></i> 보낸 결재</a></li>
-                            <li><a href="<?echo site_url('approved/receive');?>"><i class="l-basic-elaboration-mail-download"></i> 받은 확인</a></li>
+                            <li><a href="<?echo site_url('approved_send/lists/all');?>"><i class="l-basic-elaboration-mail-upload"></i> 보낸 결재</a></li>
+                            <li><a href="<?echo site_url('approved_receive/lists/all');?>"><i class="l-basic-elaboration-mail-download"></i> 받은 확인</a></li>
                         </ul>
                     </li>
                     <li>

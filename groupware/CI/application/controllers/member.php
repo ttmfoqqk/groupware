@@ -315,6 +315,84 @@ class Member extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 	}
+
+
+	/* 부서 */
+	public function _department_lists(){
+		$no = $this->input->post('no');
+		$option = array(
+			'user_no'=>$no
+		);
+		$result = $this->md_company->get_department_list($option);
+		echo json_encode($result);
+	}
+
+	public function _department_insert(){
+		$no = $this->input->post('no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'user_no'  => $no,
+					'menu_no'  => $key->menu_no,
+					'position' => $key->position,
+					'bigo'     => $key->bigo,
+					'order'    => $key->order,
+				));
+			}
+			$result = $this->md_company->set_department_insert($option,array('user_no'=>$no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
+
+	/* 연차 */
+	public function _annual_lists(){
+		$no = $this->input->post('no');
+		$option = array(
+			'user_no'=>$no
+		);
+		$result = $this->md_company->get_annual_list($option);
+		echo json_encode($result);
+	}
+
+	public function _annual_insert(){
+		$no = $this->input->post('no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'user_no' => $no,
+					'name'    => $key->name,
+					'data'    => $key->data,
+					'order'   => $key->order
+				));
+			}
+			$result = $this->md_company->set_annual_insert($option,array('user_no'=>$no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
 }
 /* End of file member.php */
 /* Location: ./controllers/member.php */

@@ -24,8 +24,18 @@ class Main extends CI_Controller{
 	}
 
 	public function index(){
-		$this->load->model('main_model','',TRUE);
-		$data['user'] = $this->main_model->get_list();
+		$approved_json = json_decode(APPROVED_COUNT_JSON);
+		foreach($approved_json->sender as $key=>$value){
+			$data['sender'][$key]=$value;
+			$data['anchor_s'][$key] = site_url('approved_send/lists/'.$key);
+			$data['class_s'][$key] = $value > 0 ? 'text-danger' : '';
+		}
+		foreach($approved_json->receiver as $key=>$value){
+			$data['receiver'][$key]=$value;
+			$data['anchor_r'][$key] = site_url('approved_receive/lists/'.$key);
+			$data['class_r'][$key] = $value > 0 ? 'text-danger' : '';
+		}
+
 		$this->load->view('main/main_v',$data);
 	}
 }
