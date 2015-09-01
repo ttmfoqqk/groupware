@@ -113,7 +113,10 @@ class Chc extends CI_Controller{
 		$where = array(
 				'c.no'=>$get_no
 		);
-		$result = $this->md_chc->get($where);
+		
+		$result = array();
+		if($this->uri->segment(3) != "")
+			$result = $this->md_chc->get($where);
 		
 		$data['action_url'] = site_url('chc/proc');
 		

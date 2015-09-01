@@ -30,19 +30,76 @@ class Account extends CI_Controller{
 	public function index(){
 		$this->lists();
 	}
+	
 	public function lists(){
-		$data['list'] = array();
-
-		$config['base_url']    = site_url('purpose/add/');
-		$config['total_rows']  = 0;
-		$config['cur_page']    = $this->uri->segment(3,1);
-		$config['uri_segment'] = 3;
-
+		//필터 설정
+		$likes = null;//$this->getListFilter();
+		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
+		
+		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
+		
+		if($start && $end)
+			$where = null;//array('category'=>$this->CATEGORY, 'created >='=>$start, 'created <'=>$end);
+		else
+			$where = null;//array('category'=>$this->CATEGORY);
+		
+		$total = $this->md_company->getCount($where, $likes);
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
+		
+		//Pagination 설정
+		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
+		$config['total_rows'] = $total; // 전체 글갯수
+		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
 		$this->pagination->initialize($config);
-		$data['pagination']    = $this->pagination->create_links();
+		$data['pagination'] = $this->pagination->create_links();
+		
+		//테이블 정보 설정
+		$data['list'] = array();
+		$result = $this->md_company->get($where, '*', $tb_show_num, $offset, $likes);
+		if (count($result) > 0){
+			$data['list'] = $result;
+		}
+		$data['table_num'] = $offset + count($result) . ' / ' . $total;
+		
+		//페이지 타이틀 설정
+		$data['action_url'] = site_url('account/proc');
+		$data['action_type'] = 'delete';
+		$data['head_name'] = "계정관리";
+		$data['page'] = $this->CATEGORY;
 
-
+		//뷰 로딩
 		$this->load->view('marketing/account_v',$data);
+	}
+	
+	public function write(){
+		$this->md_company->setTable('sw_account');
+		$get_no =  $this->uri->segment(3);
+		$where = array(
+				'no'=>$get_no
+		);
+		echo "-----------------------------";
+		print_r($where);
+		$result = $this->md_company->get($where);
+		
+		$data['action_url'] = site_url('account/proc');
+		
+		if (count($result) > 0){
+			$data['action_type'] = 'edit';
+			$result = $result[0];
+			$data['data'] = $result;
+		}else{
+			$data['action_type'] = 'create';
+			$data['data'] = $this->md_company->getEmptyData();
+			$data['data']['order'] = 0;
+		}
+		$data['head_name'] = '계정관리';
+		//뷰 로딩
+		$this->load->view('marketing/account_write',$data);
 	}
 	
 	public function _selectList(){

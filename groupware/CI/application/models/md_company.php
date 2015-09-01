@@ -35,13 +35,15 @@ class Md_company extends CI_Model{
 	}
 	
 	/**
-	 * @param array $where
+	 * @param array | string $where
 	 * @param string | array $select
 	 * @param int $offset
 	 * @param int $limit
 	 * @param array $likes
+	 * @param string $asc
+	 * @param string $desc
 	 */
-	public function get($where=NULL, $select ='*', $offset=NULL, $limit=NULL, $likes=NULL, $asc=FALSE, $desc=FALSE){
+	public function get($where=NULL, $select =NULL, $offset=NULL, $limit=NULL, $likes=NULL, $asc=FALSE, $desc=FALSE){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
 				if($val!='')
@@ -49,16 +51,18 @@ class Md_company extends CI_Model{
 			}
 		}
 		
+		if($select == NULL)
+			$select ='*';
+		
 		if (in_array("order", $this->getFileds())) 
 			$this->db->order_by("order",'ASC');
-		else{
-			if($asc != false)
-				$this->db->order_by($asc,'ASC');
-			if($desc != false)
-				$this->db->order_by($desc,'DESC');
-		}
+		if($asc != false)
+			$this->db->order_by($asc,'ASC');
+		if($desc != false)
+			$this->db->order_by($desc,'DESC');
 		
 		$this->db->select($select);
+		
 		if($where != NULL)
 			$this->db->where($where);
 		$ret = $this->db->get($this->TABLE_NAME, $offset, $limit);

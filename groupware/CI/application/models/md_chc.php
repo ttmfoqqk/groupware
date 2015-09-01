@@ -45,6 +45,7 @@ class Md_chc extends CI_Model{
 					$this->db->like($key, $val);
 			}
 		}
+		
 		if($where!=NULL){
 			foreach ($where as $key=>$val){
 				if($val!='' && $val!=NULL){

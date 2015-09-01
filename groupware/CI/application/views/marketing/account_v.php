@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>&nbsp;</h2>
+					<h2><?php echo $head_name?></h2>
 				</div>
 			</div>
 			<div class="row">
@@ -21,7 +21,8 @@
 						<div class="panel-body">
 							
 							<!-- 검색 -->
-							<form class="form-horizontal">
+							<form id="qu" class="form-horizontal" method="get" role="form"
+								action="<?echo site_url($page . '/lists/1')?>">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
@@ -70,62 +71,95 @@
 									</div>
 								</div>
 
+								<!-- 테이블 옵션  -->
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+								</div>
+								<!-- END 테이블 옵션  -->
 
 							</form>
 							<!-- 검색 -->
-							<div class="pull-left">
-								<select id="board_type" name="board_type" class="fancy-select form-control">
-									<option value="10">10개</option>
-								</select>
-							</div>
-							<div class="pull-right">
-								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
-							</div>
-
-							<table class="table table-bordered" id="tabletools">
-								<thead>
-									<tr>
-										<th style="width:45px;">
-											<div class="checkbox-custom">
-												<input class="check-all" type="checkbox" id="masterCheck" value="option1">
-												<label for="masterCheck"></label>
-											</div>
-										</th>
-										<th style="width:60px;">순서</th>
-										<th class="per8">분류</th>
-										<th>아이디</th>
-										<th class="per8">비밀번호</th>
-										<th class="per8">등급</th>
-										<th class="per8">이름</th>
-										<th class="per8">생년월일</th>
-										<th width="80px;">질문사용</th>
-										<th width="80px;">답변사용</th>
-									</tr>
-								</thead>
-								<tbody>
-									<!-- 리스트 -->
-									<tr>
-										<td>
-											<div class="checkbox-custom">
-												<input id="check" class="check" type="checkbox" value="option2">
-												<label for="check"></label>
-											</div>
-										</td>
-										<td>순서</td>
-										<td>분류</td>
-										<td>아이디</td>
-										<td>비밀번호</td>
-										<td>등급</td>
-										<td>이름</td>
-										<td>생년월일</td>
-										<td>사용</td>
-										<td>미사용</td>
-									</tr>
-									<!-- 리스트 -->
-								</tbody>
-							</table>
-
-							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
+							
+							<form id="company-form-list" action="<?echo $action_url;?>"
+								method="post" class="form-horizontal group-border stripped"
+								role="form">
+								<input type="hidden" name="action_type" id="action_type"
+									value="<?echo $action_type;?>">
+								<input type="hidden" name="page_cate" id="page_cate"
+									value="<?echo $page;?>">
+									
+									
+								<table class="table table-bordered" id="tabletools">
+									<thead>
+										<tr>
+											<th style="width:45px;">
+												<div class="checkbox-custom">
+													<input class="check-all" type="checkbox" id="masterCheck" value="option1">
+													<label for="masterCheck"></label>
+												</div>
+											</th>
+											<th style="width:60px;">순서</th>
+											<th class="per8">분류</th>
+											<th>아이디</th>
+											<th class="per8">비밀번호</th>
+											<th class="per8">등급</th>
+											<th class="per8">이름</th>
+											<th class="per8">생년월일</th>
+											<th width="80px;">사용용도</th>
+										</tr>
+									</thead>
+									<tbody>
+										<!-- 리스트 -->
+										<?php
+											foreach ( $list as $lt ) {
+											$anchor_url = site_url ( 'account/write/' . $lt ['no'] );
+											?>
+											<tr>
+												<td>
+													<div class="checkbox-custom">
+														<input id="check<?$lt['no'];?>" name="no[]"
+															class="check" type="checkbox"
+															value=<?php echo $lt['no'];?>> <label
+															for="check<?$lt['no'];?>"></label> <input type="hidden"
+															value="<?php echo $lt['no'];?>">
+													</div>
+												</td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['type'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['id'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['pwd'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['grade'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['birth'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_using_question'];?></a></td>
+											</tr>
+										<?php }?>
+										<!-- 리스트 -->
+										<?if (count ( $list ) <= 0) {?>
+										<tr>
+												<td colspan="10">등록된 내용이 없습니다.</td>
+											</tr>
+										<?}?>
+										
+									</tbody>
+								</table>
+								
+								
+								<div class="panel-body" style="text-align: center;">
+									<?php echo $table_num?><br><?echo $pagination;?></div>
+								<div class="panel-body pull-right">
+									<button id="btn_list_delete" type="button"
+										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
+										onclick="location.href='<?echo site_url('account/write/');?>';">등록</button>
+								</div>
+							</form>
 
 						</div>
 					</div>
