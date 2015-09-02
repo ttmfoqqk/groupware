@@ -393,6 +393,41 @@ class Member extends CI_Controller{
 		}
 		echo json_encode($return);
 	}
+
+	/* 권한 */
+	public function _permission_lists(){
+		$no = $this->input->post('no');
+		$option = array(
+			//'user_no'=>$no
+		);
+		$result = $this->md_company->get_permission_list($option,$no);
+		echo json_encode($result);
+	}
+
+	public function _permission_insert(){
+		$no = $this->input->post('no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$this->md_company->set_permission_delete(array('user_no'=>$no));
+		}else{
+			$option = array();
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'user_no'    => $no,
+					'category'   => $key->category,
+					'permission' => $key->permission
+				));
+			}
+			$this->md_company->set_permission_insert($option,array('user_no'=>$no));
+		}
+		$return = array(
+			'result' => 'ok',
+			'msg' => 'ok'
+		);
+		
+		echo json_encode($return);
+	}
 }
 /* End of file member.php */
 /* Location: ./controllers/member.php */

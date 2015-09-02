@@ -1,139 +1,108 @@
-<div class="row form-group ">
-	<div class="col-xs-4 text-center">명칭</div>
-	<div class="col-xs-2 text-center">권한1</div>
-	<div class="col-xs-2 text-center">권한2</div>
-	<div class="col-xs-2 text-center">권한2</div>
-	<div class="col-xs-2 text-center">권한2</div>
-</div>
-
-<div id="input-base">
-
-	<!-- input row -->
-	<div class="row form-group pop-row" style="padding:5px 0px 5px 0px;">
-		<div class="col-xs-4 text-center">
-			<input type="text" name="pop_order" class="form-control" placeholder="순서" data-value="" value="" readonly>
-		</div>
-		<div class="col-xs-2 text-center">
-			<select class="fancy-select form-control tb_num" name="tb_num">
-				<option value="Y">Y</option>
-				<option value="M">N</option>
-			</select>
-		</div>
-		<div class="col-xs-2 text-center">
-			<select class="fancy-select form-control tb_num" name="tb_num">
-				<option value="Y">Y</option>
-				<option value="M">N</option>
-			</select>
-		</div>
-		<div class="col-xs-2 text-center">
-			<select class="fancy-select form-control tb_num" name="tb_num">
-				<option value="Y">Y</option>
-				<option value="M">N</option>
-			</select>
-		</div>
-		<div class="col-xs-2 text-center">
-			<select class="fancy-select form-control tb_num" name="tb_num">
-				<option value="Y">Y</option>
-				<option value="M">N</option>
-			</select>
-		</div>
-
-	</div>
-	<!-- input row -->
-
-</div>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th class="per15">분류</th>
+			<th>권한</th>
+		</tr>
+	</thead>
+	<tbody id="table-list">
+		<tr class="pop-row">
+			<td>{title}</td>
+			<td style="padding:0px 0px 0px 20px;">
+				<input type="hidden" name="category" value="{category}">
+				<!--{for}-->
+				<div class="toggle-custom toggle-inline">
+					<label class="toggle" data-on="ON" data-off="OFF">
+						<input type="checkbox" id="{for_id}" name="{for_name}" value="{for_value}" {for_checked}>
+						<span class="button-checkbox"></span>
+					</label>
+					<label for="{for_id}">{for_label_title}</label>
+				</div>
+				<!--{/for}-->
+			</td>
+		</tr>
+	</tbody>
+</table>
 
 
 <script type="text/javascript">
+$no              = '<?echo $_POST["no"];?>';
+$table_list      = $('#table-list');
+$list_template   = $table_list.html();
 
-// 리스트에서 받은 no
-var $no = '<?echo $_POST["no"];?>';
-// input-base
-var $input_base = $('#input-base');
-// 최초 html 클론 저장
-var $new_row    = $('.pop-row').clone();
+$option_template = $list_template.split('<!--{for}-->')[1];
+$option_template = $option_template.split('<!--{/for}-->')[0];
 
-// row 추가/삭제
-function row_controll(obj,mode){
-	var len     = $('.pop-row').length;
-	var parent  = obj.parent().parent();
-	var new_row = $new_row.clone();
-	
-	if( mode == 'add' ){
-		new_row.css('background-color','#82ffab').animate({
-			'background-color':'#ffffff'
-		},500);
-
-		set_selectbox(new_row);
-		$(new_row).insertAfter(parent);		
-	}else if( mode == 'remove' ){
-		if(len <= 1){
-			alert('삭제할수 없습니다.');
-			return false;
-		}else{
-			parent.css('background-color','#ff8282').animate({
-				'opacity':'0',
-				'background-color':'#ffffff'
-			},500,function(){
-				$(this).remove();
-			});
-		}
-	}
-}
+$list_template   = $list_template.split('<!--{for}-->')[0] + '{for_block}' + $list_template.split('<!--{/for}-->')[1];
 
 
-function set_selectbox(obj){
-	var name  = obj.find('input[name="pop_name"]');
-	var data  = obj.find('input[name="pop_data"]');
-	var order = obj.find('input[name="pop_order"]');
-
-	name.each(function(){
-		$(this).val( $(this).attr('data-value') );
-	});
-	data.each(function(){
-		$(this).val( $(this).attr('data-value') );
-		$(this).datepicker({language : 'kr',  format: 'yyyy-mm-dd',  autoclose:true});
-	});
-	order.each(function(){
-		$(this).val( $(this).attr('data-value') );
-	});
-}
-
-// 리스트 생성
-// number : 기본 리스트 갯수
 function get_list(){
-	var number = 5;
+	base_show('hide');
+
 	$.ajax({
-		type : 'POST',
-		url  : '/groupware/member/annual_lists/',
-		data : {
+		type     : 'POST',
+		url      : '/groupware/member/permission_lists/',
+		data     : {
 			no : $no
 		},
 		dataType : 'json',
 		success: function(data){
-			var json   = eval(data);
-			var clones = '';
-			for (var i in json){
-				var new_row  = $new_row.clone();
-
-				var name  = new_row.find('input[name="pop_name"]');
-				var data  = new_row.find('input[name="pop_data"]');
-				var order = new_row.find('input[name="pop_order"]');
-
-				name.attr('data-value',json[i].name);
-				data.attr('data-value',json[i].data.substr(0,10));
-				order.attr('data-value',json[i].order);
-
-				clones += new_row.wrapAll('<div>').parent().html();
-			}
+			var json = eval(data);
+			var html = '';
+			var template = '';
 			
-			for (var i=json.length;i<number;i++){
-				clones += $new_row.wrapAll('<div>').parent().html();
-			}
+			if(json.length>0){
+				for (var i in json){
+					
+					var category     = json[i].category;
+					var title        = json[i].title;
+					var permission   = json[i].permission.split('|');
+					var u_permission = '';
 
-			$input_base.html(clones);
-			set_selectbox($input_base);
-			// base div show
+					if(!json[i].u_permission || json[i].u_permission.toUpperCase()=='NULL'){
+						u_permission = '';
+					}else{
+						u_permission = json[i].u_permission.split('|');
+					}
+					
+					var for_html     = '';
+					var for_template = '';
+					for(i=0; i<permission.length; i++){
+						var label_title = get_label_title( permission[i] );
+						
+						var is_checked  = '';
+						for(k=0; k<u_permission.length; k++){
+							if( u_permission[k]==permission[i] ){
+								is_checked = 'checked';
+							}
+						}
+
+						for_template = $option_template;
+						for_template = for_template.replace(/{for_id}/gi    ,category+'_'+permission[i]);
+						for_template = for_template.replace(/{for_name}/gi  ,category);
+						for_template = for_template.replace(/{for_value}/gi ,permission[i]);
+						for_template = for_template.replace(/{for_checked}/gi ,is_checked);
+						for_template = for_template.replace(/{for_label_title}/gi ,label_title);
+
+						for_html += for_template;
+					}
+
+
+					template = $list_template;
+					template = template.replace(/{title}/gi     ,title);
+					template = template.replace(/{category}/gi  ,category);
+					template = template.replace(/{for_block}/gi ,for_html);
+					html += template;
+				}
+				$table_list.html(html);
+				$table_list.find('a').bind('click',function(e){
+					e.preventDefault();
+					var eq = $(this).attr('data-eq');
+					onlick(list[eq]);
+				});
+			}else{
+				$table_list.html('<tr><td colspan="2">등록된 내용이 없습니다.</td></tr>');
+			}
 			base_show('show');
 		},error:function(err){
 			alert(err.responseText);
@@ -142,76 +111,51 @@ function get_list(){
 	});
 }
 
-
-
-// 입력
 function modal_submit(){
-	alert('준비중'); return false;
 	var data_array = new Array();
-	var validate_fg = false;
+
 	$('.pop-row').each(function(eq){
 		var data_info  = new Object();
+		var category = $(this).find('input[name="category"]');
+		var checkbox = $(this).find('input:checkbox:checked');
 
-		var name  = $(this).find('input[name="pop_name"]');
-		var data  = $(this).find('input[name="pop_data"]');
-		var order = $(this).find('input[name="pop_order"]');
-		
-		if( name.val() || data.val() || order.val() ){
-			if(!order.val()){
-				alert('순서를 입력해주세요.');
-				order.focus();
-				validate_fg = false;
-				return false;
-			}
-			if(!name.val()){
-				alert('내용을 입력해주세요.');
-				name.focus();
-				validate_fg = false;
-				return false;
-			}
-			if(!data.val()){
-				alert('일자를 입력해주세요.');
-				data.focus();
-				validate_fg = false;
-				return false;
-			}
-		}
-		validate_fg = true;
+		var permission = '';
+		if( checkbox.length>0 ){
+			checkbox.each(function(eq){
+				permission += $(this).val() + (eq+1 < checkbox.length ? '|' : '');
+			});
 
-		if(name.val() && data.val() && order.val() ){
-			data_info.name  = name.val();
-			data_info.data  = data.val();
-			data_info.order = order.val();
+			data_info.category   = category.val();
+			data_info.permission = permission;
 			data_array.push(data_info);
 		}
-
 	});
-	//console.log(JSON.stringify(data_array));return false;
-	if( validate_fg == true ){
-		$.ajax({
-			type : 'POST',
-			url  : '/groupware/member/annual_insert/',
-			data : {
-				no : $no,
-				json_data  : JSON.stringify(data_array)
-			},
-			dataType : 'json',
-			success: function(data){
-				if(data.result!='ok'){
-					alert(data.result + ',' + data.msg);
-				}else{
-					// 리스트 다시 로딩
-					base_show('hide');
-					get_list();
-					alert('저장됨');
-				}
-			},error:function(err){
-				alert(err.responseText);
-				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
+	
+	$.ajax({
+		type : 'POST',
+		url  : '/groupware/member/permission_insert/',
+		data : {
+			no : $no,
+			json_data : JSON.stringify(data_array)
+		},
+		dataType : 'json',
+		success: function(data){
+			if(data.result!='ok'){
+				alert(data.result + ',' + data.msg);
+			}else{
+				// 리스트 다시 로딩
+				base_show('hide');
+				get_list();
+				alert('저장됨');
 			}
-		});
-	}
+		},error:function(err){
+			alert(err.responseText);
+			//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
+		}
+	});
+	
 }
+
 // 베이스,로딩 div
 function base_show(m){
 	var base_div    = $('#modal-body');
@@ -225,6 +169,28 @@ function base_show(m){
 		loading_div.show();
 	}
 }
-//get_list();
-base_show('show');
+
+function get_label_title(code){
+	var label_title = '';
+	switch(code) {
+		case 'R':
+			label_title = '조회';
+			break;
+		case 'W':
+			label_title = '등록';
+			break;
+		case 'EX':
+			label_title = '엑셀';
+			break;
+		case 'PR':
+			label_title = '프린트';
+			break;
+		default:
+			label_title = '-';
+	}
+	return label_title;
+}
+
+// 리스트 호출
+get_list();
 </script>
