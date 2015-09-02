@@ -54,7 +54,9 @@
 											</tr>
 											<tr>
 												<th class="th-size">담당부서</td>
-												<td id="department"></td>
+												<td id="department">
+													<?php echo isset($data['department_name']) ? $data['department_name'] : '';?>
+												</td>
 												<th class="th-size">담당자</td>
 												<td id="user"><?php  echo isset($data['user_name']) ? $data['user_name'] : '' ;?></td>
 											</tr>

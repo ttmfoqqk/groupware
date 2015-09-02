@@ -31,6 +31,7 @@ class Md_chc extends CI_Model{
 		$this->db->join('sw_information i', 'c.customer_no = i.no', 'left outer');
 		
 		$this->db->join('sw_project_staff ps', 'ps.project_no = p.no AND ps.order = 1', 'left outer');
+		$this->db->join('sw_menu m2', 'ps.menu_no = m2.no', 'left outer');
 		$this->db->join('sw_user u', 'u.no = ps.user_no', 'left outer');
 		
 		$this->db->select('count(*) as total');
@@ -57,13 +58,14 @@ class Md_chc extends CI_Model{
 			}
 		}
 		
-		$this->db->select('c.no, c.order, c.kind, c.created, m.name as menu_kind, c.title, i.bizName, c.keyword, c.url, p.sData, p.eData, c.rank, u.name as user_name, c.title, p.pPoint, p.mPoint, p.menu_part_no, c.ip, c.status, c.customer_no');
+		$this->db->select('c.no, c.order, c.kind, c.created, m2.no, m2.name as department_name ,m.name as menu_kind, c.title, i.bizName, c.keyword, c.url, p.sData, p.eData, c.rank, u.name as user_name, c.title, p.pPoint, p.mPoint, p.menu_part_no, c.ip, c.status, c.customer_no');
 		$this->db->join('sw_project p', 'c.project_no = p.no', 'left outer');
 	//	$this->db->join('sw_user u', 'p.user_no = u.no', 'left outer');
-		$this->db->join('sw_menu m', 'menu_no = m.no', 'left outer');
+		$this->db->join('sw_menu m', 'p.menu_no = m.no', 'left outer');
 		$this->db->join('sw_information i', 'c.customer_no = i.no', 'left outer');
 		
 		$this->db->join('sw_project_staff ps', 'ps.project_no = p.no AND ps.order = 1', 'left outer');
+		$this->db->join('sw_menu m2', 'ps.menu_no = m2.no', 'left outer');
 		$this->db->join('sw_user u', 'u.no = ps.user_no', 'left outer');
 		
 		$ret = $this->db->get('sw_chc c', $offset, $limit);
