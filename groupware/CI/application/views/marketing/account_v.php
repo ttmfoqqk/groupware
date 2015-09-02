@@ -26,44 +26,49 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="담당부서">담당부서</option>
+										<select id="ft_type" name="ft_type" class="fancy-select form-control" value=<?php echo $this->input->get('ft_type');?>>
+											<option value="">전체</option>
+											<option value=1>지식인</option>
+											<option value=2>블로그</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">아이디</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="아이디">
+										<input type="text" class="form-control" placeholder="아이디" name="ft_id" value=<?php echo $this->input->get('ft_id');?>>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">등급</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="등급">등급</option>
+										<select id="ft_grade" name="ft_grade" class="fancy-select form-control" value=<?php echo $this->input->get('ft_grade');?>>
+											<option value="">전체</option>
+											<option value=1>일반</option>
+											<option value=2>장기</option>
+											<option value=3>등급</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">이름</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" placeholder="이름">
+										<input type="text" class="form-control" placeholder="이름" id="ft_name" value=<?php echo $this->input->get('ft_name');?>>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
-									<label class="col-lg-2 col-md-2 control-label" for="">질문사용</label>
+									<label class="col-lg-2 col-md-2 control-label" for="">용도</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="질문사용">질문사용</option>
+										<select id="ft_use" name="ft_use" class="fancy-select form-control" value=<?php echo $this->input->get('ft_use');?>>
+											<option value="">전체</option>
+											<option value=1>질문</option>
+											<option value=2>답변</option>
+											<option value=3>미사용</option>
 										</select>
 									</div>
 
-									<label class="col-lg-2 col-md-2 control-label" for="">답변사용</label>
+									<label class="col-lg-2 col-md-2 control-label" for=""></label>
 									<div class="col-lg-3 col-md-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="답변사용">답변사용</option>
-										</select>
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -86,7 +91,7 @@
 							</form>
 							<!-- 검색 -->
 							
-							<form id="company-form-list" action="<?echo $action_url;?>"
+							<form id="account-form-list" action="<?echo $action_url;?>"
 								method="post" class="form-horizontal group-border stripped"
 								role="form">
 								<input type="hidden" name="action_type" id="action_type"
@@ -111,7 +116,7 @@
 											<th class="per8">등급</th>
 											<th class="per8">이름</th>
 											<th class="per8">생년월일</th>
-											<th width="80px;">사용용도</th>
+											<th width="80px;">용도</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -131,13 +136,19 @@
 													</div>
 												</td>
 												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
-												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['type'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php if($lt['type'] == 1) echo "지식인";else if($lt['type'] == 2) echo "블로그";?></a></td>
 												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['id'];?></a></td>
 												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['pwd'];?></a></td>
-												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['grade'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php if($lt['grade'] == 1) echo "일반";else if($lt['grade'] == 2) echo "장기";else if($lt['grade'] == 3) echo "등급";?></a></td>
 												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['birth'];?></a></td>
-												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_using_question'];?></a></td>
+												<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo date("Y-m-d", strtotime($lt['birth']));?></a></td>
+												<td>
+													<a href="<?echo $anchor_url;?>" class="text-normal">
+														<?php if($lt['is_using_question'] == 1) echo '질문';
+															else if($lt['is_using_question'] == 2) echo '답변';
+															else if($lt['is_using_question'] == 3) echo '미사용';
+															?></a>
+												</td>
 											</tr>
 										<?php }?>
 										<!-- 리스트 -->
@@ -182,4 +193,4 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_company.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_account.js"></script>

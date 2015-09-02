@@ -163,7 +163,7 @@ class Member extends CI_Controller{
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('id','아이디','required|max_length[5]');
+			$this->form_validation->set_rules('id','아이디','required|max_length[20]');
 			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');

@@ -190,7 +190,7 @@
 												<td class="tdUsed">
 													<input type="hidden" name="is_request[]" value="">
 													<select class="fancy-select form-control" data-value="" name="sel_request[]">
-														<option value="">선택하세요</option>
+														<option value=3>미사용</option>
 														<option value=1>질문</option>
 														<option value=2>답변</option>
 													</select>

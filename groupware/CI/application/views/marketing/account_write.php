@@ -22,7 +22,7 @@
 						<!-- Start .panel-body -->
 						<div class="panel-body">
 							<!-- top form(member-form-write-setting) start  -->
-							<form id="member-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form"">
+							<form id="account-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form"">
 								<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 								<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 								<div class="form-group">
@@ -37,7 +37,7 @@
 	                                    <div class="form-group">
 	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>비밀번호</label>
 	                                        <div class="col-lg-10 col-md-10">
-	                                            <input type="password" class="form-control" name="pass" id="pass">
+	                                            <input type="text" class="form-control" name="pass" id="pass" value=<?php echo $data['pwd']?>>
 	                                        </div>
 	                                    </div>
 	                                    <div class="form-group">
@@ -47,11 +47,22 @@
 	                                        </div>
 	                                    </div>
 	                                    <div class="form-group">
-	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>등급</label>
-	                                        <div class="col-lg-10 col-md-10">
-	                                            <input type="text" class="form-control" name="position" id="position" value=<?php echo $data['grade']?>>
-	                                        </div>
-	                                    </div>
+											<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">등급</label>
+											<div class="col-lg-2 col-md-2">
+												<div class="radio-custom radio-inline">
+		                                        	<input type="radio" name="grade" value=1 <?=$data['grade'] == '1' ? ' checked="checked"' : '';?> checked="checked" id="in_office">
+		                                        	<label for="in_office">일반</label>
+		                                        </div>
+		                                        <div class="radio-custom radio-inline">
+		                                        	<input type="radio" name="grade" value=2 <?=$data['grade'] == '2' ? ' checked="checked"' : '';?> id="out_office">
+		                                        	<label for="out_office">장기</label>
+		                                        </div>
+		                                        <div class="radio-custom radio-inline">
+		                                        	<input type="radio" name="grade" value=3 <?=$data['grade'] == '3' ? ' checked="checked"' : '';?> id="out_office">
+		                                        	<label for="out_office">등급</label>
+		                                        </div>
+											</div>
+										</div>
 	                                    <div class="form-group">
 											<label for="email" class="col-lg-2 col-md-2 control-label lb-left-align"> 이메일</label>
 											<div class="col-lg-10 col-md-10">
@@ -63,12 +74,12 @@
 											<div class="col-lg-2 col-md-2">
 												<div class="input-daterange input-group">
 													<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-													<input type="text" class="form-control" name="join_date" id="join_date" value=<?php if($data['birth'] != '1') echo "'" .$data['birth'] . "'";?>/>
+													<input type="text" class="form-control" name="birthday" id="birthday" value=<?php if($data['birth'] != '1') echo "'" .date("Y-m-d", strtotime($data['birth'])) . "'";?>/>
 												</div>
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4">
+		                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> checked="checked" id="radio4">
 		                                        	<label for="radio4">남자</label>
 		                                        </div>
 		                                        <div class="radio-custom radio-inline">
@@ -82,11 +93,11 @@
 											<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">분류</label>
 											<div class="col-lg-2 col-md-2">
 												<div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="in_office" value=0 <?=$data['type'] == '0' ? ' checked="checked"' : '';?>  id="in_office">
+		                                        	<input type="radio" name="kind" value=1 <?=$data['type'] == '1' ? ' checked="checked"' : '';?> checked="checked" id="kind_kin">
 		                                        	<label for="in_office">지식인</label>
 		                                        </div>
 		                                        <div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="in_office" value=1 <?=$data['type'] == '1' ? ' checked="checked"' : '';?> id="out_office">
+		                                        	<input type="radio" name="kind" value=2 <?=$data['type'] == '2' ? ' checked="checked"' : '';?> id="kind_blog">
 		                                        	<label for="out_office">블로그</label>
 		                                        </div>
 											</div>
@@ -95,15 +106,15 @@
 											<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">용도</label>
 											<div class="col-lg-2 col-md-2">
 												<div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="in_office" value=0 <?=$data['is_using_question'] == '0' ? ' checked="checked"' : '';?>  id="in_office">
+		                                        	<input type="radio" name="use" value=3 <?=$data['is_using_question'] == '3' ? ' checked="checked"' : '';?> checked="checked" id="use_not">
 		                                        	<label for="in_office">미사용</label>
 		                                        </div>
 		                                        <div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="in_office" value=1 <?=$data['is_using_question'] == '1' ? ' checked="checked"' : '';?> id="out_office">
+		                                        	<input type="radio" name="use" value=1 <?=$data['is_using_question'] == '1' ? ' checked="checked"' : '';?> id="use_req">
 		                                        	<label for="out_office">질문</label>
 		                                        </div>
 		                                        <div class="radio-custom radio-inline">
-		                                        	<input type="radio" name="in_office" value=1 <?=$data['is_using_question'] == '2' ? ' checked="checked"' : '';?> id="out_office">
+		                                        	<input type="radio" name="use" value=1 <?=$data['is_using_question'] == '2' ? ' checked="checked"' : '';?> id="use_res">
 		                                        	<label for="out_office">답변</label>
 		                                        </div>
 											</div>
