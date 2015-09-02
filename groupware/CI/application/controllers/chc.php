@@ -43,7 +43,7 @@ class Chc extends CI_Controller{
 	}
 	
 	public function getWhereFilter(){
-		$where['p.menu_part_no'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
+		$where['m2.no'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
 		
 		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
 		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
