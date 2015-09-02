@@ -1,8 +1,8 @@
-<div class="row text-danger">준비중 - 미리 정의된 권한 테이블 추가 </div>
-
 <div class="row form-group ">
-	<div class="col-xs-7 text-center">명칭</div>
-	<div class="col-xs-3 text-center">권한1</div>
+	<div class="col-xs-4 text-center">명칭</div>
+	<div class="col-xs-2 text-center">권한1</div>
+	<div class="col-xs-2 text-center">권한2</div>
+	<div class="col-xs-2 text-center">권한2</div>
 	<div class="col-xs-2 text-center">권한2</div>
 </div>
 
@@ -10,15 +10,34 @@
 
 	<!-- input row -->
 	<div class="row form-group pop-row" style="padding:5px 0px 5px 0px;">
-		<div class="col-xs-7 text-center">
-			<input type="text" name="pop_order" class="form-control" placeholder="순서" data-value="" value="">
-		</div>
-		<div class="col-xs-3 text-center">
-			<input type="text" name="pop_name" class="form-control" placeholder="내용" data-value="" value="">
+		<div class="col-xs-4 text-center">
+			<input type="text" name="pop_order" class="form-control" placeholder="순서" data-value="" value="" readonly>
 		</div>
 		<div class="col-xs-2 text-center">
-			<input type="text" name="pop_name" class="form-control" placeholder="내용" data-value="" value="">
+			<select class="fancy-select form-control tb_num" name="tb_num">
+				<option value="Y">Y</option>
+				<option value="M">N</option>
+			</select>
 		</div>
+		<div class="col-xs-2 text-center">
+			<select class="fancy-select form-control tb_num" name="tb_num">
+				<option value="Y">Y</option>
+				<option value="M">N</option>
+			</select>
+		</div>
+		<div class="col-xs-2 text-center">
+			<select class="fancy-select form-control tb_num" name="tb_num">
+				<option value="Y">Y</option>
+				<option value="M">N</option>
+			</select>
+		</div>
+		<div class="col-xs-2 text-center">
+			<select class="fancy-select form-control tb_num" name="tb_num">
+				<option value="Y">Y</option>
+				<option value="M">N</option>
+			</select>
+		</div>
+
 	</div>
 	<!-- input row -->
 
