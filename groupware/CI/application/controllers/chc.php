@@ -132,7 +132,7 @@ class Chc extends CI_Controller{
 		$data['head_name'] = 'CHC 관리';
 		
 		//뷰 로딩
-		//$this->load->view('marketing/chc_write',$data);
+		$this->load->view('marketing/chc_write',$data);
 	}
 	
 	public function checkKind($kind){

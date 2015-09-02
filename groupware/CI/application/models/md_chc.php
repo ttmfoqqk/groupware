@@ -58,7 +58,7 @@ class Md_chc extends CI_Model{
 			}
 		}
 		
-		$this->db->select('c.no, c.order, c.kind, c.created, m2.no, m2.name as department_name ,m.name as menu_kind, c.title, i.bizName, c.keyword, c.url, p.sData, p.eData, c.rank, u.name as user_name, c.title, p.pPoint, p.mPoint, p.menu_part_no, c.ip, c.status, c.customer_no');
+		$this->db->select('c.no, c.order, c.kind, c.created, m2.no as department_no, m2.name as department_name ,m.name as menu_kind, c.title, i.bizName, c.keyword, c.url, p.sData, p.eData, c.rank, u.name as user_name, c.title, p.pPoint, p.mPoint, p.menu_part_no, c.ip, c.status, c.customer_no');
 		$this->db->join('sw_project p', 'c.project_no = p.no', 'left outer');
 	//	$this->db->join('sw_user u', 'p.user_no = u.no', 'left outer');
 		$this->db->join('sw_menu m', 'p.menu_no = m.no', 'left outer');
