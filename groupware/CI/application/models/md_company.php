@@ -221,6 +221,26 @@ class Md_company extends CI_Model{
 		$this->set_annual_delete($staff);
 		$this->db->insert_batch('sw_user_annual',$option);
 	}
+	/* 사원->권한 */
+	public function get_permission_list($option=null,$user_no){
+		$this->db->select('p.*, u.permission as u_permission');
+		$this->db->from('sw_permission p');
+		$this->db->join('sw_user_permission u', 'p.category = u.category and u.user_no="'.$user_no.'"', 'left');
+		$this->db->where($option);
+		$this->db->order_by('order','ASC');
+		$this->db->order_by('category','ASC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+	public function set_permission_delete($option){
+		$this->db->delete('sw_user_permission',$option);
+	}
+	public function set_permission_insert($option=null,$staff){
+		$this->set_permission_delete($staff);
+		$this->db->insert_batch('sw_user_permission',$option);
+	}
 }
 /* End of file company_model.php */
 /* Location: ./models/company_model.php */
