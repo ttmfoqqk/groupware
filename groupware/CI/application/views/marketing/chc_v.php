@@ -166,7 +166,7 @@
 											foreach ( $list as $lt ) {
 											$anchor_url = site_url ( 'chc/write/'. $lt ['no'] );
 											?>
-											<tr>
+											<tr <?php if($lt['status'] == '0') echo 'style="background-color: #c0c0c0;"';?>>
 												<td>
 													<div class="checkbox-custom">
 														<input id="check<?$lt['no'];?>" name="no[]"
@@ -252,7 +252,6 @@
 
 
  <script src="<?echo $this->config->base_url()?>html/plugins/charts/flot/jquery.flot.custom.js"></script>
-        <script src="<?echo $this->config->base_url()?>html/plugins/charts/flot/jquery.flot.pie.js"></script>
         <script src="<?echo $this->config->base_url()?>html/plugins/charts/flot/jquery.flot.resize.js"></script>
         <script src="<?echo $this->config->base_url()?>html/plugins/charts/flot/jquery.flot.time.js"></script>
         <script src="<?echo $this->config->base_url()?>html/plugins/charts/flot/jquery.flot.growraf.js"></script>
