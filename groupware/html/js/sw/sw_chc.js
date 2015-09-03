@@ -229,7 +229,6 @@ function getExpData(no, date){
 		,type: "POST"
 		,dataType: 'json'
 		,success: function(data, status, jqxhr){
-			console.log(data);
 			if(data.success == true)
 			{
 				return true;

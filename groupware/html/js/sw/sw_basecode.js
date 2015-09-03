@@ -19,6 +19,7 @@ function customModal(msg, title, label, callback){
 	$('.modal-header').css("color","white");
 }
 
+//bootbox callback model
 function cbModel(func, arg){
 	return function(){
 		if(arg != null)
@@ -245,9 +246,10 @@ function codeList(keyNo){
 
 
 /***************************************************************************************************
- * ready
+ * C,U,D Event Model
  * 
  ***************************************************************************************************/
+//key 생성, 수정
 function createKey(btObj){
 	btn = btObj.attr("id");
 	
@@ -306,6 +308,7 @@ function mdCreateKey(args){
 	
 }
 
+//code 생성, 수정, 삭제
 function createCode(btObj){
 	btn = btObj.attr("id");
 	
@@ -379,7 +382,6 @@ function createCode(btObj){
 		})
 		
 	}
-	
 }
 
 function mdCreateCode(args){
@@ -412,6 +414,10 @@ function mdCreateCode(args){
 }
 
 
+/***************************************************************************************************
+ * ready
+ * 
+ ***************************************************************************************************/
 $(document).ready(function() {
 	keyList();
 });
