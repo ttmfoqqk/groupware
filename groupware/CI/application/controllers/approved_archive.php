@@ -64,10 +64,10 @@ class Approved_archive extends CI_Controller{
 			'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
-			'approved.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],
+			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.part_sender'  => $this->PAGE_CONFIG['params']['part_sender'],
-			'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
+			'approved.menu_no'  => $this->PAGE_CONFIG['params']['part_sender'],
+			'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no ) = ' => $this->PAGE_CONFIG['params']['part_receiver'],
 			'approved.user_no'    => $this->session->userdata('no')
 		);
 		$temp_title = addslashes($this->PAGE_CONFIG['params']['title']);
@@ -75,15 +75,17 @@ class Approved_archive extends CI_Controller{
 		$option['cus_where'] = "status.approved_no is null ";
 
 		$option['like'] = array(
-			'user_sender.name'    => $this->PAGE_CONFIG['params']['name_sender'],
-			'user_receiver.name'  => $this->PAGE_CONFIG['params']['name_receiver'],
+			'user.name'    => $this->PAGE_CONFIG['params']['name_sender'],
+			//'user_receiver.name'  => $this->PAGE_CONFIG['params']['name_receiver'],
+			'IF(approved.kind = 0, project_user.name , document_user.name )'    => $this->PAGE_CONFIG['params']['name_receiver'],
 			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
 		);
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->approved_model->get_approved_list($option,PAGING_PER_PAGE,$offset);
+		$get_data = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);
 
 		$data['total']         = $get_data['total'];   // 전체글수
+		echo $data['total'];
 		$data['list']          = $get_data['list'];    // 글목록
 		$data['anchor_url']    = site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']); // 글 링크
 		$data['write_url']     = site_url('approved_archive/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
@@ -100,6 +102,8 @@ class Approved_archive extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_archive_v',$data);
+
+		echo $this->db->last_query();
 	}
 	public function write(){
 		$no     = $this->input->get('no');
