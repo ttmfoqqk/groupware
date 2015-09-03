@@ -64,28 +64,23 @@ class Approved_archive extends CI_Controller{
 			'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
-			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'approved.menu_no'  => $this->PAGE_CONFIG['params']['part_sender'],
+			'approved.menu_no'    => $this->PAGE_CONFIG['params']['part_sender'],
 			'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no ) = ' => $this->PAGE_CONFIG['params']['part_receiver'],
-			'approved.user_no'    => $this->session->userdata('no')
-		);
-		$temp_title = addslashes($this->PAGE_CONFIG['params']['title']);
-		//$option['cus_where'] = "(project.title like '%".$temp_title."%' OR document.name like '%".$temp_title."%' ) and status.approved_no is null ";
-		$option['cus_where'] = "status.approved_no is null ";
+			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 
+			'approved.user_no'    => $this->session->userdata('no') // 나의 결재 정보
+		);
 		$option['like'] = array(
-			'user.name'    => $this->PAGE_CONFIG['params']['name_sender'],
-			//'user_receiver.name'  => $this->PAGE_CONFIG['params']['name_receiver'],
-			'IF(approved.kind = 0, project_user.name , document_user.name )'    => $this->PAGE_CONFIG['params']['name_receiver'],
-			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
+			'user.name'      => $this->PAGE_CONFIG['params']['name_sender'],
+			'approved.title' => $this->PAGE_CONFIG['params']['title'],
+			'IF(approved.kind = 0, project_user.name , document_user.name )' => $this->PAGE_CONFIG['params']['name_receiver']
 		);
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);
 
 		$data['total']         = $get_data['total'];   // 전체글수
-		echo $data['total'];
 		$data['list']          = $get_data['list'];    // 글목록
 		$data['anchor_url']    = site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']); // 글 링크
 		$data['write_url']     = site_url('approved_archive/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
@@ -103,12 +98,11 @@ class Approved_archive extends CI_Controller{
 
 		$this->load->view('approved/list_archive_v',$data);
 
-		echo $this->db->last_query();
 	}
 	public function write(){
 		$no     = $this->input->get('no');
 		$option = array('approved.no'=>$no);
-		$result = $this->approved_model->get_approved_detail($option);
+		$result = $this->approved_model->approved_archive_detail($option);
 
 		$data['action_type'] = 'create';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
@@ -116,63 +110,55 @@ class Approved_archive extends CI_Controller{
 		$data['list_url']    = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 
 		$data['data'] = array(
-			'no'         => '-',
-			'kind'       => NULL,
-			'project_no' => NULL,
-			'user_no'    => NULL,
-			'menu_no'    => NULL,
-			'title'      => NULL,
-			'sData'      => NULL,
-			'eData'      => NULL,
-			'file'       => NULL,
-			'order'      => 0,
-			'created'    => Date('Y-m-d'),
-			'department' => NULL,
-			'project_title' => NULL,
-			'project_sData' => NULL,
-			'project_eData' => NULL,
-			'pPoint' => NULL,
-			'mPoint' => NULL,
-			'order' => 0,
-			'project_menu_name'=>NULL,
-			'project_contents'=>NULL,
-			'project_file'=>NULL,
-			'approved_contents'=>NULL,
+			'no'            => '-',
+			'kind'          => '',
+			'project_no'    => '',
+			'user_no'       => '',
+			'menu_no'       => '',
+			'title'         => '',
+			'sData'         => '',
+			'eData'         => '',
+			'file'          => '',
+			'order'         => 0,
+			'created'       => Date('Y-m-d'),
+			'user_name'     => $this->session->userdata('name'),
+			'part_name'     => '',
+			'category_name' => '',
+			'pPoint'        => '',
+			'mPoint'        => '',
+			'contents'      => '',
+			'p_contents'    => '',
+			'document_name' => ''
 		);
+
 		if ($result->num_rows() > 0){
 			$result = $result->row();
 
 			$data['action_type'] = 'edit';
 			$data['data'] = array(
-				'no'         => $result->no,
-				'kind'       => $result->kind,
-				'project_no' => $result->project_no,
-				'user_no'    => $result->user_no,
-				'menu_no'    => $result->menu_no,
-				'title'      => $result->title,
-				'sData'      => substr($result->sData,0,10),
-				'eData'      => substr($result->eData,0,10),
-				'file'       => $result->file,
-				'order'      => $result->order,
-				'created'    => substr($result->created,0,10),
-				'department'        => $result->department,
-				'project_title'     => $result->project_title,
-				'project_sData'     => substr($result->project_sData,0,10),
-				'project_eData'     => substr($result->project_eData,0,10),
-				'pPoint'            => $result->pPoint,
-				'mPoint'            => $result->mPoint,
-				'order'             => $result->order,
-				'project_menu_name' => $result->project_menu_name,
-				'project_contents'  => nl2br($result->project_contents),
-				'project_file'      => $result->project_file,
-				'approved_contents' => $result->approved_contents,
-				
+				'no'            => $result->no,
+				'kind'          => $result->kind,
+				'project_no'    => $result->project_no,
+				'user_no'       => $result->user_no,
+				'menu_no'       => $result->menu_no,
+				'title'         => $result->title,
+				'sData'         => substr($result->sData,0,10),
+				'eData'         => substr($result->eData,0,10),
+				'file'          => $result->file,
+				'order'         => $result->order,
+				'created'       => substr($result->created,0,10),
+				'user_name'     => $result->user_name,
+				'part_name'     => $result->part_name,
+				'category_name' => $result->category_name,
+				'pPoint'        => $result->pPoint,
+				'mPoint'        => $result->mPoint,
+				'contents'      => $result->contents,
+				'p_contents'    => nl2br($result->p_contents),
+				'document_name' => $result->document_name
 			);
 		}
 		
 		$this->load->view('approved/write_archive_v',$data);
-
-		//echo $this->db->last_query();
 	}
 	public function proc(){
 		$this->load->library('form_validation');
@@ -207,7 +193,6 @@ class Approved_archive extends CI_Controller{
 			$this->form_validation->set_rules('approved_kind','결재 종류','required');
 			$this->form_validation->set_rules('task_no','업무/문서 no','required');
 			if( $approved_kind == '0' ){
-				
 				$this->form_validation->set_rules('p_department','담당부서','required');
 				$this->form_validation->set_rules('p_title','제목','required|max_length[200]');
 				//$this->form_validation->set_rules('p_contents','내용','required');
@@ -286,6 +271,15 @@ class Approved_archive extends CI_Controller{
 			);
 			$this->approved_model->set_approved_update($option,array('no'=>$no));
 
+			//if($contents){
+				$option = array(
+					'approved_no' =>$no,
+					'user_no'     =>$this->session->userdata('no'),
+					'contents'    =>$contents
+				);
+				$result = $this->approved_model->set_approved_contents_insert($option);
+			//}
+
 			alert('수정되었습니다.', site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
 
@@ -336,7 +330,7 @@ class Approved_archive extends CI_Controller{
 					$status = NULL;
 				}
 				array_push($option,array(
-					'approved_no'   => $approved_no,					
+					'approved_no'   => $approved_no,
 					'sender'        => $json_data[$i]->user_no,
 					'receiver'      => $json_data[$i+1]->user_no,
 					'part_sender'   => $json_data[$i]->menu_no,
@@ -347,6 +341,48 @@ class Approved_archive extends CI_Controller{
 			}
 
 			$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
+			$return = array(
+				'result' => 'ok',
+				'msg' => 'ok'
+			);
+		}
+		echo json_encode($return);
+	}
+
+
+	/* 일반업무 담당자 임시테이블 등록 */
+	public function _temp_doc_staff_lists(){
+		$approved_no = $this->input->post('approved_no');
+		$option = array(
+			'approved_no'=>$approved_no
+		);
+		$result = $this->approved_model->temp_document_staff_list($option);
+		echo json_encode($result);
+	}
+
+	public function _temp_doc_staff_insert(){
+		$approved_no = $this->input->post('approved_no');
+		$json_data  = json_decode($this->input->post('json_data'));
+		
+		if( count($json_data) <= 0){
+			$return = array(
+				'result' => 'error',
+				'msg' => 'no data'
+			);
+		}else{
+			$option = array();
+			$i = 1;
+			foreach($json_data as $key) {
+				array_push($option,array(
+					'approved_no' => $approved_no,
+					'menu_no'     => $key->menu_no,
+					'user_no'     => $key->user_no,
+					'bigo'        => $key->bigo,
+					'order'       => $i
+				));
+				$i++;
+			}
+			$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
 			$return = array(
 				'result' => 'ok',
 				'msg' => 'ok'

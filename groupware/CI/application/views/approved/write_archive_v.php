@@ -52,9 +52,9 @@
 
 							<!-- 업무보고서 -->
 							<input type="hidden" name="p_department" id="p_department" value="<?echo $data['menu_no'];?>">
-							<input type="hidden" name="p_title" id="p_title" value="<?echo $data['project_title'];?>">
-							<input type="hidden" name="p_sData" id="p_sData" value="<?echo $data['project_sData'];?>">
-							<input type="hidden" name="p_eData" id="p_eData" value="<?echo $data['project_eData'];?>">
+							<input type="hidden" name="p_title" id="p_title" value="<?echo $data['title'];?>">
+							<input type="hidden" name="p_sData" id="p_sData" value="<?echo $data['sData'];?>">
+							<input type="hidden" name="p_eData" id="p_eData" value="<?echo $data['eData'];?>">
 
 							<div style="<?echo ($data['kind'] == '0' ? '' : 'display:none;'); ?>" id="project-layout">
 							<div class="panel panel-default">
@@ -72,23 +72,23 @@
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td id="project_department"><?echo $data['department'];?></td>
+													<td id="project_department"><?echo $data['part_name'];?></td>
 													<th>담당자</th>
-													<td id="project_user"><?echo $this->session->userdata('name');?></td>
+													<td id="project_user"><?echo $data['user_name'];?></td>
 												</tr>
 												<tr>
 													<th>분류</th>
-													<td id="project_menu"><?echo $data['project_menu_name']?></td>
+													<td id="project_menu"><?echo $data['category_name']?></td>
 													<th>제목</th>
-													<td id="project_title"><?echo $data['project_title'];?></td>
+													<td id="project_title"><?echo $data['title'];?></td>
 												</tr>
 												<tr>
 													<th>내용</th>
-													<td id="project_contents" colspan="3"><?echo $data['project_contents'];?></td>
+													<td id="project_contents" colspan="3"><?echo $data['p_contents'];?></td>
 												</tr>
 												<tr>
 													<th>진행기간</th>
-													<td id="project_date" colspan="3"><?echo $data['project_sData'].' ~ '.$data['project_eData'];?></td>
+													<td id="project_date" colspan="3"><?echo $data['sData'].' ~ '.$data['eData'];?></td>
 												</tr>
 												<tr>
 													<th>결재점수</th>
@@ -98,7 +98,7 @@
 												</tr>
 												<tr>
 													<th>첨부파일</th>
-													<td id="project_file"><?echo $data['project_file'];?></td>
+													<td id="project_file"><?echo $data['file'];?></td>
 													<th >순서</th>
 													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>
 												</tr>
@@ -106,7 +106,7 @@
 										</table>
 									</div>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['approved_contents'];?></textarea>
+										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['contents'];?></textarea>
 									</div>
 								</div>
 							</div>
@@ -114,34 +114,34 @@
 							<!-- 업무보고서 -->
 
 							<!-- 일반보고서 -->
-							<div style="display:none;" id="document-layout">
+							<div style="<?echo ($data['kind'] == '1' ? '' : 'display:none;'); ?>" id="document-layout">
 							<div class="panel panel-default">
 								<div class="panel-body">
-									<h3 class="text-center mb25">문서이름</h3>
+									<h3 class="text-center mb25" id="document_name"><?echo $data['document_name'];?></h3>
 									
 									<div class="col-xs-10 col-xs-offset-1 mb20">
 										<table class="table table-bordered table-border-black">
 											<tbody>
 												<tr>
 													<th style="width:200px;">문서번호</th>
-													<td style="width:400px;"> </td>
+													<td style="width:400px;"><?echo $data['no'];?></td>
 													<th style="width:200px;">등록일자</th>
-													<td><?echo Date('Y-m-d');?></td>
+													<td><?echo $data['created'];?></td>
 												</tr>
 												<tr>
 													<th>담당부서</th>
 													<td class="p5">
-														<select id="d_department" name="d_department" data-method="department" data-value="<?echo $this->input->get('document_department');?>" class="fancy-select form-control input-sm">
+														<select id="d_department" name="d_department" data-method="department" data-value="<?echo $data['menu_no'];?>" class="fancy-select form-control input-sm">
 															<option value="">담당부서</option>
 														</select>
 													</td>
 													<th>담당자</th>
-													<td id="document_user"> </td>
+													<td><?echo $data['user_name'];?></td>
 												</tr>
 												<tr>
 													<th>제목</th>
 													<td colspan="3" class="p5">
-														<input id="d_title" name="d_title" type="text" class="form-control input-sm" placeholder="제목" value="<?echo $this->input->get('title');?>">
+														<input id="d_title" name="d_title" type="text" class="form-control input-sm" placeholder="제목" value="<?echo $data['title'];?>">
 													</td>
 												</tr>
 												<tr>
@@ -151,16 +151,16 @@
 														<div class="col-xs-6 col-md-6 row">
 															<div class="input-daterange input-group">
 																<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-																<input type="text" class="form-control input-sm" name="d_sData" id="d_sData" value="<?echo $this->input->get('sData')?>" />
+																<input type="text" class="form-control input-sm" name="d_sData" id="d_sData" value="<?echo $data['sData'];?>" />
 																<span class="input-group-addon">to</span>
-																<input type="text" class="form-control input-sm" name="d_eData" id="d_eData" value="<?echo $this->input->get('eData')?>"/>
+																<input type="text" class="form-control input-sm" name="d_eData" id="d_eData" value="<?echo $data['eData'];?>"/>
 															</div>
 														</div>
 														<div class="col-xs-6 col-md-6">
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
+															<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsToday">오늘</button>
+															<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsWeek">7일</button>
+															<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsMonth">30일</button>
+															<button type="button" class="btn btn-sm btn-primary btn-alt" id="WsReset">날짜초기화</button>
 														</div>
 														
 													</td>
@@ -171,13 +171,13 @@
 														<input type="file" id="d_file" name="d_file" class="filestyle" data-size="sm" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 													</td>
 													<th>순서</th>
-													<td class="p5"><input type="text" id="d_order" name="d_order" class="form-control input-sm input-mini" value="0"></td>
+													<td class="p5"><input type="text" id="d_order" name="d_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="d_contents" name="d_contents" class="form-control" rows="10" placeholder="내용"></textarea>
+										<textarea id="d_contents" name="d_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['contents'];?></textarea>
 									</div>
 								</div>
 							</div>
@@ -189,7 +189,7 @@
 								<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 							</div>
 							<div class="panel-body pull-right">
-								<?if( $action_type == 'edit' ) {?>
+								<?if( $action_type == 'edit' ){?>
 								<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								<?}?>
 								<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>

@@ -6,6 +6,7 @@ $(document).ready(function() {
 	var $part_sender   = $('#part_sender');
 	var $part_receiver = $('#part_receiver');
 	var $menu_no       = $('#menu_no');
+	var $d_department  = $('#d_department');
 	
 	
 	if($part_sender.length>0){
@@ -21,6 +22,12 @@ $(document).ready(function() {
 			value  : $part_receiver.attr('data-value')
 		});
 	}
+	if($d_department.length>0){
+		$d_department.create_menu({
+			method : $d_department.attr('data-method'),
+			value  : $d_department.attr('data-value')
+		});
+	}
 	
 	if($part_receiver.length>0 && $menu_no.length>0){
 		var $menu_no_method = $menu_no.attr('data-method').split(',');
@@ -30,6 +37,8 @@ $(document).ready(function() {
 			value  : $menu_no.attr('data-value'),
 			callback : function(){
 				if($menu_no_method.length>1){
+					// 서식 자료 추가 , 구분자 추가
+					$menu_no.append('<option value="">========================</option>');
 					$menu_no.create_menu({
 						method : $menu_no_method[1],
 						value  : $menu_no.attr('data-value')
@@ -45,6 +54,11 @@ $(document).ready(function() {
 	var eData  = $('#eData');
 	var swData = $('#swData');
 	var ewData = $('#ewData');
+
+	var sData  = $('#d_sData');
+	var eData  = $('#d_eData');
+	var swData = $('#d_swData');
+	var ewData = $('#d_ewData');
 	// 진행기간 btn
 	var btn_sToday = $('#sToday');
 	var btn_sWeek  = $('#sWeek');
@@ -245,11 +259,9 @@ function call_data_modal(mode){
 	$('#modal-body').load(load_url);
 }
 
-/* 담당자 팝업 */
 
-
-/* 담당자 팝업 */
-function call_project_staff_modal(no,callback){
+/* 결재요청 팝업 */
+function call_project_staff_modal(no,kind,callback){
 	// base div hide
 	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
 
@@ -270,18 +282,59 @@ function call_project_staff_modal(no,callback){
 	});
 	$('.modal-header').css("background-color","#51bf87 ");
 	$('.modal-header').css("color","white");
-	//$('.modal-dialog').addClass('modal70');
-
+	
 	// 팝업 호출
-	$('#modal-body').load('/groupware/html/pop/approved_call_project_staff.php',{'no':no});
+	if(kind==1){
+		$('#modal-body').load('/groupware/html/pop/approved_call_document_staff.php',{'no':no});
+	}else{
+		$('#modal-body').load('/groupware/html/pop/approved_call_project_staff.php',{'no':no});
+	}
 }
 
-function call_project_staff(project_no,approved_no){
-	call_project_staff_modal(project_no,function(){
+function call_project_staff(project_no,approved_no,kind){
+	var no = kind=='0' ? project_no : approved_no;
+	call_project_staff_modal(no,kind,function(){
 		if(confirm('결재를 등록하시겠습니까?')){
 			application_approved(approved_no);
 		}else{
 			return false;
 		}
+	});
+}
+
+
+/* 일반업무 담당자등록 팝업 */
+function document_staff_modal(no,callback){
+	// base div hide
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+
+	bootbox.dialog({
+		message: test_html,
+		title: '담당자',
+		buttons: {
+			cancel: {
+				label: '닫기',
+				className: "btn-danger"
+			},
+			success: {
+				label: '저장',
+				className: "btn-success",
+				callback: callback
+			}
+		}
+	});
+	$('.modal-header').css("background-color","#51bf87 ");
+	$('.modal-header').css("color","white");
+	$('.modal-dialog').addClass('modal70');
+
+	// 팝업 호출
+	$('#modal-body').load('/groupware/html/pop/approved_document_staff.php',{'no':no});
+}
+
+function document_staff(no){
+	document_staff_modal(no,function(){
+		// 팝업창 내부 함수
+		modal_submit();
+		return false;
 	});
 }

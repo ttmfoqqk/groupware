@@ -245,6 +245,52 @@ class Document extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 	}
+
+	public function _lists(){
+		//필터 설정
+		$likes = $this->getListFilter();
+		
+		$menu = !$this->input->get('ft_document') ? NULL : $this->input->get('ft_document');
+		$is_active = !$this->input->get('ft_active') ? NULL : $this->input->get('ft_active');
+		
+		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
+		
+		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
+		
+		if(($start && $end) || $menu || $is_active){
+			$where = array();
+			if($start && $end){
+				$where['d.created <'] = $end;
+				$where['d.created >='] = $start;
+			}
+			if($menu)
+				$where['d.menu_no'] = $menu;
+			if($is_active)
+				$where['d.is_active'] = $is_active;
+		}
+		else
+			$where = NULL;
+		
+		$total = $this->md_document->getCount($where, $likes);
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
+		
+		//Pagination 설정
+		$config['base_url']    = '';
+		$config['total_rows']  = $total; // 전체 글갯수
+		$config['uri_segment'] = $uri_segment;
+		$config['per_page']    = $tb_show_num;
+
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+
+		$data['list'] = $this->md_document->get($where, $likes, $tb_show_num, $offset);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+
+		echo json_encode($data);
+	}
 }
 /* End of file document.php */
 /* Location: ./controllers/document.php */

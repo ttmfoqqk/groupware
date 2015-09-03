@@ -23,22 +23,22 @@ class Approved_model extends CI_Model{
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('sw_user AS user','approved.user_no = user.no');
-		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no and status.approved_no is null','left');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
 
 		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
-		$this->db->join('sw_project_staff AS project_staff','project.no = project_staff.project_no','left');
+		$this->db->join('(select * from sw_project_staff group by project_no) AS project_staff','project.no = project_staff.project_no','left');
 		$this->db->join('sw_user AS project_user','project_staff.user_no = project_user.no','left');
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
-		$this->db->join('sw_document_staff AS document_staff','document.no = document_staff.document_no','left');
+		$this->db->join('(select * from sw_document_staff group by approved_no) AS document_staff','document.no = document_staff.approved_no','left');
 		$this->db->join('sw_user AS document_user','document_staff.user_no = document_user.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
-
+		$this->db->where('status.approved_no is null');
 		$this->db->where($where);
 		$this->db->like($like);
-		$this->db->group_by('project_staff.project_no,document_staff.document_no');
+		//$this->db->group_by('project_staff.project_no,document_staff.approved_no');
 
 		$query = $this->db->get();
 		$query = $query->row();
@@ -56,23 +56,23 @@ class Approved_model extends CI_Model{
 
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('sw_user AS user','approved.user_no = user.no');
-		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no and status.approved_no is null','left');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no','left');
 
 		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
-		$this->db->join('sw_project_staff AS project_staff','project.no = project_staff.project_no','left');
+		$this->db->join('(select * from sw_project_staff group by project_no) AS project_staff','project.no = project_staff.project_no','left');
 		$this->db->join('sw_user AS project_user','project_staff.user_no = project_user.no','left');
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
-		$this->db->join('sw_document_staff AS document_staff','document.no = document_staff.document_no','left');
+		$this->db->join('(select * from sw_document_staff group by approved_no) AS document_staff','document.no = document_staff.approved_no','left');
 		$this->db->join('sw_user AS document_user','document_staff.user_no = document_user.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
-
+		$this->db->where('status.approved_no is null');
 		$this->db->where($where);
 		$this->db->like($like);
 		
-		$this->db->group_by('project_staff.project_no,document_staff.document_no');
+		
 		$this->db->order_by('approved.order','ASC');
 		$this->db->order_by('approved.no','DESC');
 		
@@ -80,6 +80,49 @@ class Approved_model extends CI_Model{
 
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();
+		return $result;
+	}
+
+	/*
+		보관함 TEST 상세
+	*/
+
+	public function approved_archive_detail($option){
+		
+		foreach($option as $key=>$val){
+			if($val!=''){
+				$option[$key] = $val;
+			}
+		}
+
+		$this->db->select('approved.*');
+		$this->db->select('contents.contents as contents');
+		$this->db->select('user.name as user_name ');
+		$this->db->select('user_menu.name as part_name ');
+		
+		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as category_name ');
+		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
+		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
+		$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+		$this->db->select('IF( approved.kind = 0, project.file  , approved.file )  as file ');
+		$this->db->select('project.pPoint,project.mPoint,project.contents as p_contents');
+		
+		$this->db->select('contents.contents as contents');
+		$this->db->select('document.name as document_name');
+
+		$this->db->from('sw_approved as approved');
+		$this->db->join('sw_user AS user','approved.user_no = user.no');
+		$this->db->join('sw_menu AS user_menu','approved.menu_no = user_menu.no','left');
+		$this->db->join('sw_approved_contents AS contents','approved.no = contents.approved_no and approved.user_no = contents.user_no','left');
+
+		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
+		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
+
+		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_menu AS document_menu','document.menu_no = document.no','left');
+
+		$this->db->where($option);
+		$result = $this->db->get();
 		return $result;
 	}
 
@@ -188,12 +231,29 @@ class Approved_model extends CI_Model{
 	public function set_approved_delete($set_no){
 		$this->db->delete('sw_approved','no in('.$set_no.')');
 		$this->set_approved_staff_delete('approved_no in('.$set_no.')');
+		$this->set_approved_contents_delete('approved_no in('.$set_no.')');
 	}
-
+	
+	/* 내용 */
 	public function set_approved_contents_insert($option){
-		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_approved_contents',$option);
-		return $this->db->insert_id();
+
+		$this->db->select('count(*) as total');
+		$this->db->from('sw_approved_contents');
+		$this->db->where(array('approved_no'=>$option['approved_no'],'user_no'=>$option['user_no']));
+		$query = $this->db->get();
+		$query = $query->row();
+		$total = $query->total;
+		
+		if($total < 1){
+			$this->db->set('created', 'NOW()', false);
+			$this->db->insert('sw_approved_contents',$option);
+			return $this->db->insert_id();
+		}else{
+			$this->db->update('sw_approved_contents', array('contents'=>$option['contents']) , array('approved_no'=>$option['approved_no'],'user_no'=>$option['user_no']) );
+		}
+	}
+	public function set_approved_contents_delete($option){
+		$this->db->delete('sw_approved_contents',$option);
 	}
 
 	/* 담당자 */
@@ -233,6 +293,32 @@ class Approved_model extends CI_Model{
 		$query  = $this->db->get();
 		$result = $query->result_array();
 		return $result;
+	}
+
+
+	/* 일반업무 담당자 임시 테이블 */
+	public function temp_document_staff_list($option){
+		$this->db->select('staff.*');
+		$this->db->select('menu.name as menu_name');
+		$this->db->select('user.name as user_name');
+		$this->db->from('sw_document_staff as staff');
+		$this->db->join('sw_menu menu','staff.menu_no = menu.no');
+		$this->db->join('sw_user user','staff.user_no = user.no');
+		$this->db->where($option);
+		$this->db->order_by('staff.order','ASC');
+		
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+
+	public function temp_document_staff_delete($option){
+		$this->db->delete('sw_document_staff',$option);
+	}
+
+	public function temp_document_staff_insert($option,$staff){
+		$this->temp_document_staff_delete($staff);
+		$this->db->insert_batch('sw_document_staff',$option);
 	}
 }
 /* End of file approved_model.php */
