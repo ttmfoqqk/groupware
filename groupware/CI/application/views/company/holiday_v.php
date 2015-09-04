@@ -24,6 +24,8 @@
 						<div class="panel-body">
 
 							<form id="company-form-list" method="post" class="form-horizontal group-border stripped" role="form">
+								
+								<!--  
 								<div class="row">
 									<div class="col-lg-3 col-md-2 col-sm-2 col-xs-4">
 										<?php
@@ -46,7 +48,7 @@
 										<div class="btn btn-primary btn-alt mr5 mb10" id="btYear">이번년도</div>
 									</div>
 								</div>
-							
+								-->
 								<table class="table table-bordered" id="tabletools">
 									<thead>
 										<tr>

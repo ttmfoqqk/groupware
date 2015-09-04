@@ -19,16 +19,33 @@
 							<h4 class="panel-title"><i class="fa fa-circle"></i> 금일현황</h4>
 						</div>
 						<div class="panel-body">
-							
 							<!-- 출/퇴근 버튼 -->
-							<div class="row text-center">
-								<div class="col-lg-6 col-md-6 col-sm-6"><h4>출근시간 : 2015-07-02 09:21</h4></div>
-								<div class="col-lg-6 col-md-6 col-sm-6"><button type="button" class="btn btn-primary btn-alt btn-lg mr5 mb10">출근체크</button></div>
-							</div>
-							<div class="row text-center">
-								<div class="col-lg-6 col-md-6 col-sm-6"><h4>퇴근시간 : 2015-07-02 09:21</h4></div>
-								<div class="col-lg-6 col-md-6 col-sm-6"><button type="button" class="btn btn-primary btn-alt btn-lg mr5 mb10">퇴근체크</button></div>
-							</div>
+							<form method="post" role="form" action="<?echo site_url('main/start')?>">
+								<div class="row text-center">
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<div class="col-lg-6 col-md-6 col-sm-6">
+											<h4>출근 시간 : </h4>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-6">
+											<h4><?php echo isset($atn['sData']) ? date('H시 i분 s초', strtotime($atn['sData'])) : ''?></h4>
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6"><button type="submit" class="btn btn-primary btn-alt btn-lg mr5 mb10" id="btS">출근체크</button></div>
+								</div>
+							</form>
+							<form method="post" role="form" action="<?echo site_url('main/end')?>">
+								<div class="row text-center">
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<div class="col-lg-6 col-md-6 col-sm-6">
+											<h4>퇴근 시간 : </h4>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-6">
+											<h4 id="eDate"><?php echo isset($atn['eData']) ? date('H시 i분 s초', strtotime($atn['eData'])) : ''?></h4>
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6"><button type="submit" class="btn btn-primary btn-alt btn-lg mr5 mb10" id="btE">퇴근체크</button></div>
+								</div>
+							</form>
 							<!-- 출/퇴근 버튼 -->
 
 							<table class="table table-bordered table-striped text-center">
@@ -77,3 +94,6 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
+
+
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_main.js"></script>
