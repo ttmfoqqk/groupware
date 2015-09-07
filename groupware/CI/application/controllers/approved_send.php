@@ -84,7 +84,7 @@ class Approved_send extends CI_Controller{
 			'approved.created <'  => $ewData,
 			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.receiver'     => $this->PAGE_CONFIG['params']['part_receiver'],
+			'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
 			'status.sender'       => $this->session->userdata('no'),
 			'status.status'       => $this->PAGE_CONFIG['status']
 		);
@@ -128,7 +128,7 @@ class Approved_send extends CI_Controller{
 			'status.sender' => $this->session->userdata('no'),
 			'status.status' => $this->PAGE_CONFIG['status']
 		);
-		$result = $this->approved_model->get_approved_detail($option);
+		$result = $this->approved_model->approved_send_detail($option);
 
 		if ($result->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
@@ -138,30 +138,26 @@ class Approved_send extends CI_Controller{
 
 
 		$data['data'] = array(
-			'no'         => $result->no,
-			'kind'       => $result->kind,
-			'project_no' => $result->project_no,
-			'user_no'    => $result->user_no,
-			'menu_no'    => $result->menu_no,
-			'title'      => $result->title,
-			'sData'      => substr($result->sData,0,10),
-			'eData'      => substr($result->eData,0,10),
-			'file'       => $result->file,
-			'order'      => $result->order,
-			'created'    => substr($result->created,0,10),
-			'department'        => $result->sender_department,
-			'sender'            => $result->sender_name,
-			'project_title'     => $result->project_title,
-			'project_sData'     => substr($result->project_sData,0,10),
-			'project_eData'     => substr($result->project_eData,0,10),
-			'pPoint'            => $result->pPoint,
-			'mPoint'            => $result->mPoint,
-			'order'             => $result->order,
-			'project_menu_name' => $result->project_menu_name,
-			'project_contents'  => nl2br($result->project_contents),
-			'project_file'      => $result->project_file,
-			'approved_contents' => $result->approved_contents,
-			'status'            => $result->status,
+			'no'          => $result->no,
+			'kind'        => $result->kind,
+			'user_no'     => $result->user_no,
+			'menu_no'     => $result->menu_no,
+			'menu_name'   => $result->menu_name,
+			'title'       => $result->title,
+			'document_name' => $result->document_name,
+			'sData'       => substr($result->sData,0,10),
+			'eData'       => substr($result->eData,0,10),
+			'file'        => $result->file,
+			'order'       => $result->order,
+			'created'     => substr($result->created,0,10),
+			'sender_name' => $result->sender_name,
+			'sender_menu' => $result->sender_part,
+			'pPoint'      => $result->pPoint,
+			'mPoint'      => $result->mPoint,
+			'order'       => $result->order,
+			'p_contents'  => nl2br($result->p_contents),
+			'contents'    => $result->sender_contents,
+			'status'      => $result->status
 		);
 
 		/* 결재자들 */
@@ -175,14 +171,21 @@ class Approved_send extends CI_Controller{
 			'approved_no' => $result->no
 		);
 		$data['contents_list'] = $this->approved_model->get_approved_contents_list($option);
+	
+		if( $result->kind == '0' ){
+			$this->load->view('approved/view_project_v',$data);
+		}else{
+			$this->load->view('approved/view_document_v',$data);
+		}
 
-		$this->load->view('approved/view_project_v',$data);
+		
 	}
 
 	public function proc(){
 		$this->load->library('form_validation');
 		$action_type = $this->input->post('action_type');
 		$no          = $this->input->post('no');
+		$contents    = $this->input->post('contents');
 		$parameters  = urldecode($this->input->post('parameters'));
 		
 		if( $action_type == 'send' ){

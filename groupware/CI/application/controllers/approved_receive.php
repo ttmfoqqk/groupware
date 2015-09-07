@@ -39,7 +39,6 @@ class Approved_receive extends CI_Controller{
 				$this->PAGE_CONFIG['status'] = $this->PAGE_CONFIG['set_page'];
 		}
 
-
 		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
@@ -83,22 +82,20 @@ class Approved_receive extends CI_Controller{
 			'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
-			'approved.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],
+			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
 			'status.part_sender'  => $this->PAGE_CONFIG['params']['part_sender'],
 			'status.receiver'     => $this->session->userdata('no'),
 			'status.status'       => $this->PAGE_CONFIG['status']
 		);
-		
-		$option['cus_where'] = "status.approved_no is not null ";
 
 		$option['like'] = array(
-			'user_sender.name'    => $this->PAGE_CONFIG['params']['name_sender'],
+			'sss.sender_name'    => $this->PAGE_CONFIG['params']['name_sender'],
 			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
 		);
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->approved_model->get_approved_list($option,PAGING_PER_PAGE,$offset);
+		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록
@@ -131,7 +128,7 @@ class Approved_receive extends CI_Controller{
 			'status.receiver' => $this->session->userdata('no'),
 			'status.status'   => $this->PAGE_CONFIG['status']
 		);
-		$result = $this->approved_model->get_approved_detail($option);
+		$result = $this->approved_model->approved_send_detail($option);
 
 		if ($result->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
@@ -141,30 +138,26 @@ class Approved_receive extends CI_Controller{
 
 
 		$data['data'] = array(
-			'no'         => $result->no,
-			'kind'       => $result->kind,
-			'project_no' => $result->project_no,
-			'user_no'    => $result->user_no,
-			'menu_no'    => $result->menu_no,
-			'title'      => $result->title,
-			'sData'      => substr($result->sData,0,10),
-			'eData'      => substr($result->eData,0,10),
-			'file'       => $result->file,
-			'order'      => $result->order,
-			'created'    => substr($result->created,0,10),
-			'department'        => $result->sender_department,
-			'sender'            => $result->sender_name,
-			'project_title'     => $result->project_title,
-			'project_sData'     => substr($result->project_sData,0,10),
-			'project_eData'     => substr($result->project_eData,0,10),
-			'pPoint'            => $result->pPoint,
-			'mPoint'            => $result->mPoint,
-			'order'             => $result->order,
-			'project_menu_name' => $result->project_menu_name,
-			'project_contents'  => nl2br($result->project_contents),
-			'project_file'      => $result->project_file,
-			'approved_contents' => $result->approved_contents,
-			'status'            => $result->status,
+			'no'          => $result->no,
+			'kind'        => $result->kind,
+			'user_no'     => $result->user_no,
+			'menu_no'     => $result->menu_no,
+			'menu_name'   => $result->menu_name,
+			'title'       => $result->title,
+			'document_name' => $result->document_name,
+			'sData'       => substr($result->sData,0,10),
+			'eData'       => substr($result->eData,0,10),
+			'file'        => $result->file,
+			'order'       => $result->order,
+			'created'     => substr($result->created,0,10),
+			'sender_name' => $result->sender_name,
+			'sender_menu' => $result->sender_part,
+			'pPoint'      => $result->pPoint,
+			'mPoint'      => $result->mPoint,
+			'order'       => $result->order,
+			'p_contents'  => nl2br($result->p_contents),
+			'contents'    => $result->receiver_contents,
+			'status'      => $result->status
 		);
 
 		/* 결재자들 */
@@ -179,7 +172,11 @@ class Approved_receive extends CI_Controller{
 		);
 		$data['contents_list'] = $this->approved_model->get_approved_contents_list($option);
 
-		$this->load->view('approved/view_project_v',$data);
+		if( $result->kind == '0' ){
+			$this->load->view('approved/view_project_v',$data);
+		}else{
+			$this->load->view('approved/view_document_v',$data);
+		}
 	}
 
 	public function proc(){
@@ -187,6 +184,7 @@ class Approved_receive extends CI_Controller{
 		$action_type = $this->input->post('action_type');
 		$no          = $this->input->post('no');
 		$status      = $this->input->post('status');
+		$contents    = $this->input->post('contents');
 		$parameters  = urldecode($this->input->post('parameters'));
 		
 		if( $action_type == 'receive' ){

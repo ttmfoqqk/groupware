@@ -115,8 +115,8 @@
 
 							<table class="table table-bordered" id="tabletools">
 								<thead>
-									<!--tr>
-										<th style="width:45px;">
+									<tr>
+										<!--th style="width:45px;">
 											<div class="checkbox-custom">
 												<input class="check-all" type="checkbox" id="masterCheck" value="option1">
 												<label for="masterCheck"></label>

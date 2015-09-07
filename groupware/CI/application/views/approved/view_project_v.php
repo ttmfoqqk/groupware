@@ -40,23 +40,23 @@
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td><?echo $data['department'];?></td>
+													<td><?echo $data['sender_menu'];?></td>
 													<th>담당자</th>
-													<td><?echo $data['sender'];?></td>
+													<td><?echo $data['sender_name'];?></td>
 												</tr>
 												<tr>
 													<th>분류</th>
-													<td><?echo $data['project_menu_name'];?></td>
+													<td><?echo $data['menu_name'];?></td>
 													<th>제목</th>
-													<td><?echo $data['project_title'];?></td>
+													<td><?echo $data['title'];?></td>
 												</tr>
 												<tr>
 													<th>내용</th>
-													<td colspan="3"><?echo $data['project_contents'];?></td>
+													<td colspan="3"><?echo $data['p_contents'];?></td>
 												</tr>
 												<tr>
 													<th>진행기간</th>
-													<td colspan="3"><?echo $data['project_sData'].' ~ '.$data['project_eData'];?></td>
+													<td colspan="3"><?echo $data['sData'].' ~ '.$data['eData'];?></td>
 												</tr>
 												<tr>
 													<th>결재점수</th>
@@ -126,15 +126,17 @@
 												foreach($contents_list as $lt){?>
 												<tr>
 													<td><?echo $lt['user_name'];?></td>
-													<td colspan="3"><?echo $lt['contents'];?></td>
+													<td colspan="3"><?echo nl2br($lt['contents']);?></td>
 												</tr>
 												<?}?>
 											</tbody>
 										</table>
 									</div>
+									<?if($data['status']=='a'){?>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['approved_contents'];?></textarea>
+										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['contents'];?></textarea>
 									</div>
+									<?}?>
 								</div>
 							</div>
 							
