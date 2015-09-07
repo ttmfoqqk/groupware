@@ -94,6 +94,8 @@ class Main extends CI_Controller{
 	 */
 	public function checkHoliday($year, $today){
 		$holiday = $this->getHoliday($year);
+		if($holiday == null)
+			return null;
 		list($d,$t) = explode(' ',$today);
 		return in_array($d,$holiday);
 	}
