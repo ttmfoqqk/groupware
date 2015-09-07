@@ -58,8 +58,8 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<select class="fancy-select form-control" id="isUsed_1" name="isUsed_1">
-                                                	<option value=0 <?php if(!empty($list[0]) && $list[0]['is_active'] == 0) echo ' selected="selected"';?>>사용</option>
-													<option value=1 <?php if(!empty($list[0]) && $list[0]['is_active'] == 1) echo ' selected="selected"';?>>비사용</option>
+                                                	<option value=1 <?php if(!empty($list[0]) && $list[0]['is_active'] == 1) echo ' selected="selected"';?>>사용</option>
+													<option value=0 <?php if(!empty($list[0]) && $list[0]['is_active'] == 0) echo ' selected="selected"';?>>비사용</option>
                                                 </select>
 											</div>
 										</div>
@@ -87,8 +87,8 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<select class="fancy-select form-control" id="isUsed_2" name="isUsed_2">
-                                                	<option value=0 <?php if(!empty($list[1]) && $list[1]['is_active'] == 0) echo ' selected="selected"';?>>사용</option>
-													<option value=1 <?php if(!empty($list[1]) && $list[1]['is_active'] == 1) echo ' selected="selected"';?>>비사용</option>
+                                                	<option value=1 <?php if(!empty($list[1]) && $list[1]['is_active'] == 1) echo ' selected="selected"';?>>사용</option>
+													<option value=0 <?php if(!empty($list[1]) && $list[1]['is_active'] == 0) echo ' selected="selected"';?>>비사용</option>
                                                 </select>
 											</div>
 										</div>
@@ -116,8 +116,8 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<select class="fancy-select form-control" id="isUsed_3" name="isUsed_3">
-                                                	<option value=0 <?php if(!empty($list[2]) && $list[2]['is_active'] == 0) echo ' selected="selected"';?>>사용</option>
-													<option value=0 <?php if(!empty($list[2]) && $list[2]['is_active'] == 1) echo ' selected="selected"';?>>비사용</option>
+                                                	<option value=1 <?php if(!empty($list[2]) && $list[2]['is_active'] == 1) echo ' selected="selected"';?>>사용</option>
+													<option value=0 <?php if(!empty($list[2]) && $list[2]['is_active'] == 0) echo ' selected="selected"';?>>비사용</option>
                                                 </select>
 											</div>
 										</div>

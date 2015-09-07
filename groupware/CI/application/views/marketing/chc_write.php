@@ -37,7 +37,7 @@
                                     </div>
                                     <div class="radio-custom radio-inline">
                                        	<input type="radio" name="is_active" value="0" id="out_active">
-                                       	<label for="out_active">완료</label>
+                                       	<label for="out_active">정지</label>
                                     </div>
                                 </div>
 								<!-- START .col-lg-12 col-md-12 col-xs-12 -->

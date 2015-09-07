@@ -53,12 +53,62 @@ class BaseCode extends CI_Controller{
 	
 	public function _codeList(){
 		$this->load->library('common');
-		$ret = $this->md_company->get('parent_key IS NOT NULL');
+		
+		$no = $this->input->post('no') ? $this->input->post('no') : '';
+// 		$ret = $this->md_company->get('parent_key IS NOT NULL');
+		$ret = $this->md_company->get(array('parent_key'=>$no));
 	
 		if(count($ret) > 0)
 			echo $this->common->getRet(true, $ret);
 		else
 			echo $this->common->getRet(false, "No data");
+	}
+	
+	public function _createKey(){
+		$this->load->library('common');
+		
+		$datas = $this->input->post('data');
+		if($datas['method'] == 'create'){
+			unset($datas['method']);
+			$this->md_company->create($datas);
+			
+			echo $this->common->getRet(true, '등록 하였습니다.');
+		}else if($datas['method'] == 'modify'){
+			$no = $datas['no'];
+			unset($datas['method']);
+			unset($datas['no']);
+			
+			$this->md_company->modify(array('no'=>$no), $datas);
+			echo $this->common->getRet(true, '변경 하였습니다.');
+		}else 
+			echo $this->common->getRet(false, '잘못된 입력입니다');
+	}
+	
+	public function _createCode(){
+		$this->load->library('common');
+		
+		$datas = $this->input->post('data');
+		if($datas['method'] == 'create'){
+			unset($datas['method']);
+			$this->md_company->create($datas);
+			
+			echo $this->common->getRet(true, '등록 하였습니다.');
+		}else if($datas['method'] == 'modify'){
+			$no = $datas['no'];
+			unset($datas['method']);
+			unset($datas['no']);
+			
+			$this->md_company->modify(array('no'=>$no), $datas);
+			echo $this->common->getRet(true, '변경 하였습니다.');
+		}else if($datas['method'] == 'remove'){
+			if(!isset($datas['ids']) || empty($datas['ids']))
+				echo $this->common->getRet(false, '삭제 대상이 없습니다.');
+			else{
+				$this->md_company->deleteIn('no', $datas['ids']);
+				echo $this->common->getRet(true, '삭제 하였습니다.');
+			}
+		}else
+			echo $this->common->getRet(false, '잘못된 입력입니다');
 	}
 }
 /* End of file baseCode.php */

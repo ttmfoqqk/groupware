@@ -245,6 +245,7 @@ class Chc extends CI_Controller{
 					'url' => $url,
 					'ip' => $ip,
 					'order' => $order,
+					'status' => $is_active,
 			);
 			$this->md_company->modify(array('no'=>$no), $data);
 			

@@ -95,6 +95,9 @@
             if (!$.data(this, "plugin_" + pluginName)) {
                 $.data(this, "plugin_" + pluginName,
                 new Plugin( this, options ));
+            }else{			//동적생성 테이블 위해서 수정.. (원래는 else문 자체가 없음)
+            	$.data(this, "plugin_" + pluginName,
+                        new Plugin( this, options ));
             }
         });
     };

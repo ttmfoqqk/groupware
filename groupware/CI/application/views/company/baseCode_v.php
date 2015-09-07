@@ -28,13 +28,13 @@
 											<th style="min-width: 50px;">순서</th>
 											<th style="min-width: 100px;" class="per15">KEY</th>
 											<th style="min-width: 300px; ">내용</th>
-											<th style="min-width: 60px;">수정</th>
+											<th style="min-width: 60px;"></th>
 										</tr>
 									</thead>
 									<tbody id="keyBody">
 									</tbody>
 								</table>
-								<button id="btKeyAdd" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+								<button id="btKeyAdd" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createKey($(this));">등록</button>
 							</div>
 							<!-- END .col-lg-6 .col-md-6 -->
 							<!-- START .col-lg-6 .col-md-6 -->
@@ -52,13 +52,16 @@
 											<th style="min-width: 50px;">IDX</th>
 											<th style="min-width: 200px;">내용</th>
 											<th style="min-width: 80px;">사용 여부</th>
+											<th style="min-width: 60px;"></th>
 										</tr>
 									</thead>
+									<input type="hidden" value="" name="idx" id="idx">
 									<tbody  id="codeBody">
+										<tr><td colspan="6">등록된 내용이 없습니다.</td></tr>
 									</tbody>
 								</table>
-								<button id="btCodeAdd" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
-								<button id="btCodeDel" type="button" class="btn btn-primary btn-alt mr5 mb10">삭제</button>
+								<button id="btCodeAdd" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createCode($(this));">등록</button>
+								<button id="btCodeDel" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createCode($(this));">삭제</button>
 							</div>
 							<!-- END .col-lg-6 .col-md-6 -->
 
