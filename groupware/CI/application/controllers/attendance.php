@@ -117,6 +117,27 @@ class Attendance extends CI_Controller{
 			$data['list'] = $result;
 		}
 		
+		$this->md_company->setTable('sw_attendance_history');
+		$ret = $this->md_company->get(array('user_no'=>$this->session->userdata('no')), 'oData');
+		$overTime = strtotime("00:00:00");
+		print_r($ret);
+		if(count($ret) > 0){
+			foreach ($ret as $oDate){
+				if($oDate != null){
+					echo date('H:i:s', $overTime) . "+-";
+					//$overTime =  strtotime($overTime) + strtotime($oDate['oData']) ;
+// 					echo date('H:i:s', strtotime($overTime)) . "--";
+// 					echo date('H:i:s', strtotime($oDate['oData'])) . "==";
+					$t1 = $overTime;
+					$t2 = strtotime($oDate['oData']);
+					echo date('H:i:s', $t2) . "===";
+					$overTime = ($t1 + $t2);
+				}
+				
+			}
+		}
+		echo  date('H:i:s', $overTime);
+		
 		//페이지 타이틀 설정
 		$data['head_name'] = $this->PAGE_NAME;
 		$this->load->view('company/attendance_set_v',$data);
