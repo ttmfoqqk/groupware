@@ -126,6 +126,63 @@ class Approved_model extends CI_Model{
 		return $result;
 	}
 
+	/*
+		보낸 결재 리스트
+	*/
+	public function approved_send_list($option=null,$limit=null,$offset=null){
+		$where = array();
+		foreach($option['where'] as $key=>$val){
+			if($val!=''){
+				$where[$key] = $val;
+			}
+		}
+		$like = array();
+		foreach($option['like'] as $key=>$val){
+			if($val!=''){
+				$like[$key] = $val;
+			}
+		}
+
+		$this->db->select('count(*) as total');
+		$this->db->from('sw_approved AS approved');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
+		$this->db->join('(select a.*,b.name as receiver_name from sw_approved_status as a join sw_user as b on a.receiver = b.no group by approved_no) AS rrr','approved.no = rrr.approved_no');
+		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
+		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
+		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		$this->db->where($where);
+		$this->db->like($like);
+
+		$query = $this->db->get();
+		$query = $query->row();
+		$result['total'] = $query->total;
+
+		$this->db->select('approved.*');
+		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
+		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
+		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
+		$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+		$this->db->select('project.pPoint,project.mPoint');
+		$this->db->from('sw_approved AS approved');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
+		$this->db->join('(select a.*,b.name as receiver_name from sw_approved_status as a join sw_user as b on a.receiver = b.no group by approved_no) AS rrr','approved.no = rrr.approved_no');
+		
+		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
+		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
+		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
+		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		$this->db->where($where);
+		$this->db->like($like);
+		$this->db->order_by('approved.order','ASC');
+		$this->db->order_by('approved.no','DESC');
+		$this->db->limit($limit,$offset);
+
+		$query = $this->db->get();
+		$result['list'] = $query->result_array();
+		return $result;
+	}
+
 	public function get_approved_list($option=null,$limit=null,$offset=null){
 		$where = array();
 		foreach($option['where'] as $key=>$val){

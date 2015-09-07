@@ -55,10 +55,7 @@ $(document).ready(function() {
 	var swData = $('#swData');
 	var ewData = $('#ewData');
 
-	var sData  = $('#d_sData');
-	var eData  = $('#d_eData');
-	var swData = $('#d_swData');
-	var ewData = $('#d_ewData');
+	
 	// 진행기간 btn
 	var btn_sToday = $('#sToday');
 	var btn_sWeek  = $('#sWeek');
@@ -138,6 +135,10 @@ $(document).ready(function() {
 	/* 리스트 페이지 */
 
 	/* 쓰기 페이지 */
+	var d_sData     = $('#d_sData');
+	var d_eData     = $('#d_eData');
+	var d_swData    = $('#d_swData');
+	var d_ewData    = $('#d_ewData');
 	// 진행기간 btn
 	var btn_WsToday = $('#WsToday');
 	var btn_WsWeek  = $('#WsWeek');
@@ -147,26 +148,26 @@ $(document).ready(function() {
 	btn_WsToday.click(function(){
 		var myDate = new Date();
 		var dayOfMonth = myDate.getDate();
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		d_sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
+		d_eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
 	});
 	btn_WsWeek.click(function(){
 		var myDate = new Date();
 		var dayOfMonth = myDate.getDate();
 		myDate.setDate(dayOfMonth + 6);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		d_sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
+		d_eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
 	});
 	btn_WsMonth.click(function(){
 		var myDate = new Date();
 		var dayOfMonth = myDate.getDate();
 		myDate.setDate(dayOfMonth + 29);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		d_sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
+		d_eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
 	});
 	btn_WsReset.click(function(){
-		sData.datepicker('setDate', "");
-		eData.datepicker('setDate', "");
+		d_sData.datepicker('setDate', "");
+		d_eData.datepicker('setDate', "");
 	});
 
 	$('#approved_write_send').on('click',function(){

@@ -164,8 +164,8 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['pPoint']>0?'+'.$lt['pPoint']:'');?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['mPoint']>0?'-'.$lt['mPoint']:'');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '+'.$lt['pPoint'] : '');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '-'.$lt['mPoint'] : '');?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 										<td class="text-center">

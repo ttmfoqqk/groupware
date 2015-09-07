@@ -39,7 +39,6 @@ class Approved_send extends CI_Controller{
 				$this->PAGE_CONFIG['status'] = $this->PAGE_CONFIG['set_page'];
 		}
 
-
 		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
@@ -83,22 +82,20 @@ class Approved_send extends CI_Controller{
 			'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
-			'approved.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],
+			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
+			'status.receiver'     => $this->PAGE_CONFIG['params']['part_receiver'],
 			'status.sender'       => $this->session->userdata('no'),
 			'status.status'       => $this->PAGE_CONFIG['status']
 		);
-		
-		$option['cus_where'] = "status.approved_no is not null ";
 
 		$option['like'] = array(
-			'user_receiver.name' => $this->PAGE_CONFIG['params']['name_receiver'],
+			'rrr.receiver_name' => $this->PAGE_CONFIG['params']['name_receiver'],
 			'approved.title'     => $this->PAGE_CONFIG['params']['title'],
 		);
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->approved_model->get_approved_list($option,PAGING_PER_PAGE,$offset);
+		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록

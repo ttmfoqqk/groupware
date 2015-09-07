@@ -75,7 +75,7 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+										<select id="menu_no" name="menu_no" data-method="project,document" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
 											<option value="">분류</option>
 										</select>
 									</div>
@@ -135,7 +135,7 @@
 								</thead>
 								<tbody>
 								<?php foreach($list as $lt){
-									$anchor = $anchor_url.'&no='.$lt['approved_no'];
+									$anchor = $anchor_url.'&no='.$lt['no'];
 									?>
 									<tr>
 										<!--td>
@@ -144,16 +144,16 @@
 												<label for="check"></label>
 											</div>
 										</td-->
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['orders']?0:$lt['orders']; ?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['approved_no']; ?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['order']?0:$lt['order']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['no']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal">+<?echo $lt['pPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal">-<?echo $lt['mPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['createds'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '+'.$lt['pPoint'] : '');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '-'.$lt['mPoint'] : '');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-primary btn-xs" id="view_staff" onclick="alert('준비중');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" onclick="alert('준비중');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
 									<?php }?>
