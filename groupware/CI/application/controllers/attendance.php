@@ -117,26 +117,50 @@ class Attendance extends CI_Controller{
 			$data['list'] = $result;
 		}
 		
+		//지각 시간
 		$this->md_company->setTable('sw_attendance_history');
 		$ret = $this->md_company->get(array('user_no'=>$this->session->userdata('no')), 'oData');
-		$overTime = strtotime("00:00:00");
-		print_r($ret);
+		$tHour = $tMinute = $tSec = 0;
 		if(count($ret) > 0){
 			foreach ($ret as $oDate){
 				if($oDate != null){
-					echo date('H:i:s', $overTime) . "+-";
-					//$overTime =  strtotime($overTime) + strtotime($oDate['oData']) ;
-// 					echo date('H:i:s', strtotime($overTime)) . "--";
-// 					echo date('H:i:s', strtotime($oDate['oData'])) . "==";
-					$t1 = $overTime;
-					$t2 = strtotime($oDate['oData']);
-					echo date('H:i:s', $t2) . "===";
-					$overTime = ($t1 + $t2);
+					$mt = explode(':', $oDate['oData']);
+					$tHour = $tHour + $mt[0];
+					$tMinute = $tMinute + $mt[1];
+					$tSec = $tSec + $mt[2];
 				}
-				
 			}
 		}
-		echo  date('H:i:s', $overTime);
+		$tH = floor($tMinute/60);
+		$tMinute = $tMinute%60;
+		$tHour = $tHour + $tH;
+		$data['late_time'] = $tHour . '시간 ' . $tMinute . '분 '. $tSec . '초';
+		
+		//업무시간
+		$ret = $this->md_company->get(array('user_no'=>$this->session->userdata('no'), 'sData >='=>date('Y') . "-01-01 00:00:00", 'eData >='=>date('Y') . "-01-01 00:00:00"));
+		$tHour = $tMinute = $tSec = 0;
+		if(count($ret) > 0){
+			foreach ($ret as $oDate){
+				$sDate = strtotime($oDate['sData']);
+				$eDate = strtotime($oDate['eData']);
+				$diff_in = gmdate("H:i:s", ($eDate - $sDate));
+				
+				$mt = explode(':', $diff_in);
+				$tHour = $tHour + $mt[0];
+				$tMinute = $tMinute + $mt[1];
+				$tSec = $tSec + $mt[2];
+			}
+		}
+		$tH = floor($tMinute/60);
+		$tMinute = $tMinute%60;
+		$tHour = $tHour + $tH;
+		$data['working_time'] = $tHour . '시간 ' . $tMinute . '분 '. $tSec . '초';
+		
+		//누적 지각 옵션 값
+		$this->md_company->setTable('sw_base_code');
+		$ret = $this->md_company->get(array('key'=>'accrue_lateness_time'), 'name');
+		print_r($ret);
+		$data['accure_lateness'] = isset($ret[0]['name']) ? $ret[0]['name'] : '';
 		
 		//페이지 타이틀 설정
 		$data['head_name'] = $this->PAGE_NAME;
@@ -182,9 +206,10 @@ class Attendance extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 		
-		$this->md_company->modify(array("no"=>1), array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1));
-		$this->md_company->modify(array("no"=>2), array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2));
-		$this->md_company->modify(array("no"=>3), array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3));
+		//배열로 가져와서 순서대로 no 넣기.
+		$this->md_company->modify(array("no"=>0), array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1));
+		$this->md_company->modify(array("no"=>1), array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2));
+		$this->md_company->modify(array("no"=>2), array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3));
 		
 		alert('수정되었습니다.', site_url('attendance/set') );
 	}

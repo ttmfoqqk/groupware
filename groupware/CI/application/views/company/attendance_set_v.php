@@ -127,10 +127,10 @@
 
 								<div class="panel-body" style="text-align: left;">
 									<div class="row">
-									<label >지각 또는 조퇴  </label> &nbsp;<input type="text" value="8" size="1"></input> &nbsp; <label>시간 누적 시 연차 1일 공제</label>
+									<label >지각 또는 조퇴  </label> &nbsp;<input type="text" value="<?php echo $accure_lateness;?>" size="1"></input> &nbsp; <label>시간 누적 시 연차 1일 공제</label>
 									</div>
 									<div class="row">
-									<label >현재 나의 누적 지각시간 :</label> <label  style="color: red">3시간 22분 </label> &nbsp;&nbsp; <label > 현재 나의 누적 근무시간 : </label> <label style="color: blue">2,112시간 22분</label>
+									<label >현재 나의 누적 지각시간 :</label> <label  style="color: red"><?php echo $late_time;?></label> &nbsp;&nbsp; <label > 현재 나의 누적 근무시간 : </label> <label style="color: blue"><?php echo $working_time;?></label>
 									</div>
 									
 									
