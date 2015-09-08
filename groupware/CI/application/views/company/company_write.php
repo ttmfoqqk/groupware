@@ -36,7 +36,7 @@
 								<div class="form-group">
 									<label for="ceo_name" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("ceoName");?></label>
 									<div class="col-lg-10 col-md-9">
-										<input id="ceo_name" name="ceo_name" type="text" class="form-control" placeholder="" value="<?echo $data['ceoName'];?>" maxlength="20" <?echo $action_type=='edit'?'readonly':''; ?>>
+										<input id="ceo_name" name="ceo_name" type="text" class="form-control" placeholder="" value="<?echo $data['ceoName'];?>" maxlength="20">
 									</div>
 								</div>
 								<!-- End .form-group  -->
