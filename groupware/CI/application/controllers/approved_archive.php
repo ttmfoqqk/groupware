@@ -336,7 +336,8 @@ class Approved_archive extends CI_Controller{
 					'part_sender'   => $json_data[$i]->menu_no,
 					'part_receiver' => $json_data[$i+1]->menu_no,
 					'status'        => $status,
-					'order'         => $json_data[$i]->order
+					'order'         => $json_data[$i]->order,
+					'created'       => Date('Y-m-d H:i:s')
 				));
 			}
 
