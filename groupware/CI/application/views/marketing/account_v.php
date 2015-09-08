@@ -27,7 +27,7 @@
 									<div class="col-lg-2">
 										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
 									</div>
-									<div class="col-lg-2 col-md-2">
+									<div class="col-lg-2">
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10">업로드</button>
 									</div>
 								</div>
