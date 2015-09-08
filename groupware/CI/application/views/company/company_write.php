@@ -99,7 +99,7 @@
 								<div class="form-group">
 									<label for="order" class="col-lg-2 col-md-3 control-label"><?php echo $this->lang->line("order");?></label>
 									<div class="col-lg-10 col-md-9">
-										<input id="order" name="board_order" type="text" class="form-control input-mini valid"  placeholder="순서" value="<?echo $data['order'];?>" maxlength="3">
+										<input id="order" name="order" type="text" class="form-control input-mini valid"  placeholder="순서" value="<?echo $data['order'];?>" maxlength="3">
 									</div>
 								</div>
 								<!-- End .form-group  -->
