@@ -94,6 +94,8 @@ class Main extends CI_Controller{
 	 */
 	public function checkHoliday($year, $today){
 		$holiday = $this->getHoliday($year);
+		if($holiday == null)
+			return null;
 		list($d,$t) = explode(' ',$today);
 		return in_array($d,$holiday);
 	}
@@ -147,7 +149,7 @@ class Main extends CI_Controller{
 					$data = array(
 							'user_no'=>$this->session->userdata('no'),
 							'sData'=>$cDate,
-							'oData'=>date('Y-m-d H:i:s', strtotime(gmdate("H:i:s", ($mT - $confT)))), 
+							'oData'=>date('H:i:s', strtotime(gmdate("H:i:s", ($mT - $confT)))), 
 							'point'=>$latePoint,
 							'created'=>$cDate
 					); 

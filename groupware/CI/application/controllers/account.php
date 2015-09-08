@@ -104,6 +104,66 @@ class Account extends CI_Controller{
 		$this->load->view('marketing/account_write',$data);
 	}
 	
+	public function upload(){
+		$config['upload_path'] = 'upload/account/';
+		$config['remove_spaces'] = true;
+		$config['allowed_types'] = FILE_TXT_TYPE;
+		$config['encrypt_name'] = true;
+		
+		$file = $origin_file = NULL;
+		if( $_FILES['userfile']['name'] ) {
+			$this->load->library('upload', $config);
+				
+			if ( !$this->upload->do_upload() ){
+				$upload_error = $this->upload->display_errors('','') ;
+				alert($upload_error);
+			}else{
+				$upload_data = $this->upload->data();
+				$file = $upload_data['file_name'];
+				$origin_file = $_FILES['userfile']['name'];
+			}
+			
+			if($file){
+				$filename = $file;
+				$fp = fopen(realpath($config['upload_path']) . '/' . $file, "r") or alert("파일열기에 실패하였습니다");
+				while(!feof($fp)){
+					$buffer = fgets($fp);
+					$tp = explode("\t", $buffer);
+					if(count($tp) != 5)
+						alert('문서 형태가 잘못 되었습니다',site_url('account' . '/index') );
+					$uId = $tp[0];
+					$uPass = $tp[1];
+					$uName = $tp[2];
+					$uBirth = date('Y-m-d',strtotime($tp[3]));
+					if($tp[4] == 1)
+						$uSex = 0;
+					else
+						$uSex = 1;
+					
+					$this->md_company->setTable('sw_account');
+					$data = array(
+							'id'=>$uId,
+							'pwd'=>$uPass,
+							'name'=>$uName,
+							'grade'=>1,
+							'birth'=>$uBirth,
+							'gender'=>$uSex,
+							'order'=>0,
+							'type'=>1, 
+							'is_using_question'=>3
+					);
+					$this->md_company->create($data);
+				}
+				fclose($fp);
+				//파일 삭제하고
+				unlink(realpath($config['upload_path']) . '/' . $file);
+			}
+			alert('업로드 완료', site_url('account' . '/index') );
+		}else
+			alert('업로드 실패. 파일이 존재하지 않습니다', site_url('account' . '/index') );
+		
+	}
+	
 	public function proc(){
 		$this->load->library('form_validation');
 		
