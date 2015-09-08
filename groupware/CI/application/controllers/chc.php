@@ -170,7 +170,7 @@ class Chc extends CI_Controller{
 		
 		
 		if( $action_type == 'create' ){
-			if($kind = $this->checkKind($kind) != null){
+			if(($kind = $this->checkKind($kind)) != null){
 			}else
 				alert("분류가 잘 못 되었습니다");
 			

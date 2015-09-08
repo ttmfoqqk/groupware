@@ -75,7 +75,7 @@
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10"> 검 색</button>
 									</div>
 								</div>
-
+								
 								<!-- 테이블 옵션  -->
 								<div class="pull-left">
 									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
@@ -167,7 +167,7 @@
 								<div class="panel-body pull-right">
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
+									<button type="submit" class="btn btn-primary btn-alt mr5 mb10"
 										onclick="location.href='<?echo site_url('account/write/');?>';">등록</button>
 								</div>
 							</form>
@@ -193,4 +193,6 @@
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
+
+<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_account.js"></script>

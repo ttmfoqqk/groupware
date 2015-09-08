@@ -104,6 +104,37 @@ class Account extends CI_Controller{
 		$this->load->view('marketing/account_write',$data);
 	}
 	
+	public function upload(){
+		$config['upload_path'] = 'upload/account/';
+		$config['remove_spaces'] = true;
+		$config['allowed_types'] = 'txt';
+		
+		$file = $origin_file = NULL;
+		print_r($_FILES);
+		if( $_FILES['userfile']['name'] ) {
+			$this->load->library('upload', $config);
+				
+			if ( !$this->upload->do_upload() ){
+				$upload_error = $this->upload->display_errors('','') ;
+				alert($upload_error);
+			}else{
+				$upload_data = $this->upload->data();
+				$file = $upload_data['file_name'];
+				$origin_file = $_FILES['userfile']['name'];
+			}
+			
+			
+			//이전파일 삭제하고
+// 			$exUserFile = $_FILES['userfile']['name'];
+// 			if($exUserFile)
+// 				unlink(realpath($config['upload_path']) . '/' . $exUserFile);
+			
+			alert('업로드 완료', site_url('account' . '/index') );
+		}else
+			alert('업로드 실패. 파일이 존재하지 않습니다', site_url('account' . '/index') );
+		
+	}
+	
 	public function proc(){
 		$this->load->library('form_validation');
 		
