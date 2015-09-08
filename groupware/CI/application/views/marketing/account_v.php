@@ -20,6 +20,19 @@
 						</div>
 						<div class="panel-body">
 							
+							<form action="<?echo site_url('account/upload')?>" method="post" class="form-horizontal group-border stripped" role="form" enctype="multipart/form-data">
+								<div class="form-group col-lg-12 col-md-12">
+									<div class="col-lg-8">
+									</div>
+									<div class="col-lg-2">
+										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+									</div>
+									<div class="col-lg-2 col-md-2">
+										<button type="submit" class="btn btn-primary btn-alt mr5 mb10">업로드</button>
+									</div>
+								</div>
+							</form>
+							
 							<!-- 검색 -->
 							<form id="qu" class="form-horizontal" method="get" role="form"
 								action="<?echo site_url($page . '/lists/1')?>">
@@ -75,7 +88,7 @@
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10"> 검 색</button>
 									</div>
 								</div>
-								
+
 								<!-- 테이블 옵션  -->
 								<div class="pull-left">
 									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
@@ -167,7 +180,7 @@
 								<div class="panel-body pull-right">
 									<button id="btn_list_delete" type="button"
 										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-									<button type="submit" class="btn btn-primary btn-alt mr5 mb10"
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
 										onclick="location.href='<?echo site_url('account/write/');?>';">등록</button>
 								</div>
 							</form>
@@ -192,7 +205,6 @@
 <!-- 폼 날짜 -->
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-
 
 <script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_account.js"></script>
