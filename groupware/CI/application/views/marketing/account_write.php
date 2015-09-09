@@ -120,6 +120,19 @@
 											</div>
 										</div>
 										<div class="form-group">
+											<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">사용여부</label>
+											<div class="col-lg-2 col-md-2">
+												<div class="radio-custom radio-inline">
+		                                        	<input type="radio" name="is_active" value=1 <?=$data['is_active'] == '1' ? ' checked="checked"' : '';?> checked="checked" id="is_active">
+		                                        	<label for="in_office">사용</label>
+		                                        </div>
+		                                        <div class="radio-custom radio-inline">
+		                                        	<input type="radio" name="is_active" value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?> id="kind_blog">
+		                                        	<label for="out_office">비사용</label>
+		                                        </div>
+											</div>
+										</div>
+										<div class="form-group">
 											<label for="order" class="col-lg-2 col-md-2 control-label lb-left-align">순서</label>
 											<div class="col-lg-10 col-md-10">
 												<input id="order" name="order" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['order']?>>

@@ -116,7 +116,7 @@ class Account extends CI_Controller{
 				
 			if ( !$this->upload->do_upload() ){
 				$upload_error = $this->upload->display_errors('','') ;
-				alert($upload_error);
+				alert($upload_error, site_url('account' . '/index'));
 			}else{
 				$upload_data = $this->upload->data();
 				$file = $upload_data['file_name'];
@@ -152,6 +152,12 @@ class Account extends CI_Controller{
 							'type'=>1, 
 							'is_using_question'=>3
 					);
+					$chck = $this->md_company->get(array('id'=>$uId));
+					if(count($chck)  > 0){
+						unlink(realpath($config['upload_path']) . '/' . $file);
+						fclose($fp);
+						alert('이미 존재하는 아이디 입니다(' . $uId . ')',site_url('account' . '/index')  );
+					}
 					$this->md_company->create($data);
 				}
 				fclose($fp);
@@ -179,6 +185,7 @@ class Account extends CI_Controller{
 		$kind = $this->input->post('kind');
 		$use = $this->input->post('use');
 		$order = $this->input->post('order');
+		$is_active = $this->input->post('is_active');
 		
 		if( $action_type == 'create' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -203,6 +210,7 @@ class Account extends CI_Controller{
 					'type'=>$kind,
 					'gender'=>$sex,
 					'order'=>$order,
+					'is_active'=>$is_active,
 			);
 				
 			$result = $this->md_company->create($data);
@@ -232,6 +240,7 @@ class Account extends CI_Controller{
 					'type'=>$kind,
 					'gender'=>$sex,
 					'order'=>$order,
+					'is_active'=>$is_active
 			);
 				
 			$this->md_company->modify(array('no'=>$no), $data);
@@ -258,15 +267,7 @@ class Account extends CI_Controller{
 		$no = !$this->input->post('accountNo') ? NULL : $this->input->post('accountNo');
 		$chc_no = !$this->input->post('chcNo') ? false : $this->input->post('chcNo');
 		
-		if($no == NULL)
-			if($chc_no){
-				$where = "chc_no =" . $chc_no . " OR chc_no is NULL";
-			}
-			else
-				$where = "chc_no is NULL";
-		else{
-			$where = array('no'=>$no);
-		}
+		$where = array('is_active'=>1);
 		
 		$ret = $this->md_company->get($where);
 		if(count($ret) > 0){

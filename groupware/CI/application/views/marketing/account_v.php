@@ -138,7 +138,7 @@
 											foreach ( $list as $lt ) {
 											$anchor_url = site_url ( 'account/write/' . $lt ['no'] );
 											?>
-											<tr>
+											<tr <?php if($lt['is_active'] == '2') echo 'style="background-color: #c0c0c0;"';?>>
 												<td>
 													<div class="checkbox-custom">
 														<input id="check<?$lt['no'];?>" name="no[]"
