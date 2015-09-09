@@ -118,7 +118,7 @@
 											</td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['phone'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['mobile'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['email'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'] == 0 ? '재직' : '퇴사';?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>

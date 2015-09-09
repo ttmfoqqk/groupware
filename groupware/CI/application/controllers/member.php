@@ -159,6 +159,7 @@ class Member extends CI_Controller{
 		
 		$config['upload_path'] = 'upload/member/';
 		$config['remove_spaces'] = true;
+		$config['encrypt_name'] = true;
 		$config['allowed_types'] = FILE_IMAGE_TYPE;
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
