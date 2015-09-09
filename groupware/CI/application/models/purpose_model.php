@@ -7,7 +7,6 @@ class Purpose_model extends CI_Model{
 		$where = array();
 		foreach($option['where'] as $key=>$val){
 			if($val!=''){
-				$this->db->where($key, $val);
 				$where[$key] = $val;
 			}
 		}
@@ -17,6 +16,7 @@ class Purpose_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		
 
 		$this->db->select('project.sData');
 		$this->db->select('project.eData');
@@ -46,7 +46,8 @@ class Purpose_model extends CI_Model{
 
 		$query = $this->db->get();
 		$result = $query->result_array();
-		
+
+				
 		
 		/* 
 			sData~eData 주말제거 A
@@ -54,28 +55,156 @@ class Purpose_model extends CI_Model{
 			dataDiif -= A.count - B.count
 			dataDiif * pPoint,mPoint
 		*/
+		// 휴일
+		$holiday_result = $this->get_holiday();
+		$holiday = array();
+		foreach($holiday_result as $lt){
+			array_push($holiday,$lt['date']);
+		}
+		
+		// 연차
+		$annual_option = array();
+		foreach($option['annual'] as $key=>$val){
+			if($val!=''){
+				$annual_option[$key] = $val;
+			}
+		}
+		$annual_result = $this->get_annual($annual_option);
+		$annual = array();
+		foreach($annual_result as $lt){
+			array_push($annual,$lt['date']);
+		}
 
-		// 전체점수
-		$point_total = 0;
+		$data = array(
+			'point_total'   => 0,
+			'point_plus'    => 0,
+			'point_minus'   => 0,
+			'point_avg'     => 0,
+			'percent_plus'  => 0,
+			'percent_minus' => 0,
+			'percent_avg'   => 0
+		);
+
+		
+
 		// 리스트
 		foreach($result as $lt){
-			// 가용일 카운트
-			$cnt_day = 0;
-			// 주말제거, 휴일제거 추가하기
+			// 주말제거, 휴일제거, 연차제거
 			for( $i=0; $i < $lt['dataDiff']; $i++ ){
 				$date = date("Y-m-d", strtotime( $lt['sData']."+$i day"));
 				$yoil = date('w',strtotime($date));
 				if($yoil > 0 && $yoil < 6 ){
-					//echo $yoil;
-					$cnt_day++;
-					$point_total += $lt['pPoint'];
+					if( in_array($date,$holiday) || in_array($date,$annual) ){
+						continue 1;
+					}
+					$data['point_total'] += $lt['pPoint'];
 				}
+			}
+			// [ 보낸결재 승인 +점수, 그외 -점수 ]
+			if($lt['status'] == 'c'){
+				$data['point_plus']  += $lt['pPoint'];
+			}else{
+				$data['point_minus'] += $lt['mPoint'];
 			}
 		}
 
+		$data['point_avg']     = $data['point_plus'] - $data['point_minus'];
+		$data['percent_plus']  = ceil($data['point_plus'] / $data['point_total'] * 100);
+		$data['percent_minus'] = ceil($data['point_minus'] / $data['point_total'] * 100);
+		$data['percent_avg']   = ceil($data['point_avg'] / $data['point_total'] * 100);
 
-		//return $result;
+		$data['percent_plus']  = $data['percent_plus'] < 0 ? 0 : $data['percent_plus'];
+		$data['percent_minus'] = $data['percent_minus'] < 0 ? 0 : $data['percent_minus'];
+		$data['percent_avg']   = $data['percent_avg'] < 0 ? 0 : $data['percent_avg'];
+
+		return $data;
 	}
+	public function get_point_chc($option=null){
+		$where = array();
+		foreach($option['where'] as $key=>$val){
+			if($val!=''){
+				$where[$key] = $val;
+			}
+		}
+		$like = array();
+		foreach($option['like'] as $key=>$val){
+			if($val!=''){
+				$like[$key] = $val;
+			}
+		}
+
+		$this->db->select('IFNULL( ROUND( 10-(avg(IF(log.rank=0,11,log.rank))-1) , 1 ) , 0) AS point_avg',false);
+		$this->db->select('IFNULL( ROUND( count(IF(log.rank > 0 and log.rank < 6,log.rank,NULL)) / count(*) * 100 ) , 0 ) AS percent_display',false);
+		$this->db->from('sw_chc AS chc');
+		$this->db->join('sw_chc_log AS log','chc.no = log.chc_no');
+		$this->db->join('sw_project_staff AS staff','chc.project_no = staff.project_no');
+		$this->db->where('log.rank > -1');
+		$this->db->where($where);
+		$this->db->like($like);
+		$query = $this->db->get();
+		$result = $query->row();
+
+		$data['point_avg']       = $result->point_avg < 0 ? 0 : $result->point_avg;
+		$data['percent_avg']     = $data['point_avg'] * 10;
+		$data['point_text']      = 0;
+		$data['percent_text']    = 0;
+
+		$data['percent_display'] = $result->percent_display;
+
+		$data['point_total']     = ($data['point_avg'] * $data['percent_display'] / 100) + $data['point_text'];
+		$data['percent_total']   = $data['point_total'];
+
+		return $data;
+	}
+
+	public function get_point_other($option=null){
+		$where = array();
+		foreach($option['where'] as $key=>$val){
+			if($val!=''){
+				$where[$key] = $val;
+			}
+		}
+		$like = array();
+		foreach($option['like'] as $key=>$val){
+			if($val!=''){
+				$like[$key] = $val;
+			}
+		}
+
+		$this->db->select('ifnull(sum(point),0) AS sum',false);
+		$this->db->from('sw_other_point');
+		$this->db->where($where);
+		$this->db->like($like);
+		$query  = $this->db->get();
+		$result = $query->row();
+		
+
+		$data = array(
+			'sum' => $result->sum,
+			'percent_sum' => $result->sum < 0 ? 0 : $result->sum
+		);
+		return $data;
+	}
+
+
+
+	private function get_holiday(){
+		$this->db->select('DATE_FORMAT(date,"%Y-%m-%d") AS date',false);
+		$query = $this->db->get('sw_holiday');
+		$result = $query->result_array();
+		return $result;
+	}
+	private function get_annual($option=null){
+		$this->db->select('DATE_FORMAT(annual.data,"%Y-%m-%d") AS date',false);
+		$this->db->from('sw_user_annual AS annual');
+		$this->db->join('sw_user_department AS department','annual.user_no = department.user_no','left');
+		$this->db->where($option);
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
+	}
+
+	
 	
 }
 /* End of file purpose_model.php */

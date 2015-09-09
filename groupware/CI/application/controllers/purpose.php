@@ -46,13 +46,36 @@ class Purpose extends CI_Controller{
 		$this->load->view('purpose/search_v',$data);
 	}
 	public function appraisal(){
+		// approved point
 		$option['where'] = array(
-			'' => ''
+			'status.sender' => $this->session->userdata('no')
 		);
-		$option['like'] = array(
-			'' => ''
+		$option['like'] = array();
+		$option['annual'] = array(
+			'annual.user_no' => $this->session->userdata('no')
+			//'department.no' => 부서키
 		);
-		$data['list'] = $this->purpose_model->get_point_approved($option);
+		$data['approved'] = $this->purpose_model->get_point_approved($option);
+		
+		// chc point
+		$option['where'] = array(
+			'staff.user_no' => $this->session->userdata('no')
+		);
+		$option['like'] = array();
+		$data['chc'] = $this->purpose_model->get_point_chc($option);
+
+		// other point
+		$option['where'] = array(
+			'user_no' => $this->session->userdata('no')
+		);
+		$option['like'] = array();
+		$data['others'] = $this->purpose_model->get_point_other($option);
+		
+
+		$data['all_point'] = array(
+			'point_total' => $data['approved']['point_avg'] * ($data['chc']['point_total']<=1?1:$data['chc']['point_total']) + $data['others']['sum'],
+			'percent_total' => 0
+		);
 		$this->load->view('purpose/appraisal_v',$data);
 	}
 }

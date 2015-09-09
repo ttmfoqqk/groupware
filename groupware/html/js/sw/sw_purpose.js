@@ -74,4 +74,38 @@ var initPieChartPage = function(lineWidth, size, animateTime, colours) {
         size: size,
         animate: animateTime
     });
+
+	
+	$('#d_type').change(function(){
+		var value = $(this).val();
+		set_date_option(value);
+	});
+	set_date_option($('#d_type').val());
+
+	var department = $('#department');
+	if(department.length>0){
+		department.create_menu({
+			method : department.attr('data-method'),
+			value  : department.attr('data-value')
+		});
+	}
+}
+
+function set_date_option(m){
+	var obj = $('#d_option');
+	var value = obj.attr('data-value');
+	var h = '';
+	if(m=='m'){
+		for(i=1;i<=12;i++){
+			h += '<option value="'+i+'" '+ (value==i?'selected':'') +'>'+i+'월</option>';
+		}
+	}else if(m=='q'){
+		for(i=1;i<=4;i++){
+			if(i<=4){
+				h += '<option value="'+i+'" '+ (value==i?'selected':'') +'>'+i+'기</option>';
+			}
+		}
+		h += '<option value="5" '+ (value==5?'selected':'') +'>1기+2기</option><option value="6" '+ (value==6?'selected':'') +'>1기+2기+3기</option><option value="7" '+ (value==7?'selected':'') +'>1기+2기+3기+4기</option>';
+	}	
+	$('#d_option').html(h);
 }
