@@ -215,14 +215,39 @@ class Chc extends CI_Controller{
 			
 			if($kind == 'kin'){
 				//account 등록 (지식인 일떄만)
-				$this->md_company->setTable("sw_account");
 				$i = 0;
 				foreach ($accountNos as $accountNo){
 					if($accountNo != "" && $accountNo != null){
-					//	$this->md_company->modify(array('no'=>$accountNo), array('chc_no'=>$chcNo, 'is_using_question'=>$idUsed[$i], 'used'=>$cur));
-						echo $chcNo;
-						echo $idUsed[$i];
-						echo $id_is_active[$i];
+					$this->md_company->setTable("sw_account");
+						$this->md_company->modify(array('no'=>$accountNo), array('is_using_question'=>$idUsed[$i], 'used'=>$cur, 'is_active'=>$id_is_active[$i]));
+						
+						if($idUsed[$i] == 3){
+							$idUsed[$i] = '미사용';
+						}else if($idUsed[$i] == 1){
+							$idUsed[$i] = '질문';
+						}else if($idUsed[$i] == 2){
+							$idUsed[$i] = '답변';
+						}
+						
+						$idData = $this->md_company->get(array('no'=>$accountNo));
+						if($idData[0]['grade'] == 1){
+							$idData[0]['grade'] = '일반';
+						}else if($idData[0]['grade'] == 2){
+							$idData[0]['grade'] = '장기';
+						}else if($idData[0]['grade'] == 3){
+							$idData[0]['grade'] = '등급';
+						}
+						$achData = array(
+							'chc_no'=>$chcNo,
+							'account_no'=>$accountNo, 
+							'created'=>$cur, 
+							'used'=>$idUsed[$i],
+							'id'=>$idData[0]['id'],
+							'passwd'=>$idData[0]['pwd'],
+							'grade'=>$idData[0]['grade'],
+						);
+						$this->md_company->setTable('sw_account_history');
+						$this->md_company->create($achData);
 					}
 					$i = $i +1 ;
 				}
