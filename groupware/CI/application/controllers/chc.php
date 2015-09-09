@@ -291,13 +291,6 @@ class Chc extends CI_Controller{
 							$idUsed[$i] = '답변';
 						}
 						
-						if($id_is_active[$i] == '0'){
-							$id_is_active[$i] = '사용안함';
-						}else if($id_is_active[$i] == 1){
-							$id_is_active[$i] = '사용함';
-						}
-						
-						
 						$idData = $this->md_company->get(array('no'=>$accountNo));
 						if($idData[0]['grade'] == 1){
 							$idData[0]['grade'] = '일반';

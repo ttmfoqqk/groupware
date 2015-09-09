@@ -185,7 +185,7 @@ function createIdRow(no,obj){
 				obj.find('select[name="id_active[]"]').val(0).attr("selected", "selected");
 				obj.find('select[name="id_active[]"]').attr('data-value', 0);
 				obj.find('input[name="id_is_active[]"]').val(0);
-				obj.find('#selId').val(json[0].no);
+				obj.find('#selId').val(no);
 			},error:function(err){
 				alert(err.responseText);
 				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
