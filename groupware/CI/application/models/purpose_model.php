@@ -3,7 +3,7 @@ class Purpose_model extends CI_Model{
 	public function __construct(){
 		parent::__construct();
 	}
-	public function get_point_approved($option=null){
+	public function get_point_approved($option=null,$sDate,$eDate){
 		$where = array();
 		foreach($option['where'] as $key=>$val){
 			if($val!=''){
@@ -17,46 +17,11 @@ class Purpose_model extends CI_Model{
 			}
 		}
 		
-
-		$this->db->select('project.sData');
-		$this->db->select('project.eData');
-		$this->db->select('TO_DAYS(project.eData)-TO_DAYS(project.sData)+1 AS dataDiff');
-		$this->db->select('project.pPoint');
-		$this->db->select('project.mPoint');
-
-		$this->db->select('status.status');
-		$this->db->select('status.sender');
-		$this->db->select('status.receiver');
-		$this->db->select('status.part_sender');
-		$this->db->select('status.part_receiver');
-		$this->db->select('status.created');
-
-		$this->db->select('sender.name AS sender_name');
-		$this->db->select('receiver.name AS receiver_name');
-		$this->db->from('sw_approved AS approved');
-		$this->db->join('sw_project AS project','approved.project_no = project.no');
-		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
-
-		$this->db->join('sw_user AS sender','status.sender = sender.no');
-		$this->db->join('sw_user AS receiver','status.receiver = receiver.no');
-
-		$this->db->where('approved.kind = 0');
-		$this->db->where($where);
-		$this->db->like($like);
-
-		$query = $this->db->get();
-		$result = $query->result_array();
-
-		echo $this->db->last_query();
-
-				
 		
-		/* 
-			sData~eData 주말제거 A
-			sw_holiday  휴일제거 B
-			dataDiif -= A.count - B.count
-			dataDiif * pPoint,mPoint
-		*/
+
+
+		
+
 		// 휴일
 		$holiday_result = $this->get_holiday();
 		$holiday = array();
@@ -72,6 +37,79 @@ class Purpose_model extends CI_Model{
 			array_push($annual,$lt['date']);
 		}
 
+		
+		
+		// 일할계산한 업무 목록 - 전체점수,
+		$this->db->select('project.no');
+		$this->db->select('IF(date_format(sData,"%Y-%m") < "'.$sDate.'" , "'.$sDate.'" ,sData) AS sData',false);
+		$this->db->select('eData');
+		$this->db->select('TO_DAYS( IF(date_format(eData,"%Y-%m") > "'.$eDate.'" , date_add(date_add("'.$eDate.'-01", interval +1 month), interval -1 day) ,eData) ) - TO_DAYS(  IF(date_format(sData,"%Y-%m") < "'.$sDate.'" , "'.$sDate.'-01" ,sData)  ) + 1 AS dataDiff',false);
+		$this->db->select('pPoint,mPoint');
+		$this->db->from('sw_project AS project');
+		$this->db->join('sw_project_staff AS staff','project.no = staff.project_no');
+		$this->db->join('sw_user AS user','staff.user_no = user.no');
+		$this->db->where($where);
+		$this->db->like($like);
+
+		$query = $this->db->get();
+		$result = $query->result_array();
+
+		$project = array();
+		$project['no']=array(0);
+		foreach($result as $lt){
+			if( !in_array($lt['no'],$project['no']) ){
+				$project[ 'no_'.$lt['no'] ] = array(
+					'no' => $lt['no'],
+					'sData' => $lt['sData'],
+					'eData' => $lt['eData'],
+					'dataDiff' => $lt['dataDiff'],
+					'pPoint' => $lt['pPoint'],
+					'mPoint' => $lt['mPoint']
+				);
+				array_push($project['no'] ,$lt['no'] );
+			}
+		}
+		unset($result);
+		// 결재점수
+		
+		
+		$where_test = array();
+		foreach($option['test']['where'] as $key=>$val){
+			if($val!=''){
+				$where_test[$key] = $val;
+			}
+		}
+		$like_test = array();
+		foreach($option['test']['like'] as $key=>$val){
+			if($val!=''){
+				$like_test[$key] = $val;
+			}
+		}
+
+		$this->db->select('approved.project_no,status.*');
+		
+		$this->db->from('sw_approved AS approved');
+		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
+		$this->db->join('sw_user AS user','status.sender = user.no');
+		$this->db->where('approved.kind = 0');
+		$this->db->where($where_test);
+		$this->db->like($like_test);
+		$this->db->where_in('project_no',$project['no']);
+		
+
+		$query = $this->db->get();
+		$result = $query->result_array();
+
+
+				
+		
+		/* 
+			sData~eData 주말제거 A
+			sw_holiday  휴일제거 B
+			dataDiif -= A.count - B.count
+			dataDiif * pPoint,mPoint
+		*/
+		
 		$data = array(
 			'point_total'   => 0,
 			'point_plus'    => 0,
@@ -81,29 +119,88 @@ class Purpose_model extends CI_Model{
 			'percent_minus' => 0,
 			'percent_avg'   => 0
 		);
+		
+
+
+
+		foreach($project as $key=>$val){
+			if( $key != 'no' ){
+				for( $i=0; $i < $project[$key]['dataDiff']; $i++ ){
+					$date = date('Y-m-d', strtotime( $project[$key]['sData']."+$i day"));
+					$yoil = date('w',strtotime($date));
+					if($yoil > 0 && $yoil < 6 ){
+						if( in_array($date,$holiday) || in_array($date,$annual) ){
+							continue 1;
+						}
+
+						$data['point_total'] += $project[$key]['pPoint'];
+						if( $date < date('Y-m-d') ){
+							$data['point_minus'] += $project[$key]['mPoint'];
+						}
+					}
+				}
+			}
+		}
+		
+
+		foreach($result as $lt){
+			// 주말제거, 휴일제거, 연차제거
+			for( $i=0; $i < $project['no_'.$lt['project_no']]['dataDiff']; $i++ ){
+				$date = date('Y-m-d', strtotime( $project['no_'.$lt['project_no']]['sData']."+$i day"));
+				$yoil = date('w',strtotime($date));
+				if($yoil > 0 && $yoil < 6 ){
+					if( in_array($date,$holiday) || in_array($date,$annual) ){
+						continue 1;
+					}
+					if( $date < date('Y-m-d') ){
+						
+					}
+				}
+			}
+			if( $project['no_'.$lt['project_no']]['dataDiff'] > 0 ){
+			// [ 보낸결재 승인 +점수 ]
+				if($lt['status'] == 'c'){
+					$data['point_plus']  += $project['no_'.$lt['project_no']]['pPoint'];
+					$data['point_minus'] -= $project['no_'.$lt['project_no']]['mPoint'];
+				}
+			}
+		}
+
+		//echo $data['point_total'] .'-'.$data['point_minus'];
 
 		
 
+		
+		/*
 		// 리스트
 		foreach($result as $lt){
 			// 주말제거, 휴일제거, 연차제거
 			for( $i=0; $i < $lt['dataDiff']; $i++ ){
-				$date = date("Y-m-d", strtotime( $lt['sData']."+$i day"));
+				$date = date('Y-m-d', strtotime( $lt['sData']."+$i day"));
 				$yoil = date('w',strtotime($date));
 				if($yoil > 0 && $yoil < 6 ){
 					if( in_array($date,$holiday) || in_array($date,$annual) ){
 						continue 1;
 					}
 					$data['point_total'] += $lt['pPoint'];
+					
+					
+					if( $date < date('Y-m-d') ){
+						$data['point_minus'] += $lt['mPoint'];
+						echo $lt['status'];
+					}
 				}
 			}
-			// [ 보낸결재 승인 +점수, 그외 -점수 ]
-			if($lt['status'] == 'c'){
-				$data['point_plus']  += $lt['pPoint'];
-			}else{
-				$data['point_minus'] += $lt['mPoint'];
+			if( $lt['dataDiff'] > 0 ){
+			// [ 보낸결재 승인 +점수 ]
+				if($lt['status'] == 'c'){
+					$data['point_plus']  += $lt['pPoint'];
+				}else{
+					//$data['point_minus'] += $lt['mPoint'];
+				}
 			}
 		}
+		*/
 
 		$data['point_avg']     = $data['point_plus'] - $data['point_minus'];
 		$data['percent_plus']  = $data['point_total'] > 0 ? ceil($data['point_plus']  / $data['point_total'] * 100) : 0;
@@ -135,6 +232,7 @@ class Purpose_model extends CI_Model{
 		$this->db->from('sw_chc AS chc');
 		$this->db->join('sw_chc_log AS log','chc.no = log.chc_no');
 		$this->db->join('sw_project_staff AS staff','chc.project_no = staff.project_no');
+		$this->db->join('sw_user AS user','staff.user_no = user.no');
 		$this->db->where('log.rank > -1');
 		$this->db->where($where);
 		$this->db->like($like);
@@ -169,7 +267,8 @@ class Purpose_model extends CI_Model{
 		}
 
 		$this->db->select('ifnull(sum(point),0) AS sum',false);
-		$this->db->from('sw_other_point');
+		$this->db->from('sw_other_point as point');
+		$this->db->join('sw_user as user','point.user_no = user.no');
 		$this->db->where($where);
 		$this->db->like($like);
 		$query  = $this->db->get();

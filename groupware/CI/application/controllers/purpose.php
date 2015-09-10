@@ -85,41 +85,52 @@ class Purpose extends CI_Controller{
 			}
 		}
 
-		/*
-		$department = $this->PAGE_CONFIG['params']['department'];
-		$user_name = $this->PAGE_CONFIG['params']['user_name'];
-		*/
-
+		
 		// approved point
 		$option['where'] = array(
+			'date_format(project.sData,"%Y-%m") <=' => $eDate,
+			'date_format(project.eData,"%Y-%m") >=' => $sDate,
+			'staff.menu_no'    => $this->PAGE_CONFIG['params']['department']
+			//'staff.sender' => $this->session->userdata('no') //개인용
+		);
+		$option['like'] = array(
+			'user.name' => $this->PAGE_CONFIG['params']['user_name']
+		);
+
+		$option['test']['where'] = array(
 			'DATE_FORMAT(status.created,"%Y-%m") >=' => $sDate,
 			'DATE_FORMAT(status.created,"%Y-%m") <=' => $eDate,
 			'status.part_sender' => $this->PAGE_CONFIG['params']['department']
-			//'status.sender' => $this->session->userdata('no') //개인용
+			//'annual.user_no' => $this->session->userdata('no')
 		);
-		$option['like'] = array(
-			'sender.name' => $this->PAGE_CONFIG['params']['user_name']
+		$option['test']['like'] = array(
+			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
 
 		$option['annual']['where'] = array(
 			'DATE_FORMAT(annual.data,"%Y-%m") >=' => $sDate,
 			'DATE_FORMAT(annual.data,"%Y-%m") <=' => $eDate,
-			'department.no' => $this->PAGE_CONFIG['params']['department']
+			'department.menu_no' => $this->PAGE_CONFIG['params']['department']
 			//'annual.user_no' => $this->session->userdata('no')
 		);
 		$option['annual']['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
-		$data['approved'] = $this->purpose_model->get_point_approved($option);
+		$data['approved'] = $this->purpose_model->get_point_approved($option,$sDate,$eDate);
 
 
 
 		
 		// chc point
 		$option['where'] = array(
-			'staff.user_no' => $this->session->userdata('no')
+			'DATE_FORMAT(log.date,"%Y-%m") >=' => $sDate,
+			'DATE_FORMAT(log.date,"%Y-%m") <=' => $eDate,
+			'menu_no' => $this->PAGE_CONFIG['params']['department']
+			//'staff.user_no' => $this->session->userdata('no')
 		);
-		$option['like'] = array();
+		$option['like'] = array(
+			'user.name' => $this->PAGE_CONFIG['params']['user_name']
+		);
 		$data['chc'] = $this->purpose_model->get_point_chc($option);
 
 
@@ -127,9 +138,14 @@ class Purpose extends CI_Controller{
 
 		// other point
 		$option['where'] = array(
-			'user_no' => $this->session->userdata('no')
+			'DATE_FORMAT(date,"%Y-%m") >=' => $sDate,
+			'DATE_FORMAT(date,"%Y-%m") <=' => $eDate,
+			'menu_no' => $this->PAGE_CONFIG['params']['department']
+			//'user_no' => $this->session->userdata('no')
 		);
-		$option['like'] = array();
+		$option['like'] = array(
+			'user.name' => $this->PAGE_CONFIG['params']['user_name']
+		);
 		$data['others'] = $this->purpose_model->get_point_other($option);
 		
 
