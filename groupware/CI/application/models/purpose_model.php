@@ -47,6 +47,8 @@ class Purpose_model extends CI_Model{
 		$query = $this->db->get();
 		$result = $query->result_array();
 
+		echo $this->db->last_query();
+
 				
 		
 		/* 
@@ -63,13 +65,8 @@ class Purpose_model extends CI_Model{
 		}
 		
 		// 연차
-		$annual_option = array();
-		foreach($option['annual'] as $key=>$val){
-			if($val!=''){
-				$annual_option[$key] = $val;
-			}
-		}
-		$annual_result = $this->get_annual($annual_option);
+		
+		$annual_result = $this->get_annual($option['annual']);
 		$annual = array();
 		foreach($annual_result as $lt){
 			array_push($annual,$lt['date']);
@@ -109,13 +106,13 @@ class Purpose_model extends CI_Model{
 		}
 
 		$data['point_avg']     = $data['point_plus'] - $data['point_minus'];
-		$data['percent_plus']  = ceil($data['point_plus'] / $data['point_total'] * 100);
-		$data['percent_minus'] = ceil($data['point_minus'] / $data['point_total'] * 100);
-		$data['percent_avg']   = ceil($data['point_avg'] / $data['point_total'] * 100);
+		$data['percent_plus']  = $data['point_total'] > 0 ? ceil($data['point_plus']  / $data['point_total'] * 100) : 0;
+		$data['percent_minus'] = $data['point_total'] > 0 ? ceil($data['point_minus'] / $data['point_total'] * 100) : 0;
+		$data['percent_avg']   = $data['point_total'] > 0 ? ceil($data['point_avg']   / $data['point_total'] * 100) : 0;
 
-		$data['percent_plus']  = $data['percent_plus'] < 0 ? 0 : $data['percent_plus'];
+		$data['percent_plus']  = $data['percent_plus']  < 0 ? 0 : $data['percent_plus'];
 		$data['percent_minus'] = $data['percent_minus'] < 0 ? 0 : $data['percent_minus'];
-		$data['percent_avg']   = $data['percent_avg'] < 0 ? 0 : $data['percent_avg'];
+		$data['percent_avg']   = $data['percent_avg']   < 0 ? 0 : $data['percent_avg'];
 
 		return $data;
 	}
@@ -195,10 +192,25 @@ class Purpose_model extends CI_Model{
 		return $result;
 	}
 	private function get_annual($option=null){
+		$where = array();
+		foreach($option['where'] as $key=>$val){
+			if($val!=''){
+				$where[$key] = $val;
+			}
+		}
+		$like = array();
+		foreach($option['like'] as $key=>$val){
+			if($val!=''){
+				$like[$key] = $val;
+			}
+		}
+
 		$this->db->select('DATE_FORMAT(annual.data,"%Y-%m-%d") AS date',false);
 		$this->db->from('sw_user_annual AS annual');
+		$this->db->join('sw_user AS user','annual.user_no = user.no');
 		$this->db->join('sw_user_department AS department','annual.user_no = department.user_no','left');
-		$this->db->where($option);
+		$this->db->where($where);
+		$this->db->like($like);
 		$query = $this->db->get();
 		$result = $query->result_array();
 		return $result;

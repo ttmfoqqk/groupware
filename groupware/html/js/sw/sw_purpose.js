@@ -96,8 +96,11 @@ function set_date_option(m){
 	var value = obj.attr('data-value');
 	var h = '';
 	if(m=='m'){
+		var d = new Date();
+		var n = d.getMonth();
+		value = !value ? n : value;
 		for(i=1;i<=12;i++){
-			h += '<option value="'+i+'" '+ (value==i?'selected':'') +'>'+i+'월</option>';
+			h += '<option value="'+(i<10 ? '0'+i : i )+'" '+ (value==i?'selected':'') +'>'+i+'월</option>';
 		}
 	}else if(m=='q'){
 		for(i=1;i<=4;i++){

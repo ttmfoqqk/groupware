@@ -28,11 +28,13 @@
 									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">평가일자</label>
 
 									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
+										<select id="d_year" name="d_year" class="fancy-select form-control">
 											<?
-											$sdate = date("Y")-5;
-											for($i=0;$i<10;$i++){
-												echo '<option value="'.($sdate + $i).'" '. ($sdate + $i==date("Y") ? 'selected' : '') .' >'.($sdate + $i).'</option>';
+											$sdate = date("Y")-4;
+											$cdate = $this->input->get('d_year');
+											$cdate = !$cdate ? date('Y') : $cdate;
+											for($i=0;$i<5;$i++){
+												echo '<option value="'.($sdate + $i).'" '. ($sdate + $i==$cdate ? 'selected' : '') .' >'.($sdate + $i).'</option>';
 											}
 											?>
 										</select>
