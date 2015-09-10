@@ -76,7 +76,7 @@
 									<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">사용여부</label>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name=is_active value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office">
+                                        	<input type="radio" name=is_active value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office" checked="checked">
                                         	<label for="in_office">사용</label>
                                         </div>
                                         <div class="radio-custom radio-inline">

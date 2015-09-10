@@ -106,11 +106,11 @@
 											<tr>
 												<th class="th-size"><font class="red">* </font>URL</th>
 												<td class="nr-pd">
-													<input id="url" name="url" class="form-control" value="<?php echo $data['url'];?>"></input>
+													<input id="url" name="url" class="form-control" value="<?php echo $data['url'];?>" placeholder="http://"></input>
 												</td>
 												<th class="th-size"><font class="red">* </font>IP</th>
 												<td class="nr-pd">
-													<input id="ip" name="ip" class="form-control" value="<?php echo $data['ip'];?>"></input>
+													<input id="ip" name="ip" class="form-control" value="<?php echo $data['ip'];?>" placeholder="000.000.000"></input>
 												</td>
 											</tr>
 											<tr><td class="empty" colspan="4"></td>
