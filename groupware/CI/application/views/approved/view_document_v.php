@@ -16,183 +16,135 @@
 					<div class="panel panel-primary">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재등록</h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> 보낸결재</h4>
 						</div>
 						<div class="panel-body">
 
-							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="approved-form-send" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
-							<input type="hidden" name="task_no" id="task_no" value="<?echo $data['project_no'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
-
-
-
-							<?if( $action_type == 'create' ) {?>
-							<div class="row pb20">
-								<label for="approved_kind" class="col-lg-2 col-md-3 control-label">결재 종류</label>
-								<div class="col-lg-7 col-md-6 col-xs-8">
-									<select id="approved_kind" name="approved_kind" class="fancy-select form-control">
-										<option value="0">업무</option>
-										<option value="1">일반</option>
-									</select>
-								</div>
-								<div class="col-lg-3 col-md-3 col-xs-4">
-									<button type="button" class="btn btn-primary btn-alt" id="call_approved_kind">불러오기</button>
-								</div>
-							</div>
-							<?}else{?>
-							<div class="row pb20">
-								<div class="col-lg-3 col-md-3 col-xs-4">
-									<input type="hidden" id="approved_kind" name="approved_kind" value="<?echo $data['kind'];?>">
-									<button type="button" class="btn btn-primary btn-alt" id="call_approved_kind"><?echo $data['kind']=='0'?'업무':'문서';?> 불러오기</button>
-								</div>
-							</div>
-							<?}?>
-
-							<!-- 업무보고서 -->
-							<input type="hidden" name="p_department" id="p_department" value="<?echo $data['menu_no'];?>">
-							<input type="hidden" name="p_title" id="p_title" value="<?echo $data['project_title'];?>">
-							<input type="hidden" name="p_sData" id="p_sData" value="<?echo $data['project_sData'];?>">
-							<input type="hidden" name="p_eData" id="p_eData" value="<?echo $data['project_eData'];?>">
-
-							<div style="<?echo ($data['kind'] == '0' ? '' : 'display:none;'); ?>" id="project-layout">
+							
 							<div class="panel panel-default">
 								<div class="panel-body">
-									<h3 class="text-center mb25">업무보고서</h3>
+									<h3 class="text-center mb25"><?echo $data['document_name'];?></h3>
 									
 									<div class="col-xs-10 col-xs-offset-1 mb20">
-										<table class="table table-bordered table-border-black">
+										<table class="table table-bordered" style="min-width:700px;">
 											<tbody>
 												<tr>
 													<th style="width:200px;">문서번호</th>
-													<td id="p_paper_no" style="width:400px;"><?echo $data['no'];?></td>
+													<td style="width:400px;"><?echo $data['no'];?></td>
 													<th style="width:200px;">등록일자</th>
 													<td><?echo $data['created'];?></td>
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td id="project_department"><?echo $data['department'];?></td>
+													<td><?echo $data['sender_menu'];?></td>
 													<th>담당자</th>
-													<td id="project_user"><?echo $this->session->userdata('name');?></td>
+													<td><?echo $data['sender_name'];?></td>
 												</tr>
 												<tr>
-													<th>분류</th>
-													<td id="project_menu"><?echo $data['project_menu_name']?></td>
 													<th>제목</th>
-													<td id="project_title"><?echo $data['project_title'];?></td>
+													<td colspan="3"><?echo $data['title'];?></td>
 												</tr>
-												<tr>
-													<th>내용</th>
-													<td id="project_contents" colspan="3"><?echo $data['project_contents'];?></td>
-												</tr>
+												
 												<tr>
 													<th>진행기간</th>
-													<td id="project_date" colspan="3"><?echo $data['project_sData'].' ~ '.$data['project_eData'];?></td>
-												</tr>
-												<tr>
-													<th>결재점수</th>
-													<td id="project_pPoint">+<?echo $data['pPoint'];?></td>
-													<th>누락점수</th>
-													<td id="project_mPoint">-<?echo $data['mPoint'];?></td>
+													<td colspan="3"><?echo $data['sData'].' ~ '.$data['eData'];?></td>
 												</tr>
 												<tr>
 													<th>첨부파일</th>
-													<td id="project_file"><?echo $data['project_file'];?></td>
-													<th >순서</th>
-													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="p_contents" name="p_contents" class="form-control" rows="10" placeholder="내용"><?echo $data['approved_contents'];?></textarea>
-									</div>
-								</div>
-							</div>
-							</div>
-							<!-- 업무보고서 -->
-
-							<!-- 일반보고서 -->
-							<div style="display:none;" id="document-layout">
-							<div class="panel panel-default">
-								<div class="panel-body">
-									<h3 class="text-center mb25">문서이름</h3>
-									
-									<div class="col-xs-10 col-xs-offset-1 mb20">
-										<table class="table table-bordered table-border-black">
-											<tbody>
-												<tr>
-													<th style="width:200px;">문서번호</th>
-													<td style="width:400px;"> </td>
-													<th style="width:200px;">등록일자</th>
-													<td><?echo Date('Y-m-d');?></td>
+													<td><?echo $data['file'];?></td>
+													<th> </th>
+													<td class="p5"> </td>
 												</tr>
 												<tr>
-													<th>담당부서</th>
-													<td class="p5">
-														<select id="d_department" name="d_department" data-method="department" data-value="<?echo $this->input->get('document_department');?>" class="fancy-select form-control input-sm">
-															<option value="">담당부서</option>
-														</select>
-													</td>
-													<th>담당자</th>
-													<td id="document_user"> </td>
+													<td colspan="4" style="border-left:1px solid #ffffff;border-right:1px solid #ffffff;">&nbsp;</td>
 												</tr>
 												<tr>
-													<th>제목</th>
-													<td colspan="3" class="p5">
-														<input id="d_title" name="d_title" type="text" class="form-control input-sm" placeholder="제목" value="<?echo $this->input->get('title');?>">
-													</td>
-												</tr>
-												<tr>
-													<th>진행기간</th>
-													<td colspan="3" class="p5">
+													<th style="vertical-align:middle;">결재</th>
+													<td colspan="3" class="p0 m0">
 														
-														<div class="col-xs-6 col-md-6 row">
-															<div class="input-daterange input-group">
-																<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-																<input type="text" class="form-control input-sm" name="d_sData" id="d_sData" value="<?echo $this->input->get('sData')?>" />
-																<span class="input-group-addon">to</span>
-																<input type="text" class="form-control input-sm" name="d_eData" id="d_eData" value="<?echo $this->input->get('eData')?>"/>
+														<div class="row col-xs-12 p0 m0">
+															<?
+															$i = 1;
+															foreach($approved_list as $lt){?>
+															<div class="col-xs-2 pt5 p0 m0 text-center" style="width:20%;border-right:<?echo ($i % 5==0?'0':'1')?>px solid #ddd;">
+																<div style="border-bottom:1px solid #ddd;" class="p5 pb10 m0">직급</div>
+																<div class="p5 m5" style="height:80px;">
+																	<p><?echo $lt['user_name'];?></p>
+																	<?if( $app_type == 'receive' && $data['status']=='b' && $lt['receiver']==$this->session->userdata('no') ){?>
+																	<select id="status" name="status" class="fancy-select form-control">
+																		<option value="">선택</option>
+																		<option value="c">결재</option>
+																		<option value="d">반려</option>
+																	</select>
+																	<?}else{
+																		switch( $lt['status'] ) {
+																			case "c" :
+																				$status = '승인';
+																				break;
+																			case "d" :
+																				$status = '반려';
+																				break;
+																			default :
+																				$status = '미결';
+																		}
+																	?>
+																	<div class="p5"><b><?echo $status;?></b></div>
+																	<?}?>
+																</div>
 															</div>
-														</div>
-														<div class="col-xs-6 col-md-6">
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
-															<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
-														</div>
+															<?
+																$i++;
+																if($i % 6 == 0){
+																	echo '</div><div class="row col-xs-12 p0 m0" style="border-top:1px solid #ddd;">';
+																}
+															}?>
+														<div>
 														
 													</td>
 												</tr>
+												<?php 
+												if(count($contents_list)>0) {?>
 												<tr>
-													<th>첨부파일</th>
-													<td class="p5">
-														<input type="file" id="d_file" name="d_file" class="filestyle" data-size="sm" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
-													</td>
-													<th>순서</th>
-													<td class="p5"><input type="text" id="d_order" name="d_order" class="form-control input-sm input-mini" value="0"></td>
+													<td colspan="4" style="border-left:1px solid #ffffff;border-right:1px solid #ffffff;">&nbsp;</td>
 												</tr>
+												<?}
+												foreach($contents_list as $lt){?>
+												<tr>
+													<td><?echo $lt['user_name'];?></td>
+													<td colspan="3"><?echo nl2br($lt['contents']);?></td>
+												</tr>
+												<?}?>
 											</tbody>
 										</table>
 									</div>
+									<?if($data['status']=='a'){?>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="d_contents" name="d_contents" class="form-control" rows="10" placeholder="내용"></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?echo $data['contents'];?></textarea>
 									</div>
+									<?}?>
 								</div>
 							</div>
-							</div>
-							<!-- 일반보고서 -->
 							
 							
-							<div class="panel-body pull-left">
-								<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
-							</div>
-							<div class="panel-body pull-right">
-								<?if( $action_type == 'edit' ) {?>
-								<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-								<?}?>
-								<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+							<div class="col-xs-10 col-xs-offset-1">
+								<div class="panel-body pull-left">
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
+								</div>
+								<div class="panel-body pull-right">
+									<?if( $app_type == 'send' && $data['status']=='a' ) {?>
+									<button id="approved_write_send" type="button" class="btn btn-danger btn-alt mr5 mb10">결재 요청</button>
+									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<?}?>
+
+									<?if( $app_type == 'receive' && $data['status']=='b' ) {?>
+									<button id="approved_write_receive" type="button" class="btn btn-danger btn-alt mr5 mb10">결재 하기</button>
+									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<?}?>
+								</div>
 							</div>
 
 							</form>

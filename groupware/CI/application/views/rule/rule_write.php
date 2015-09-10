@@ -42,7 +42,7 @@
 								<div class="form-group">
 									<label for="name" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 제목</label>
 									<div class="col-lg-10 col-md-10">
-										<input id="name" name="name" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['name']?>>
+										<input id="name" name="name" type="text" class="form-control" placeholder=""  maxlength="20" value="<?php echo $data['name'];?>">
 									</div>
 								</div>
 								<div class="form-group">

@@ -6,9 +6,7 @@ class Rule extends CI_Controller{
 	
 	public function __construct() {
 		parent::__construct();
-		set_cookie('left_menu_open_cookie',site_url('rule'),'0');
 		login_check();
-		
 		$this->load->model('md_company');
 		$this->load->model('md_rule');
 		$this->md_company->setTable($this->TABLE_NAME);
@@ -21,6 +19,7 @@ class Rule extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
+				set_cookie('left_menu_open_cookie',site_url('rule'),'0');
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
 				$this->$method();
@@ -97,6 +96,55 @@ class Rule extends CI_Controller{
 		
 		
 		$this->load->view('rule/rule_v',$data);
+	}
+
+	public function _lists(){
+		//필터 설정
+		$likes = $this->getListFilter();
+		
+		$menu = !$this->input->get('ft_rule') ? NULL : $this->input->get('ft_rule');
+		$is_point = !$this->input->get('ft_point') ? NULL : $this->input->get('ft_point');
+		
+		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
+		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
+		
+		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
+		
+		if(($start && $end) || $menu || $is_point){
+			$where = array();
+			if($start && $end){
+				$where['r.created <'] = $end;
+				$where['r.created >='] = $start;
+			}
+			if($menu)
+				$where['r.menu_no'] = $menu;
+			if($is_point)
+				$where['r.operator'] = $is_point;
+		}
+		else
+			$where = NULL;
+		
+		$total = $this->md_rule->getCount($where, $likes);
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
+		
+		//Pagination 설정
+		$config['base_url'] = "";
+		$config['total_rows'] = $total; // 전체 글갯수
+		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		
+		//테이블 정보 설정
+		$data['list'] = array();
+		$result = $this->md_rule->get($where, $likes, $tb_show_num, $offset);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
+		if (count($result) > 0){
+			$data['list'] = $result;
+		}
+		echo json_encode($data);
 	}
 	
 	public function write(){

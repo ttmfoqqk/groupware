@@ -28,27 +28,28 @@
 									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">평가일자</label>
 
 									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="월별">월별</option>
-											<option value="분기별" >분기별</option>
-										</select>
-									</div>
-									
-									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="2015">2015</option>
+										<select id="d_year" name="d_year" class="fancy-select form-control">
+											<?
+											$sdate = date("Y")-4;
+											$cdate = $this->input->get('d_year');
+											$cdate = !$cdate ? date('Y') : $cdate;
+											for($i=0;$i<5;$i++){
+												echo '<option value="'.($sdate + $i).'" '. ($sdate + $i==$cdate ? 'selected' : '') .' >'.($sdate + $i).'</option>';
+											}
+											?>
 										</select>
 									</div>
 
 									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="1기">1기</option>
-											<option value="2기">2기</option>
-											<option value="3기">3기</option>
-											<option value="4기">4기</option>
-											<option value="1기+2기">1기+2기</option>
-											<option value="1기+2기+3기">1기+2기+3기</option>
-											<option value="1기+2기+3기+4기">1기+2기+3기+4기</option>
+										<select id="d_type" name="d_type" class="fancy-select form-control">
+											<option value="m" <?echo $this->input->get('d_type')=='m'?'selected':'';?>>월별</option>
+											<option value="q" <?echo $this->input->get('d_type')=='q'?'selected':'';?>>분기별</option>
+										</select>
+									</div>
+
+									<div class="col-lg-3 col-md-3 col-sm-3">
+										<select id="d_option" name="d_option" data-value="<?echo $this->input->get('d_option')?>" class="fancy-select form-control">
+											<option value="">선택</option>
 										</select>
 									</div>
 
@@ -57,38 +58,20 @@
 								<div class="form-group">
 									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">담당부서</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="담당부서">담당부서</option>
+										<select id="department" name="department" data-method="department" data-value="<?echo $this->input->get('department');?>" class="fancy-select form-control">
+											<option value="">담당부서</option>
 										</select>
 									</div>
 
 									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">담당자</label>
 									<div class="col-lg-3 col-md-3 col-sm-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="담당자">담당자</option>
-										</select>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">분류</label>
-									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="board_type" name="board_type" class="fancy-select form-control">
-											<option value="분류">분류</option>
-										</select>
-									</div>
-
-									<label class="col-lg-2 col-md-2 col-sm-2 control-label" for="">제목</label>
-									<div class="col-lg-3 col-md-3 col-sm-3">
-										<input type="text" class="form-control" placeholder="제목">
+										<input type="text" name="user_name" class="form-control" placeholder="담당자" value="<?echo $this->input->get('user_name');?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10"> 검 색</button>
 									</div>
 								</div>
-
-
 							</form>
 							<!-- 검색 -->
 
@@ -119,7 +102,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart" data-percent="28">28%</div>
+											<div class="easy-pie-chart" data-percent="100"><?echo $approved['point_total'];?>점</div>
 										</div>
 									</div>
 
@@ -130,7 +113,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-green" data-percent="28">28%</div>
+											<div class="easy-pie-chart-green" data-percent="<?echo $approved['percent_plus'];?>"><?echo $approved['point_plus'];?>점</div>
 										</div>
 										<div style="position:absolute;top:33%;left:100%;font-size:30px;" class="hidden-sm hidden-xs">-</div>
 									</div>
@@ -142,7 +125,7 @@
 									</div>									
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-green" data-percent="28">28%</div>
+											<div class="easy-pie-chart-green" data-percent="<?echo $approved['percent_minus'];?>"><?echo $approved['point_minus'];?>점</div>
 										</div>
 										<div style="position:absolute;top:33%;left:100%;font-size:30px;" class="hidden-sm hidden-xs">=</div>
 									</div>
@@ -154,7 +137,7 @@
 									</div>									
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-blue" data-percent="28">28%</div>
+											<div class="easy-pie-chart-blue" data-percent="<?echo $approved['percent_avg'];?>"><?echo $approved['point_avg'];?>점</div>
 										</div>
 									</div>
 
@@ -189,7 +172,7 @@
 									</div>									
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-green" data-percent="28">28%</div>
+											<div class="easy-pie-chart-green" data-percent="<?echo $chc['percent_avg'];?>"><?echo $chc['point_avg'];?>점</div>
 										</div>
 									</div>
 
@@ -200,7 +183,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-green" data-percent="28">28%</div>
+											<div class="easy-pie-chart-green" data-percent="<?echo $chc['percent_display'];?>"><?echo $chc['percent_display'];?>%</div>
 										</div>
 									</div>
 
@@ -211,7 +194,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts green-pie">
-											<div class="easy-pie-chart-green" data-percent="28">28%</div>
+											<div class="easy-pie-chart-green" data-percent="<?echo $chc['percent_text'];?>"><?echo $chc['point_text'];?>점</div>
 										</div>
 									</div>
 
@@ -222,7 +205,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts blue-pie">
-											<div class="easy-pie-chart-blue" data-percent="28">28%</div>
+											<div class="easy-pie-chart-blue" data-percent="<?echo $chc['percent_total'];?>"><?echo $chc['point_total'];?>점</div>
 										</div>
 									</div>
 								</div>
@@ -257,7 +240,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts blue-pie">
-											<div class="easy-pie-chart-blue" data-percent="65">65%</div>
+											<div class="easy-pie-chart-blue" data-percent="<?echo $approved['percent_avg'];?>"><?echo $approved['point_avg'];?>점</div>
 										</div>
 									</div>
 
@@ -268,7 +251,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts blue-pie">
-											<div class="easy-pie-chart-blue" data-percent="65">65%</div>
+											<div class="easy-pie-chart-blue" data-percent="<?echo $chc['percent_total'];?>"><?echo $chc['point_total'];?>점</div>
 										</div>
 									</div>
 
@@ -279,7 +262,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts blue-pie">
-											<div class="easy-pie-chart-blue" data-percent="65">65%</div>
+											<div class="easy-pie-chart-blue" data-percent="<?echo $others['percent_sum'];?>"><?echo $others['sum'];?>점</div>
 										</div>
 									</div>
 
@@ -290,7 +273,7 @@
 									</div>
 									<div class="col-lg-3 col-md-3">
 										<div class="pie-charts red-pie">
-											<div class="easy-pie-chart-red" data-percent="65">65%</div>
+											<div class="easy-pie-chart-red" data-percent="<?echo $all_point['percent_total'];?>"><?echo $all_point['point_total'];?>점</div>
 										</div>
 									</div>
 

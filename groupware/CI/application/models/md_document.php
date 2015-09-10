@@ -35,7 +35,7 @@ class Md_document extends CI_Model{
 		if($where != NULL)
 			$this->db->where($where);
 		
-		$this->db->select('d.no, d.order,  m.name as menu_name, d.name,  d.is_active, d.created, u.name as user_name, d.menu_no');
+		$this->db->select('d.no, d.order,  m.name as menu_name, d.name,  d.is_active, d.created, u.name as user_name, d.menu_no , d.contents , d.file');
 		$this->db->join('sw_user u', 'd.user_no = u.no', 'left outer');
 		$this->db->join('sw_menu m', 'd.menu_no = m.no', 'left outer');
 		

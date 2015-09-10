@@ -1,16 +1,13 @@
 <?
 class Menu extends CI_Controller{
-	private $GLOBAL;
-	
+	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		login_check();
 
-		$this->GLOBAL['method'] = $this->uri->segment(3);
-		
+		$this->PAGE_CONFIG['method'] = $this->uri->segment(3);
 		
 		$menu_name = '';
-		switch ($this->GLOBAL['method']) {
+		switch ($this->PAGE_CONFIG['method']) {
 		case 'department':
 			$menu_name = "부서 분류관리";
 			break;
@@ -41,12 +38,13 @@ class Menu extends CI_Controller{
 	*/
 
 	public function _remap($method){
+		login_check();
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
 			}
 		}else{
-			set_cookie('left_menu_open_cookie',site_url('menu/lists/'.$this->GLOBAL['method'] ),'0');
+			set_cookie('left_menu_open_cookie',site_url('menu/lists/'.$this->PAGE_CONFIG['method'] ),'0');
 			if(method_exists($this, $method)){
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
@@ -64,7 +62,7 @@ class Menu extends CI_Controller{
 	
 	public function lists(){
 		$options = array(
-			'category' => $this->GLOBAL['method']
+			'category' => $this->PAGE_CONFIG['method']
 		);
 		$data['list'] = $this->organization_model->get_organization($options);
 
@@ -82,14 +80,14 @@ class Menu extends CI_Controller{
 
         // html 생성
         $data['tree'] = $this->buildMenu(0, $menuData, 'html');
-		$data['key']  = $this->GLOBAL['method'];
+		$data['key']  = $this->PAGE_CONFIG['method'];
 		
 		$this->load->view('menu/menu_v',$data);
 	}
 
 	public function _lists(){
 		$options = array(
-			'category' => $this->GLOBAL['method']
+			'category' => $this->PAGE_CONFIG['method']
 		);
 		$data['list'] = $this->organization_model->get_organization($options);
 

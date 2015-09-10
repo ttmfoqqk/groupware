@@ -136,7 +136,7 @@
 						<ul class="sub">
 							<li><a href="<?php echo site_url('purpose/search');?>"><span class="txt">목표설정</span></a></li>
 							<li><a href="<?php echo site_url('purpose/appraisal');?>"><span class="txt">업무평가</span></a></li>
-							<li><a href="<?php echo site_url('purpose/add');?>"><span class="txt">추가평점</span></a></li>
+							<li><a href="<?php echo site_url('other_point/lists');?>"><span class="txt">추가평점</span></a></li>
 						</ul>
 					</li>
 					<li>

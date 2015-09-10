@@ -16,7 +16,7 @@
 					<div class="panel panel-primary toggle">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재 보관함</h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> 결재 보관함<?echo Date('Y-m-d H:i:s');?></h4>
 						</div>
 						<div class="panel-body">
 							
@@ -146,30 +146,34 @@
 										<th class="per8">누락</th>
 										<th class="per8">등록일자</th>
 										<th width="80px;">담당자</th>
-										<th width="80px;">결재자</th>
+										<th width="90px;">결재요청</th>
 									</tr>
 								</thead>
 								<tbody>
 								<?php foreach($list as $lt){
-									$anchor = $anchor_url.'&no='.$lt['approved_no'];
+									$anchor = $anchor_url.'&no='.$lt['no'];
 									?>
 									<tr>
 										<td>
 											<div class="checkbox-custom">
-												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['approved_no'];?>">
+												<input id="no" name="no[]" class="check" type="checkbox" value="<?echo $lt['no'];?>">
 												<label for="check"></label>
 											</div>
 										</td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['orders']?0:$lt['orders']; ?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['project_menu'] ? $lt['project_menu'] : $lt['document'] ;?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'] ? $lt['title'] : $lt['name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['order']?0:$lt['order']; ?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal">+<?echo $lt['pPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal">-<?echo $lt['mPoint'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['createds'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_default'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '+'.$lt['pPoint'] : '');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '-'.$lt['mPoint'] : '');?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['approved_no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-danger btn-xs" id="view_staff" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['no'];?>','<?echo $lt['kind'];?>');"><i class="glyphicon glyphicon-ok"></i></button>
+											
+											<?if($lt['kind']=="1"){?>
+											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="document_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+											<?}?>
 										</td>
 									</tr>
 									<?php }?>
