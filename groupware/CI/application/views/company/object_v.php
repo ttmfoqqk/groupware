@@ -164,10 +164,10 @@
 								<div class="panel-body" style="text-align: center;">
 									<?php echo $table_num?><br><?echo $pagination;?></div>
 								<div class="panel-body pull-right">
-									<button id="btn_list_delete" type="button"
-										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
 										onclick="location.href='<?echo site_url('object/write/')?>';">등록</button>
+									<button id="btn_list_delete" type="button"
+										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 							</form>
 						</div>

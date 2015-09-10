@@ -90,8 +90,8 @@
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('object')?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 								
 							</form>

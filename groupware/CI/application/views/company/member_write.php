@@ -104,8 +104,8 @@
 									<div class="col-lg-4 col-md-4">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="anual_start" id="anual_start" value=<?php if($data['sDate'] != '1') echo "'" .$data['sDate'] . "'";?>/>
-											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value=<?php if($data['eDate'] != '1') echo "'" .$data['eDate'] . "'";?>/>
+											<input type="text" class="form-control" name="anual_start" id="anual_start" value=<?php if($data['sDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['sDate'])) . "'" ;?>/>
+											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value=<?php if($data['eDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['eDate'])) . "'" ;?>/>
 										</div>
 									</div>
 								</div>
@@ -114,7 +114,7 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="birthday" id="birthday" value=<?php if($data['birth'] != '1') echo "'" .$data['birth'] . "'";?>/>
+											<input type="text" class="form-control" name="birthday" id="birthday" value=<?php if($data['birth'] != '1') echo "'" . date('Y-m-d', strtotime($data['birth'])) . "'" ;?>/>
 										</div>
 									</div>
 								</div>
@@ -123,7 +123,7 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="join_date" id="join_date" value=<?php if($data['inDate'] != '1') echo "'" .$data['inDate'] . "'";?>/>
+											<input type="text" class="form-control" name="join_date" id="join_date" value=<?php if($data['inDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['inDate'])) . "'" ;?>/>
 										</div>
 									</div>
 									<div class="col-lg-2 col-md-2">
@@ -171,8 +171,8 @@
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('member')?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 								
 							</form>

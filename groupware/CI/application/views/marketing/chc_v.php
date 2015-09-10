@@ -112,22 +112,21 @@
 											검 색</button>
 									</div>
 								</div>
-
+								
+								<!-- 테이블 옵션  -->
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+								</div>
+								<!-- END 테이블 옵션  -->
 
 							</form>
 							<!-- 검색 -->
-							
-							<!-- 테이블 옵션  -->
-							<div class="pull-left">
-								<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?echo $this->input->get('tb_num');?>>
-									<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
-									<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
-								</select>
-							</div>
-							<div class="pull-right">
-								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
-							</div>
-							<!-- END 테이블 옵션  -->
 							
 							<form id="chc-form-list" action="<?echo $action_url;?>"
 								method="post" class="form-horizontal group-border stripped"
@@ -217,10 +216,10 @@
 								<div class="panel-body" style="text-align: center;">
 										<?php echo $table_num?><br><?echo $pagination;?></div>
 								<div class="panel-body pull-right">
-									<button id="btn_list_delete" type="button"
-										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
 										onclick="location.href='<?echo site_url('chc/write/');?>';">등록</button>
+									<button id="btn_list_delete" type="button"
+										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 							</form>
 
