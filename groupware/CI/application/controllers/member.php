@@ -227,7 +227,6 @@ class Member extends CI_Controller{
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('id','아이디','required|max_length[20]');
 			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');
@@ -266,7 +265,6 @@ class Member extends CI_Controller{
 			}
 			
 			$data = array(
-					'id'=>$id,
 					'pwd'=>$passwd,
 					'name'=>$name,
 					'phone'=>$phone,
@@ -282,6 +280,7 @@ class Member extends CI_Controller{
 					'color'=>$color,
 					'order'=>$order,
 					'is_active'=>$inOffice,
+					'position'=>$position,
 					'origin_file' => $origin_file,
 			);
 			if($file != null)
