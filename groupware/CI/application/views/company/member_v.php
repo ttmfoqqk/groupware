@@ -44,11 +44,14 @@
 										<input type="text" class="form-control" id="ft_email"
 											name="ft_email" placeholder="이메일" value=<?php echo $filter['email'] != NULL ? $filter['email'] : '';?>>
 									</div>
-
+									
 									<label class="col-lg-2 col-md-2 control-label" for="">재직여부</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_iswork"
-											name="ft_iswork" placeholder="재직여부" value=<?php echo $filter['is_active'] != NULL ? $filter['is_active'] : '';?>>
+										<select class="fancy-select form-control" id="ft_iswork" name="ft_iswork" value="<?echo $this->input->get('ft_iswork');?>">
+											<option value="">전체</option>
+                                        	<option value="0" <?= $filter['is_active'] == "0" ? ' selected="selected"' : '';?>>재직</option>
+                                        	<option value=1 <?= $filter['is_active'] == '1' ? ' selected="selected"' : '';?>>퇴직</option>
+                                        </select>
 									</div>
 
 									<div class="col-lg-2 col-md-2">

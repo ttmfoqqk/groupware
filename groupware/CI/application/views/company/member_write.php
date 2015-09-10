@@ -45,7 +45,7 @@
 	                                    <div class="form-group">
 	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>아이디</label>
 	                                        <div class="col-lg-10 col-md-10">
-	                                            <input type="text" class="form-control" name="id" id="id" value=<?php echo $data['id']?>>
+	                                            <input type="text" class="form-control" name="id" id="id" value=<?php echo $data['id']?> <?php if($action_type!="create") echo " disabled='disabled'";?>>
 	                                        </div>
 	                                    </div>
 	                                    <div class="form-group">
@@ -104,8 +104,8 @@
 									<div class="col-lg-4 col-md-4">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="anual_start" id="anual_start" value=<?php if($data['sDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['sDate'])) . "'" ;?>/>
-											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value=<?php if($data['eDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['eDate'])) . "'" ;?>/>
+											<input type="text" class="form-control" name="anual_start" id="anual_start" value="<?php if($data['sDate'] != '') echo date('Y-m-d', strtotime($data['sDate']));?>"/>
+											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value="<?php if($data['eDate'] != '') echo date('Y-m-d', strtotime($data['eDate']));?>"/>
 										</div>
 									</div>
 								</div>
@@ -114,7 +114,7 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="birthday" id="birthday" value=<?php if($data['birth'] != '1') echo "'" . date('Y-m-d', strtotime($data['birth'])) . "'" ;?>/>
+											<input type="text" class="form-control" name="birthday" id="birthday" value="<?php if($data['birth'] != '') echo date('Y-m-d', strtotime($data['birth']));?>"/>
 										</div>
 									</div>
 								</div>
@@ -123,12 +123,12 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="join_date" id="join_date" value=<?php if($data['inDate'] != '1') echo "'" . date('Y-m-d', strtotime($data['inDate'])) . "'" ;?>/>
+											<input type="text" class="form-control" name="join_date" id="join_date" value="<?php if($data['inDate'] != '') echo  date('Y-m-d', strtotime($data['inDate']));?>"/>
 										</div>
 									</div>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4">
+                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4" checked="checked">
                                         	<label for="radio4">남자</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
@@ -157,7 +157,7 @@
 									<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">재직여부</label>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name="in_office" value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office">
+                                        	<input type="radio" name="in_office" value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office" checked="checked">
                                         	<label for="in_office">재직</label>
                                         </div>
                                         <div class="radio-custom radio-inline">

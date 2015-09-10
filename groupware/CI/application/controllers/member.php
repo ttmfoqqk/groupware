@@ -59,7 +59,7 @@ class Member extends CI_Controller{
 		$likes['name'] = !$this->input->get('ft_name') ? '' : $this->input->get('ft_name');
 		$likes['phone'] = !$this->input->get('ft_phone') ? '' : $this->input->get('ft_phone');
 		$likes['email'] = !$this->input->get('ft_email') ? '' : $this->input->get('ft_email');
-		$likes['is_active'] = !$this->input->get('ft_iswork') ? '' : $this->input->get('ft_iswork');
+		$likes['is_active'] = ($this->input->get('ft_iswork')=="") ? '' : (string)$this->input->get('ft_iswork');
 		return $likes;
 	}
 	
@@ -67,7 +67,6 @@ class Member extends CI_Controller{
 		//필터 설정
 		$likes = $this->getListFilter();
 		$data['filter'] = $likes;		//페이지 필터 값  
-		
 		//Pagination, 테이블정보 필요 설정 세팅
 		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		$where = NULL;

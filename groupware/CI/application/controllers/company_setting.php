@@ -94,7 +94,7 @@ class Company_setting extends CI_Controller{
 					$addr, $phone, $fax, $note, $order, '', $bizNumber);
 			
 			$this->md_company->modify(array('no'=>$company_no), $data);
-			alert('수정되었습니다.' . $category, site_url($category) );
+			alert('수정되었습니다.', site_url($category) );
 			
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('company_no','','required');
@@ -104,7 +104,7 @@ class Company_setting extends CI_Controller{
 			$set_no = is_array($company_no) ? implode(',',$company_no):$company_no;
 			$where = 'no in (' . $set_no . ')';
 			$this->md_company->delete($where);
-			alert('삭제되었습니다.' . $category , site_url($category) );
+			alert('삭제되었습니다.', site_url($category) );
 		}else{
 			alert('잘못된 접근입니다.');
 		}
