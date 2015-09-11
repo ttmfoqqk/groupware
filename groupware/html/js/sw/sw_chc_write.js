@@ -71,6 +71,7 @@ $(document).ready(function() {
 		$("#ft_commpany").attr("disabled",true);
 	}else
 		$('#contents_setting_delete').hide();
+	
 });
 
 
@@ -78,20 +79,24 @@ $(document).ready(function() {
 var $idTable_base = $('#tbId tbody');
 //최초 html 클론 저장
 var $new_row    = $('.tbRow').clone();
+var $add_id_count = 1;
 
 //row 추가/삭제
 function row_controll(obj, mode){
 	var len     = $('.tbRow').length;
 	var parent  = obj.parent().parent();
 	var new_row = $new_row.clone();
-	
+	console.log($add_id_count);
 	if( mode == 'add' ){
-		new_row.css('background-color','#82ffab').animate({
-			'background-color':'#ffffff'
-		},500);
-			addEvent(new_row);
-			$(new_row).insertAfter(parent);
-		
+		if(len >= $add_id_count){
+			alert('아이디를 더이상 사용할 수 없습니다');
+		}else{
+			new_row.css('background-color','#82ffab').animate({
+				'background-color':'#ffffff'
+			},500);
+				addEvent(new_row);
+				$(new_row).insertAfter(parent);
+		}
 	}else if( mode == 'rm' ){
 		if(len <= 1){
 			alert('삭제할수 없습니다.');
@@ -134,6 +139,17 @@ function addEvent(obj){
 		});
 	});
 	
+	//id_active[]
+	var menu_obj = obj.find('select[name="id_active[]"]');
+	menu_obj.each(function(eq){
+		$this = $(this);
+		$this.change(function(){
+			var no = $(this).val();
+			$(this).attr("data-value", no);
+			$(this).prev().attr("value", no);
+		});
+	});
+	
 }
 
 //ID select box 선택 시 테이블 변경
@@ -164,8 +180,12 @@ function createIdRow(no,obj){
 				obj.find('.tdBirth').text(json[0].birth);
 				obj.find('.tdEmail').text(json[0].email);
 				obj.find('select[name="sel_request[]"]').val(json[0].is_using_question).attr("selected", "selected");
-				//$('input:radio[name="is_request"][value=' + json[0].is_using_question + ']').attr('checked', 'checked');
-				obj.find('#selId').val(json[0].no);
+				obj.find('select[name="sel_request[]"]').attr("data-value", json[0].is_using_question);
+				obj.find('input[name="is_request[]"]').val(json[0].is_using_question);
+				obj.find('select[name="id_active[]"]').val(0).attr("selected", "selected");
+				obj.find('select[name="id_active[]"]').attr('data-value', 0);
+				obj.find('input[name="id_is_active[]"]').val(0);
+				obj.find('#selId').val(no);
 			},error:function(err){
 				alert(err.responseText);
 				//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
@@ -180,6 +200,46 @@ function list(){
 	
 	chcNo = $("#docNo").text()=="" ? null : $("#docNo").text();
 	number = 1;
+	
+	var menu_obj = $idTable_base.find('select[name="sel_id[]"]');
+	
+	menu_obj.each(function(eq){
+		$this = $(this);
+		var opt = $this.attr("disabled") ? $this.attr("disabled") : null;
+		$this.create_idList({
+			method : 'selectList',
+			value : $this.attr('data-value'),
+			opt : opt
+		});
+		$this.change(function(){
+			var no = $(this).val();
+			createIdRow(no, $(this).parent().parent());
+			menu_obj.attr("data-value", no);
+		});
+	});
+	//sel_request
+	var menu_obj = $idTable_base.find('select[name="sel_request[]"]');
+	menu_obj.each(function(eq){
+		$this = $(this);
+		$this.change(function(){
+			var no = $(this).val();
+			$(this).attr("data-value", no);
+			$(this).prev().attr("value", no);
+		});
+	});
+	
+	//id_active[]
+	var menu_obj = $idTable_base.find('select[name="id_active[]"]');
+	menu_obj.each(function(eq){
+		$this = $(this);
+		$this.change(function(){
+			var no = $(this).val();
+			$(this).attr("data-value", no);
+			$(this).prev().attr("value", no);
+		});
+	});
+	
+	/*
 	$.ajax({
 		type     : 'POST',
 		data     : {
@@ -212,6 +272,7 @@ function list(){
 					new_row.find('.tdDate').attr('data-value', json[i].used);
 					new_row.find('.tdUsed').attr('data-value', json[i].is_using_question);
 					new_row.find('input[name="is_request[]"]').val(json[i].is_using_question);
+					new_row.find('input[name="id_active[]"]').val(json[i].is_active);
 					new_row.find('#selId').val(json[i].no);
 					new_row.find('.btRm').css('display', 'none');
 					clones += new_row.wrapAll('<div>').parent().html();
@@ -256,7 +317,16 @@ function list(){
 				});
 			});
 			
-			
+			//id_active[]
+			var menu_obj = $idTable_base.find('select[name="id_active[]"]');
+			menu_obj.each(function(eq){
+				$this = $(this);
+				$this.change(function(){
+					var no = $(this).val();
+					$(this).attr("data-value", no);
+					$(this).prev().attr("value", no);
+				});
+			});
 			
 			
 		},error:function(err){
@@ -265,6 +335,7 @@ function list(){
 			//alert('일시적인 에러입니다. 잠시 후 다시 시도해 주세요.');
 		}
 	});
+	*/
 }
 
 
@@ -293,6 +364,12 @@ function setInputVal(){
 	$('.tdUsed').each(function(){
 		var va = $(this).attr('data-value');
 		$(this).find('select[name="sel_request[]"]').find('option[value=' + va + ']').attr('selected', 'selected');
+		//$(this).find('input:radio[name="is_request[]"][value=' + va + ']').attr('checked', 'checked');
+	});
+	
+	$('.tdIsActive').each(function(){
+		var va = $(this).attr('data-value');
+		$(this).find('select[name="id_active[]"]').find('option[value=' + va + ']').attr('selected', 'selected');
 		//$(this).find('input:radio[name="is_request[]"][value=' + va + ']').attr('checked', 'checked');
 	});
 }
@@ -352,7 +429,6 @@ function setInputVal(){
 		var element = $(this);
 		var $actionType = $("#action_type").val();
 		var $opt = options.opt;
-		console.log($value);
 		if(element.length<=0){
 			alert('잘못된 객체');
 			return false;
@@ -398,7 +474,7 @@ function setInputVal(){
 					console.log(data);
 					if(data.result){
 						$data = eval(data.data);
-						
+						$add_id_count = $data.length;
 						if(tagName=='SELECT'){
 							var html = create_option($data);
 							element.append(html);
@@ -417,7 +493,14 @@ function setInputVal(){
 		function create_option(json_obj){
 			var output = '';
 			for (var i in json_obj){
-                output+='<option value="'+json_obj[i].no+'" '+ ($value==json_obj[i].no?'selected':'') +'>' + json_obj[i].id + '</option>';
+				var grade;
+				if(json_obj[i].grade == 1)
+					grade = '일반';
+				else if(json_obj[i].grade == 2)
+					grade = '장기';
+				else if(json_obj[i].grade == 3)
+					grade = '등급';
+                output+='<option value="'+json_obj[i].no+'" '+ ($value==json_obj[i].no?'selected':'') +'>' + json_obj[i].id + ' - ' + grade + '</option>';
             }
 			return output;
 		}

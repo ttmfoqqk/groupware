@@ -59,7 +59,7 @@ class Member extends CI_Controller{
 		$likes['name'] = !$this->input->get('ft_name') ? '' : $this->input->get('ft_name');
 		$likes['phone'] = !$this->input->get('ft_phone') ? '' : $this->input->get('ft_phone');
 		$likes['email'] = !$this->input->get('ft_email') ? '' : $this->input->get('ft_email');
-		$likes['is_active'] = !$this->input->get('ft_iswork') ? '' : $this->input->get('ft_iswork');
+		$likes['is_active'] = ($this->input->get('ft_iswork')=="") ? '' : (string)$this->input->get('ft_iswork');
 		return $likes;
 	}
 	
@@ -67,7 +67,6 @@ class Member extends CI_Controller{
 		//필터 설정
 		$likes = $this->getListFilter();
 		$data['filter'] = $likes;		//페이지 필터 값  
-		
 		//Pagination, 테이블정보 필요 설정 세팅
 		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
 		$where = NULL;
@@ -159,6 +158,7 @@ class Member extends CI_Controller{
 		
 		$config['upload_path'] = 'upload/member/';
 		$config['remove_spaces'] = true;
+		$config['encrypt_name'] = true;
 		$config['allowed_types'] = FILE_IMAGE_TYPE;
 		if( $action_type == 'create' ){
 			//$category = $this->uri->segment(2);
@@ -227,7 +227,6 @@ class Member extends CI_Controller{
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('id','아이디','required|max_length[20]');
 			$this->form_validation->set_rules('pass','비밀번호','required|min_length[5]|max_length[20]');
 			$this->form_validation->set_rules('name','이름','required');
 			$this->form_validation->set_rules('position','직급','required');
@@ -266,7 +265,6 @@ class Member extends CI_Controller{
 			}
 			
 			$data = array(
-					'id'=>$id,
 					'pwd'=>$passwd,
 					'name'=>$name,
 					'phone'=>$phone,
@@ -282,6 +280,7 @@ class Member extends CI_Controller{
 					'color'=>$color,
 					'order'=>$order,
 					'is_active'=>$inOffice,
+					'position'=>$position,
 					'origin_file' => $origin_file,
 			);
 			if($file != null)

@@ -100,7 +100,10 @@ class Md_chc extends CI_Model{
 				$arDatas[$i]['history'] = $this->db->get_where('sw_chc_history', array('chc_no'=>$no))->result_array();
 				
 				//답변수
-				$arDatas[$i]['response'] = $this->db->get_where('sw_account', array('chc_no'=>$no, 'is_using_question'=>2))->result_array();
+				$arDatas[$i]['response'] = $this->db->get_where('sw_account_history', array('chc_no'=>$no, 'used'=>'답변'))->result_array();
+				
+				//사용아이디 히스토리
+				$arDatas[$i]['idHistory'] = $this->db->get_where('sw_account_history', array('chc_no'=>$no))->result_array();
 				
 				$i = $i + 1;
 			}

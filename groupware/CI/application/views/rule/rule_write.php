@@ -50,7 +50,7 @@
 									<div class="col-lg-5 col-md-5">
 										<select class="fancy-select form-control" id="operator" name="operator" data-value="<?php echo $data['operator'];?>">
                                         	<option value="">점수</option>
-                                        	<option value=0 <?=$data['operator'] == '0' ? ' selected="selected"' : '';?>>+</option>
+                                        	<option value=0 <?=$data['operator'] == '0' ? ' selected="selected"' : '';?> selected="selected">+</option>
                                         	<option value=1 <?=$data['operator'] == '1' ? ' selected="selected"' : '';?>>-</option>
                                         </select>
 									</div>
@@ -80,7 +80,7 @@
 									<label  class="col-lg-2 col-md-2 control-label lb-left-align">사용여부</label>
 									<div class="col-lg-3 col-md-3">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name=is_active value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_active">
+                                        	<input type="radio" name=is_active value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_active" checked="checked">
                                         	<label for="in_active">사용</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
@@ -94,8 +94,8 @@
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('rule')?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 								
 							</form>

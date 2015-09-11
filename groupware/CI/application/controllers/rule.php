@@ -186,7 +186,7 @@ class Rule extends CI_Controller{
 		$config['allowed_types'] = FILE_ALL_TYPE;
 		if( $action_type == 'create' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('operator','분류','required');
+			$this->form_validation->set_rules('rule','분류','required');
 			$this->form_validation->set_rules('name','제목','required');
 			$this->form_validation->set_rules('operator','점수 오퍼레이션','required');
 			$this->form_validation->set_rules('point','점수','required');
@@ -233,7 +233,7 @@ class Rule extends CI_Controller{
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('operator','분류','required');
+			$this->form_validation->set_rules('rule','분류','required');
 			$this->form_validation->set_rules('name','제목','required');
 			$this->form_validation->set_rules('operator','점수 오퍼레이션','required');
 			$this->form_validation->set_rules('point','점수','required');

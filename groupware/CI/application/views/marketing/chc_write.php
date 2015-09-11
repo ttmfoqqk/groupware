@@ -30,7 +30,7 @@
 								<h3 class="text-center mb25">CHC 보고서</h3>
 								
 								<div class="row col-lg-12 col-md-12 col-xs-12">
-									<input type="hidden" id="isActive" value="<?php echo $data['status'] ;?>">
+									<input type="hidden" id="isActive" value="<?php  if($data['status'] != '') echo $data['status']; else echo 1 ;?>">
 									<div class="radio-custom radio-inline">
                                         <input type="radio" name="is_active" value="1" id="in_active">
                                         <label for="in_active">진행</label>
@@ -106,11 +106,11 @@
 											<tr>
 												<th class="th-size"><font class="red">* </font>URL</th>
 												<td class="nr-pd">
-													<input id="url" name="url" class="form-control" value="<?php echo $data['url'];?>"></input>
+													<input id="url" name="url" class="form-control" value="<?php echo $data['url'];?>" placeholder="http://"></input>
 												</td>
 												<th class="th-size"><font class="red">* </font>IP</th>
 												<td class="nr-pd">
-													<input id="ip" name="ip" class="form-control" value="<?php echo $data['ip'];?>"></input>
+													<input id="ip" name="ip" class="form-control" value="<?php echo $data['ip'];?>" placeholder="000.000.000"></input>
 												</td>
 											</tr>
 											<tr><td class="empty" colspan="4"></td>
@@ -137,7 +137,7 @@
 								<!-- START .col-lg-12 col-md-12 col-xs-12 -->
 								<div class="col-lg-12 col-md-12 col-xs-12">
 									<br></br>
-									<h4 class="panel-title pull-left">URL 히스토리</h4>
+									<h4 class="panel-title pull-left">작업 히스토리</h4>
 									<table class="table table-bordered" id="tbHistory">
 										<thead>
 											<th>URL</th>
@@ -172,6 +172,7 @@
 											<th>메일</th>
 											<th>사용일자</th>
 											<th>용도</th>
+											<th>활성</th>
 											<th></th>
 										</thead>
 										<tbody>
@@ -196,16 +197,13 @@
 														<option value=1>질문</option>
 														<option value=2>답변</option>
 													</select>
-													<!--  
-													<div class="radio-custom radio-inline">
-			                                        	<input type="radio" name="is_request[]" value="1">
-			                                        	<label for="in_active">질문</label>
-			                                        </div>
-			                                        <div class="radio-custom radio-inline">
-			                                        	<input type="radio" name="is_request[]" value="2">
-			                                        	<label for="out_active">답변</label>
-			                                        </div>
-			                                        -->
+												</td>
+												<td class="tdIsActive">
+													<input type="hidden" name="id_is_active[]" value="">
+													<select class="fancy-select form-control" data-value="" name="id_active[]">
+														<option value=0>사용안함</option>
+														<option value=1>사용함</option>
+													</select>
 												</td>
 												<td class="text-center">
 													<div class="btn btn-primary mr5 btn-xs btAdd" onclick="row_controll($(this), 'add')">+</div> <!-- btn-round btn-alt mb10-->
@@ -217,12 +215,42 @@
 									</table>
 								</div>
 								<!-- END .col-lg-12 col-md-12 col-xs-12 -->
+								
+								
+								<!-- START .col-lg-12 col-md-12 col-xs-12 -->
+								<div class="col-lg-12 col-md-12 col-xs-12">
+									<br></br>
+									<h4 class="panel-title pull-left">사용 ID 히스토리</h4>
+									<table class="table table-bordered" id="tbIdHistory">
+										<thead>
+											<th>아이디</th>
+											<th>비밀번호</th>
+											<th>등급</th>
+											<th>사용일자</th>
+											<th>용도</th>
+										</thead>
+										<tbody>
+											<!-- 리스트 -->
+											<?php if(isset($data['idHistory']) && count($data['idHistory']) > 0){ 
+												foreach ($data['idHistory'] as $rw){
+													echo '<tr><td>' . $rw['id'] . '</td><td>' . $rw['passwd'] . '</td><td>' . $rw['grade'] . '</td><td>' . $rw['created'] . '</td><td>' . $rw['used'] . '</td></tr>';
+												}  
+											
+											}else echo '<tr><td colspan="5">데이터가 없습니다</td></tr>'?>
+											<!-- 리스트 -->
+										</tbody>
+									</table>
+								</div>
+								<!-- END .col-lg-12 col-md-12 col-xs-12 -->
+								
+								
+								
 								<div class="panel-body pull-left">
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="javascript:history.go(-1); javascript:reload();">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 								
 								

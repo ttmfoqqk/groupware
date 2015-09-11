@@ -69,6 +69,12 @@ class Md_company extends CI_Model{
 		return $ret->result_array();
 	}
 	
+	public function where_in($key, $datas){
+		$this->db->where_in($key, $datas);
+		$ret = $this->db->get($this->TABLE_NAME);
+		return $ret->result_array();
+	}
+	
 	public function create($data){
 		$this->db->insert($this->TABLE_NAME,$data);
 		return $this->db->insert_id();

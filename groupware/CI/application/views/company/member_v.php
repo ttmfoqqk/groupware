@@ -44,11 +44,14 @@
 										<input type="text" class="form-control" id="ft_email"
 											name="ft_email" placeholder="이메일" value=<?php echo $filter['email'] != NULL ? $filter['email'] : '';?>>
 									</div>
-
+									
 									<label class="col-lg-2 col-md-2 control-label" for="">재직여부</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_iswork"
-											name="ft_iswork" placeholder="재직여부" value=<?php echo $filter['is_active'] != NULL ? $filter['is_active'] : '';?>>
+										<select class="fancy-select form-control" id="ft_iswork" name="ft_iswork" value="<?echo $this->input->get('ft_iswork');?>">
+											<option value="">전체</option>
+                                        	<option value="0" <?= $filter['is_active'] == "0" ? ' selected="selected"' : '';?>>재직</option>
+                                        	<option value=1 <?= $filter['is_active'] == '1' ? ' selected="selected"' : '';?>>퇴직</option>
+                                        </select>
 									</div>
 
 									<div class="col-lg-2 col-md-2">
@@ -118,7 +121,7 @@
 											</td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['phone'];?></a></td>
+											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['mobile'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['email'];?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['is_active'] == 0 ? '재직' : '퇴사';?></a></td>
 											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
@@ -152,10 +155,8 @@
 								<div class="panel-body" style="text-align: center;">
 									<?php echo $table_num?><br><?echo $pagination;?></div>
 								<div class="panel-body pull-right">
-									<button id="btn_list_delete" type="button"
-										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
-									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-										onclick="location.href='<?echo site_url($page . '/write/');?>';">등록</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo site_url($page . '/write/');?>';">등록</button>
+									<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 							</form>
 						</div>
