@@ -104,7 +104,7 @@
 										</div>
 										
 										<div class="col-lg-2 col-md-2 row">
-											<button type="button" class="btn btn-sm btn-primary btn-alt">선택</button> 
+											<button type="button" class="btn btn-sm btn-primary btn-alt" onclick="call_document_modal()">선택</button> 
 										</div>
 
 									</div>

@@ -184,3 +184,27 @@ function call_staff(no){
 	});
 }
 /* 담당자 팝업 */
+
+
+/* 규정 팝업 */
+function call_document_modal(){
+	// base div hide
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+
+	bootbox.dialog({
+		message: test_html,
+		title: '서식선택',
+		buttons: {
+			cancel: {
+				label: '닫기',
+				className: "btn-danger"
+			}
+		}
+	});
+	$('.modal-header').css("background-color","#51bf87 ");
+	$('.modal-header').css("color","white");
+	$('.modal-dialog').addClass('modal70');
+
+	// 팝업 호출
+	$('#modal-body').load('/groupware/html/pop/project_call_document.php');
+}
