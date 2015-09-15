@@ -100,7 +100,6 @@ class Approved_send extends CI_Controller{
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
 
-		echo $this->db->last_query();
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록

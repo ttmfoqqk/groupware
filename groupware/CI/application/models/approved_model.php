@@ -238,6 +238,18 @@ class Approved_model extends CI_Model{
 	}
 
 	
+	public function get_check($no){
+		$this->db->select('count(*) as count');
+		$this->db->from('sw_approved A');
+		$this->db->join('sw_approved B','A.kind = b.kind and A.project_no = B.project_no');
+		$this->db->join('sw_approved_status C','A.no = C.approved_no');
+		$this->db->where('B.no',$no);
+		$this->db->where('C.created >','date_format(now(),"%Y-%m-%d")',false);
+		$this->db->where('C.sender',$this->session->userdata('no'));
+		$query = $this->db->get();
+		$query = $query->row();
+		return $query->count;
+	}
 
 	public function set_approved_insert($option){
 		$this->db->set('created', 'NOW()', false);

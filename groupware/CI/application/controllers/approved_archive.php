@@ -212,6 +212,8 @@ class Approved_archive extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 
+			
+
 			$option = array(
 				'kind'       =>$approved_kind,
 				'project_no' =>$task_no,
@@ -321,31 +323,40 @@ class Approved_archive extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
+			$count_check = $this->approved_model->get_check($approved_no);
+			if( $count_check > 0 ){
+				$return = array(
+					'result' => 'error',
+					'msg' => '이미 등록된 결재가 있습니다.'
+				);
+			}else{
 			
-			$option = array();
-			for( $i=0; $i < count($json_data)-1; $i++ ){
-				if($i == 0){
-					$status = 'a';
-				}else{
-					$status = NULL;
+				$option = array();
+				for( $i=0; $i < count($json_data)-1; $i++ ){
+					if($i == 0){
+						$status = 'a';
+					}else{
+						$status = NULL;
+					}
+					array_push($option,array(
+						'approved_no'   => $approved_no,
+						'sender'        => $json_data[$i]->user_no,
+						'receiver'      => $json_data[$i+1]->user_no,
+						'part_sender'   => $json_data[$i]->menu_no,
+						'part_receiver' => $json_data[$i+1]->menu_no,
+						'status'        => $status,
+						'order'         => $json_data[$i]->order,
+						'created'       => Date('Y-m-d H:i:s')
+					));
 				}
-				array_push($option,array(
-					'approved_no'   => $approved_no,
-					'sender'        => $json_data[$i]->user_no,
-					'receiver'      => $json_data[$i+1]->user_no,
-					'part_sender'   => $json_data[$i]->menu_no,
-					'part_receiver' => $json_data[$i+1]->menu_no,
-					'status'        => $status,
-					'order'         => $json_data[$i]->order,
-					'created'       => Date('Y-m-d H:i:s')
-				));
-			}
 
-			$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
-			$return = array(
-				'result' => 'ok',
-				'msg' => 'ok'
-			);
+				$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
+				$return = array(
+					'result' => 'ok',
+					'msg' => 'ok'
+				);
+
+			}
 		}
 		echo json_encode($return);
 	}
@@ -371,23 +382,33 @@ class Approved_archive extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$option = array();
-			$i = 1;
-			foreach($json_data as $key) {
-				array_push($option,array(
-					'approved_no' => $approved_no,
-					'menu_no'     => $key->menu_no,
-					'user_no'     => $key->user_no,
-					'bigo'        => $key->bigo,
-					'order'       => $i
-				));
-				$i++;
+			$count_check = $this->approved_model->get_check($approved_no);
+			if( $count_check > 0 ){
+				$return = array(
+					'result' => 'error',
+					'msg' => '이미 등록된 결재가 있습니다.'
+				);
+			}else{
+				
+				$option = array();
+				$i = 1;
+				foreach($json_data as $key) {
+					array_push($option,array(
+						'approved_no' => $approved_no,
+						'menu_no'     => $key->menu_no,
+						'user_no'     => $key->user_no,
+						'bigo'        => $key->bigo,
+						'order'       => $i
+					));
+					$i++;
+				}
+				$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
+				$return = array(
+					'result' => 'ok',
+					'msg' => 'ok'
+				);
+
 			}
-			$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
-			$return = array(
-				'result' => 'ok',
-				'msg' => 'ok'
-			);
 		}
 		echo json_encode($return);
 	}
