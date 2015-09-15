@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$(".input-daterange").datepicker({format: 'yyyy-mm-dd'});
+	$(".input-daterange").datepicker({language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true,autoclose:true});
 	/* 리스트 페이지 */
 	
 	// 부서,분류 selectbox
@@ -13,6 +13,7 @@ $(document).ready(function() {
 		method : $menu_no.attr('data-method'),
 		value : $menu_no.attr('data-value')
 	});
+	var action_type = $('#action_type');
 	// 진행기간,등록일자 input #진행기간[sData,eData] 은 write 에서도 사용
 	var sData  = $('#sData');
 	var eData  = $('#eData');
@@ -88,7 +89,7 @@ $(document).ready(function() {
 			callback: function(result) {
 		  		//callback result
 				if(result){
-					$('#action_type').val('delete');
+					action_type.val('delete');
 					$('#project-form-list').submit();
 				}
 		    }
@@ -135,12 +136,34 @@ $(document).ready(function() {
 			callback: function(result) {
 		  		//callback result
 				if(result){
-					$('#action_type').val('delete');
+					action_type.val('delete');
 					$('#project-form-write-setting').submit();
 				}
 		    }
 		});
 	});
+
+	var date = new Date();
+	var year  = pad(date.getFullYear());
+	var month = pad(date.getMonth() + 1);
+	var day   = pad(date.getDate());
+	var yyyymmdd = year +'-'+ month +'-'+ day;
+	
+	
+	sData.off("change").on('change',function(){
+		if( $(this).val() < yyyymmdd  &&  action_type.val() == 'create'){
+			//alert( '현재날짜보다 전일은 등록하실 수 없습니다.' );
+			return false;
+		}
+		return false;
+	});
+
+	
+
+	
+	function pad(numb) {
+		return (numb < 10 ? '0' : '') + numb;
+	}
 	/* 쓰기 페이지 */
 
 	
