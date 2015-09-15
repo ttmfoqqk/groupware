@@ -148,7 +148,10 @@ class Purpose extends CI_Controller{
 		);
 		$data['others'] = $this->purpose_model->get_point_other($option);
 		
-
+		/*
+			총점 전자결재 * chc + 추가평점 = 총점
+			계산식 점검 필요
+		*/
 		$data['all_point'] = array(
 			'point_total' => $data['approved']['point_avg'] * ($data['chc']['point_total']<=1?1:$data['chc']['point_total']) + $data['others']['sum'],
 			'percent_total' => 0

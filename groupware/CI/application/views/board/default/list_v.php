@@ -17,14 +17,14 @@
 					<div class="panel panel-primary">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><i class="fa fa-circle"></i> <?echo BOARD_TITLE;?></h4>
+							<h4 class="panel-title"><i class="fa fa-circle"></i> <?echo $board_name;?></h4>
 						</div>
 						<div class="panel-body">
 
 
-							<form id="board-form-list" action="<?echo BOARD_FORM?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="board-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="">
-							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 							<table id="tabletools" class="table table-bordered" cellspacing="0" width="100%">
 								<thead>
@@ -43,7 +43,7 @@
 								</thead>
 								<tbody>
 								<?foreach($notice as $lt){
-									$anchor = $anchor_url .'?no='.$lt['no'] .'&'. $parameters;
+									$anchor = $anchor_url .'&no='.$lt['no'];
 								?>
 									<tr>
 										<td>
@@ -57,7 +57,7 @@
 								<?}?>
 
 								<?foreach($list as $lt){
-									$anchor = $anchor_url .'?no='.$lt['no'] .'&'. $parameters;
+									$anchor = $anchor_url .'&no='.$lt['no'];
 									
 									$depth = '';
 									if( $lt['no'] != $lt['parent_no'] ){
@@ -109,20 +109,5 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-
-
-
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/jquery.dataTables.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.tableTools.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.bootstrap.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.responsive.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
 
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>

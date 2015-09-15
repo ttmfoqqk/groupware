@@ -20,9 +20,10 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="board-form-write-setting" action="<?echo site_url('board_setting/proc');?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="board-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="board_no" id="board_no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 								<div class="form-group">
 									<label for="board_code" class="col-lg-2 col-md-3 control-label">코드</label>
@@ -100,15 +101,4 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-
-
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
-
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>

@@ -61,7 +61,7 @@
 									<button id="contents_board_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $edit_url?>'">수정</button>
 									<?}?>
-									<?if(BOARD_REPLY == 0){?>
+									<?if($reply_fg == 0){?>
 									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $reply_url?>'">답글</button>
 									<?}?>
 								</div>
