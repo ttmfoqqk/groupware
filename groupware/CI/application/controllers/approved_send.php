@@ -76,7 +76,6 @@ class Approved_send extends CI_Controller{
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 		
 		
-
 		$option['where'] = array(
 			'approved.sData <='   => $this->PAGE_CONFIG['params']['sData'],
 			'approved.eData >='   => $eData,
@@ -86,16 +85,22 @@ class Approved_send extends CI_Controller{
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
 			'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
 			'status.sender'       => $this->session->userdata('no'),
-			'status.status'       => $this->PAGE_CONFIG['status']
+			'status.status'       => $this->PAGE_CONFIG['status'],
+			'status.created >'    => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
+			'status.created <'    => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
+			
 		);
+		
 
 		$option['like'] = array(
 			'rrr.receiver_name' => $this->PAGE_CONFIG['params']['name_receiver'],
-			'approved.title'     => $this->PAGE_CONFIG['params']['title'],
+			'approved.title'    => $this->PAGE_CONFIG['params']['title'],
 		);
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
+
+		echo $this->db->last_query();
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록

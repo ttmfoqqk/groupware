@@ -29,6 +29,7 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'sender' , $CI->session->userdata('no') );
+		$CI->db->where( 'created >', date('Y-m-d') );
 		$CI->db->group_by('status');
 		$query = $CI->db->get();
 		$result['sender'] = $query->result_array();
@@ -36,12 +37,23 @@ class _Common{
 		foreach( $result['sender'] as $lt ){
 			$count_approved['sender'][$lt['status']] = $lt['count'];
 		}
+
+		//sender - 미결재
+		$CI->db->select('count(*) as count');
+		$CI->db->from('sw_approved_status');
+		$CI->db->where( 'sender' , $CI->session->userdata('no') );
+		$CI->db->where( 'created < ', date('Y-m-d') );
+		$CI->db->where( 'status', 'a' );
+		$query = $CI->db->get();
+		$result['sender_ao'] = $query->row();
+		$count_approved['sender']['ao'] = $result['sender_ao']->count;
 		
 		//receiver
 		$CI->db->select('status');
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'receiver' , $CI->session->userdata('no') );
+		$CI->db->where( 'created >', date('Y-m-d') );
 		$CI->db->group_by('status');
 		$query = $CI->db->get();
 		$result['receiver'] = $query->result_array();
@@ -49,6 +61,16 @@ class _Common{
 		foreach( $result['receiver'] as $lt ){
 			$count_approved['receiver'][ $lt['status'] ] = $lt['count'];
 		}
+
+		//receiver - 미결재
+		$CI->db->select('count(*) as count');
+		$CI->db->from('sw_approved_status');
+		$CI->db->where( 'receiver' , $CI->session->userdata('no') );
+		$CI->db->where( 'created < ', date('Y-m-d') );
+		$CI->db->where( 'status', 'a' );
+		$query = $CI->db->get();
+		$result['receiver_ao'] = $query->row();
+		$count_approved['receiver']['ao'] = $result['receiver_ao']->count;
 
 		define('APPROVED_COUNT_JSON', json_encode($count_approved) );
 

@@ -31,9 +31,7 @@ class Project extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
-
 				set_cookie('left_menu_open_cookie',site_url('project/'),'0');
-
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
 				$this->$method();
@@ -216,6 +214,10 @@ class Project extends CI_Controller{
 
 			alert('수정되었습니다.', site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
+			/*
+				결재 상태 count check
+			*/
+
 			$this->form_validation->set_rules('no','no','required');
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');

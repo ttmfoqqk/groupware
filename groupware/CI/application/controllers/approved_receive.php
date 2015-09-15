@@ -86,9 +86,11 @@ class Approved_receive extends CI_Controller{
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
 			'status.part_sender'  => $this->PAGE_CONFIG['params']['part_sender'],
 			'status.receiver'     => $this->session->userdata('no'),
-			'status.status'       => $this->PAGE_CONFIG['status']
+			'status.status'       => $this->PAGE_CONFIG['status'],
+			'status.created >'    => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
+			'status.created <'    => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
 		);
-
+		
 		$option['like'] = array(
 			'sss.sender_name'    => $this->PAGE_CONFIG['params']['name_sender'],
 			'approved.title'      => $this->PAGE_CONFIG['params']['title'],

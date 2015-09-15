@@ -7,7 +7,6 @@ class Project_model extends CI_Model{
 		$where = array();
 		foreach($option['where'] as $key=>$val){
 			if($val!=''){
-				$this->db->where($key, $val);
 				$where[$key] = $val;
 			}
 		}
