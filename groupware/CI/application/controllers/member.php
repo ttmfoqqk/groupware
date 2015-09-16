@@ -358,10 +358,9 @@ class Member extends CI_Controller{
 	/* 연차 */
 	public function _annual_lists(){
 		$no = $this->input->post('no');
-		$option = array(
-			'no'=>$no
-		);
-		$data = $this->md_company->get_annual_count($option);
+
+		// 사용가능한,사용한 연차 카운트
+		$data = $this->md_company->get_annual_count(array('no'=>$no));
 		$result['cnt'] = array(
 			'annual'  => 0,
 			'use_cnt' => 0
@@ -373,10 +372,11 @@ class Member extends CI_Controller{
 				'use_cnt' => $data->use_cnt
 			);
 		}
-		$option = array(
-			'user_no'=>$no
-		);
-		$result['list'] = $this->md_company->get_annual_list($option);
+
+		// 등록된 업무 일자 리스트
+		$result['no_data'] = $this->md_company->get_no_list(array('B.user_no'=>$no));
+
+		$result['list'] = $this->md_company->get_annual_list(array('user_no'=>$no));
 		echo json_encode($result);
 	}
 

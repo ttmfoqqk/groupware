@@ -211,16 +211,26 @@ class Md_company extends CI_Model{
 	}
 	/* 사원->연차 */
 	public function get_annual_count($option){
+		// 사용가능한,사용한 연차 카운트
 		$this->db->select('A.annual,count(B.user_no) as use_cnt');
 		$this->db->from('sw_user as A');
 		$this->db->join('sw_user_annual as B','A.no = B.user_no and date_format(data,"%Y") = date_format(now(),"%Y")','left');
 		$this->db->where($option);
 		$this->db->group_by('A.no');
-		
 		$query = $this->db->get();
-		//$result = $query->row();
-		//echo $this->db->last_query();
 		return $query;
+	}
+	
+	public function get_no_list($option){
+		// 등록된 업무 일자 리스트
+		$this->db->select('date_format(A.sData,"%Y-%m-%d") as sData,date_format(A.eData,"%Y-%m-%d") as eData',false);
+		$this->db->from('sw_project as A');
+		$this->db->join('sw_project_staff as B','A.no = B.project_no');
+		$this->db->where($option);
+		$this->db->group_by('A.sData,A.eData');
+		$query = $this->db->get();
+		$result = $query->result_array();
+		return $result;
 	}
 
 	public function get_annual_list($option){

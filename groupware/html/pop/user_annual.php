@@ -41,6 +41,8 @@ var $input_base = $('#input-base');
 var $new_row    = $('.pop-row').clone();
 // 연차일수
 var $annual = 0;
+// 등록된 업무 일자 리스트 sData~eData
+var $no_data = new Object();
 
 // row 추가/삭제
 function row_controll(obj,mode){
@@ -101,13 +103,14 @@ function get_list(){
 		dataType : 'json',
 		success: function(data){
 			var json   = eval(data);
+			var no_data= json.no_data;
 			var cnt    = json.cnt;
 			var list   = json.list;
 			var clones = '';
 
 			$annual = json.cnt.annual;
+			$no_data = no_data;
 
-			//alert( 'annual: ' + json.cnt.annual + ' ,use_cnt: ' + json.cnt.use_cnt );
 			for (var i in list){
 				var new_row  = $new_row.clone();
 
@@ -142,11 +145,14 @@ function get_list(){
 // 입력
 function modal_submit(){
 	var annual = $annual;
-	var date   = new Date();
-	var year   = pad(date.getFullYear());
+	var no_data = new Array();
+	
+	var date = new Date();
+	var year = pad(date.getFullYear());
 
 	var data_array = new Array();
 	var validate_fg = false;
+
 	$('.pop-row').each(function(eq){
 		var data_info  = new Object();
 
@@ -176,7 +182,6 @@ function modal_submit(){
 		}
 		validate_fg = true;
 		
-		// 해당 년도 == data.val(Y) i ++; validate_fg = false; alert('')
 		if(name.val() && data.val() && order.val() ){
 			data_info.name  = name.val();
 			data_info.data  = data.val();
@@ -189,15 +194,28 @@ function modal_submit(){
 			if( year == t_year ){
 				annual--;
 			}
+
+			for(var i in $no_data){
+				if( $no_data[i].sData <= data.val() && $no_data[i].eData >= data.val() ){
+					no_data.push(data.val());
+				}
+			}
 		}
 
 	});
+
+	if( no_data.length > 0 ){
+		alert('등록된 업무가 있습니다.\n업무설정 후 다시 등록해 주시기 바랍니다. \n\n' + no_data.join('\n') );
+		validate_fg = false;
+		return false;
+	}
+
 	if( annual <= 0 ){
 		alert('연차일을 모두 사용하였습니다. \n'+year+'년도 사용가능한 연차일수는 '+$annual+'일 입니다.');
 		validate_fg = false;
 		return false;
-	}
-	//console.log(JSON.stringify(data_array));return false;
+	}	
+
 	if( validate_fg == true ){
 		$.ajax({
 			type : 'POST',
