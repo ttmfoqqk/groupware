@@ -142,7 +142,12 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['created'],0,10);?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 										<td class="text-center">
+										<?if($lt['cnt'] > 0){?>
+											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_staff_view('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+										<?}else{?>
 											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="call_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+										<?}?>
+											
 										</td>
 									</tr>
 								<?php }?>

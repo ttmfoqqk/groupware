@@ -218,6 +218,28 @@ function call_staff(no){
 		return false;
 	});
 }
+
+
+// 결재진행중인 업무 담당자 출력
+function call_staff_view(no){
+	// base div hide
+	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
+
+	bootbox.dialog({
+		message: test_html,
+		title: '담당자',
+		buttons: {
+			cancel: {
+				label: '닫기',
+				className: "btn-danger"
+			}
+		}
+	});
+	$('.modal-header').css("background-color","#51bf87 ");
+	$('.modal-header').css("color","white");
+	
+	$('#modal-body').load('/groupware/html/pop/approved_call_project_staff.php',{'no':no});
+}
 /* 담당자 팝업 */
 
 
