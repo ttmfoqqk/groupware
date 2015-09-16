@@ -64,7 +64,10 @@ class Project extends CI_Controller{
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
 			'title'  => $this->PAGE_CONFIG['params']['title']
 		);
-
+		/*
+			list - 결재 등록된것 checkbox 삭제 금지
+			view - 결재 등록된것 button 삭제 금지
+		*/
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
 
@@ -109,7 +112,8 @@ class Project extends CI_Controller{
 			'mPoint'       => '0',
 			'file'         => '',
 			'order'        => '0',
-			'created'      => ''
+			'created'      => '',
+			'cnt'          => '0'
 		);
 		if ($result->num_rows() > 0){
 			$result = $result->row();
@@ -129,6 +133,7 @@ class Project extends CI_Controller{
 				'file'         => $result->file,
 				'order'        => $result->order,
 				'created'      => $result->created,
+				'cnt'          => $result->cnt
 			);
 		}
 		$data['list_url']  = site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);

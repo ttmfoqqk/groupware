@@ -134,12 +134,14 @@
 								<div class="panel-body pull-left">
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
+								<?if($data['cnt'] <= 0){?>
 								<div class="panel-body pull-right">
-									<?if( $action_type == 'edit' ) {?>
+									<?if( $action_type == 'edit'){?>
 									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<?}?>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
 								</div>
+								<?}?>
 
 							</form>
 						</div>

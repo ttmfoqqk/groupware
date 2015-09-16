@@ -121,12 +121,16 @@
 								<?php foreach($list as $lt){
 									$anchor = $anchor_url.'&no='.$lt['no'];
 									?>
-									<tr>
+									<tr <?if( $lt['cnt'] > 0 ){echo 'style="background-color:#f5f5f5;"';}?>>
 										<td>
+										<?if( $lt['cnt'] <= 0 ){?>
 											<div class="checkbox-custom">
 												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['no'];?>">
 												<label for="check"></label>
 											</div>
+										<?}else{?>
+											X
+										<?}?>
 										</td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['order'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['part_name'];?></a></td>
