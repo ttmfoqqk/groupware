@@ -210,6 +210,19 @@ class Md_company extends CI_Model{
 		$this->db->insert_batch('sw_user_department',$option);
 	}
 	/* 사원->연차 */
+	public function get_annual_count($option){
+		$this->db->select('A.annual,count(B.user_no) as use_cnt');
+		$this->db->from('sw_user as A');
+		$this->db->join('sw_user_annual as B','A.no = B.user_no and date_format(data,"%Y") = date_format(now(),"%Y")','left');
+		$this->db->where($option);
+		$this->db->group_by('A.no');
+		
+		$query = $this->db->get();
+		//$result = $query->row();
+		//echo $this->db->last_query();
+		return $query;
+	}
+
 	public function get_annual_list($option){
 		$this->db->from('sw_user_annual');
 		$this->db->where($option);

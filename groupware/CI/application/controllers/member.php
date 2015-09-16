@@ -359,9 +359,24 @@ class Member extends CI_Controller{
 	public function _annual_lists(){
 		$no = $this->input->post('no');
 		$option = array(
+			'no'=>$no
+		);
+		$data = $this->md_company->get_annual_count($option);
+		$result['cnt'] = array(
+			'annual'  => 0,
+			'use_cnt' => 0
+		);
+		if ($data->num_rows() > 0){
+			$data = $data->row();
+			$result['cnt'] = array(
+				'annual'  => $data->annual,
+				'use_cnt' => $data->use_cnt
+			);
+		}
+		$option = array(
 			'user_no'=>$no
 		);
-		$result = $this->md_company->get_annual_list($option);
+		$result['list'] = $this->md_company->get_annual_list($option);
 		echo json_encode($result);
 	}
 

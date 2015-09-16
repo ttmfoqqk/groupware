@@ -39,6 +39,8 @@ var $no = '<?echo $_POST["no"];?>';
 var $input_base = $('#input-base');
 // 최초 html 클론 저장
 var $new_row    = $('.pop-row').clone();
+// 연차일수
+var $annual = 0;
 
 // row 추가/삭제
 function row_controll(obj,mode){
@@ -99,22 +101,28 @@ function get_list(){
 		dataType : 'json',
 		success: function(data){
 			var json   = eval(data);
+			var cnt    = json.cnt;
+			var list   = json.list;
 			var clones = '';
-			for (var i in json){
+
+			$annual = json.cnt.annual;
+
+			//alert( 'annual: ' + json.cnt.annual + ' ,use_cnt: ' + json.cnt.use_cnt );
+			for (var i in list){
 				var new_row  = $new_row.clone();
 
 				var name  = new_row.find('input[name="pop_name"]');
 				var data  = new_row.find('input[name="pop_data"]');
 				var order = new_row.find('input[name="pop_order"]');
 
-				name.attr('data-value',json[i].name);
-				data.attr('data-value',json[i].data.substr(0,10));
-				order.attr('data-value',json[i].order);
+				name.attr('data-value',list[i].name);
+				data.attr('data-value',list[i].data.substr(0,10));
+				order.attr('data-value',list[i].order);
 
 				clones += new_row.wrapAll('<div>').parent().html();
 			}
 			
-			for (var i=json.length;i<number;i++){
+			for (var i=list.length;i<number;i++){
 				clones += $new_row.wrapAll('<div>').parent().html();
 			}
 
@@ -133,6 +141,9 @@ function get_list(){
 
 // 입력
 function modal_submit(){
+	var annual = $annual;
+	var date   = new Date();
+	var year   = pad(date.getFullYear());
 
 	var data_array = new Array();
 	var validate_fg = false;
@@ -164,15 +175,28 @@ function modal_submit(){
 			}
 		}
 		validate_fg = true;
-
+		
+		// 해당 년도 == data.val(Y) i ++; validate_fg = false; alert('')
 		if(name.val() && data.val() && order.val() ){
 			data_info.name  = name.val();
 			data_info.data  = data.val();
 			data_info.order = order.val();
 			data_array.push(data_info);
+
+			var t_date = new Date( data.val() );
+			var t_year = pad(date.getFullYear());
+
+			if( year == t_year ){
+				annual--;
+			}
 		}
 
 	});
+	if( annual <= 0 ){
+		alert('연차일을 모두 사용하였습니다. \n'+year+'년도 사용가능한 연차일수는 '+$annual+'일 입니다.');
+		validate_fg = false;
+		return false;
+	}
 	//console.log(JSON.stringify(data_array));return false;
 	if( validate_fg == true ){
 		$.ajax({
