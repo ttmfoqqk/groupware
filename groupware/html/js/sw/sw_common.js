@@ -301,3 +301,7 @@ $(document).ready(function() {
 	}
 	
 })(jQuery);
+
+function pad(numb) {
+	return (numb < 10 ? '0' : '') + numb;
+}

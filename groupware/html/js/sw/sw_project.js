@@ -149,21 +149,33 @@ $(document).ready(function() {
 	var day   = pad(date.getDate());
 	var yyyymmdd = year +'-'+ month +'-'+ day;
 	
-	
-	sData.off("change").on('change',function(){
+	var tmp_sData = '';
+	sData.on('changeDate',function(){
+		if( !sData.val() ){return false;}
+		if( tmp_sData == $(this).val() ){return false;}
+		
 		if( $(this).val() < yyyymmdd  &&  action_type.val() == 'create'){
-			//alert( '현재날짜보다 전일은 등록하실 수 없습니다.' );
+			alert( '현재날짜보다 전일은 등록하실 수 없습니다.' );
+			sData.datepicker('setDate', "");
+			tmp_sData = $(this).val();
 			return false;
 		}
-		return false;
+	});
+
+	var tmp_eData = '';
+	eData.on('changeDate',function(){
+		if( !eData.val() ){return false;}
+		if( tmp_eData == $(this).val() ){return false;}
+		
+		if( $(this).val() < yyyymmdd  &&  action_type.val() == 'create'){
+			alert( '현재날짜보다 전일은 등록하실 수 없습니다.' );
+			eData.datepicker('setDate', "");
+			tmp_eData = $(this).val();
+			return false;
+		}
 	});
 
 	
-
-	
-	function pad(numb) {
-		return (numb < 10 ? '0' : '') + numb;
-	}
 	/* 쓰기 페이지 */
 
 	
