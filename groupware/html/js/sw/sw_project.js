@@ -143,13 +143,19 @@ $(document).ready(function() {
 		});
 	});
 
+
 	var date = new Date();
 	var year  = pad(date.getFullYear());
 	var month = pad(date.getMonth() + 1);
 	var day   = pad(date.getDate());
 	var yyyymmdd = year +'-'+ month +'-'+ day;
 	
+	var tmp_sData_value = sData.val();
+	var tmp_eData_value = eData.val();
+
 	var tmp_sData = '';
+	var tmp_eData = '';
+
 	sData.on('changeDate',function(){
 		if( !sData.val() ){return false;}
 		if( tmp_sData == $(this).val() ){return false;}
@@ -160,9 +166,16 @@ $(document).ready(function() {
 			tmp_sData = $(this).val();
 			return false;
 		}
+
+		if( $(this).val() != tmp_sData_value  &&  action_type.val() == 'edit'){
+			alert( '변경된 기간의 점수를 반영해주세요.' );
+			tmp_sData = $(this).val();
+			return false;
+		}
+
 	});
 
-	var tmp_eData = '';
+	
 	eData.on('changeDate',function(){
 		if( !eData.val() ){return false;}
 		if( tmp_eData == $(this).val() ){return false;}
@@ -173,7 +186,15 @@ $(document).ready(function() {
 			tmp_eData = $(this).val();
 			return false;
 		}
+
+		if( $(this).val() != tmp_eData_value  &&  action_type.val() == 'edit'){
+			alert( '변경된 기간의 점수를 반영해주세요.' );
+			tmp_eData = $(this).val();
+			return false;
+		}
 	});
+
+	
 
 	
 	/* 쓰기 페이지 */
