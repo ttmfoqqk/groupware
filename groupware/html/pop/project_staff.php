@@ -194,7 +194,15 @@ function modal_submit(){
 		}
 	});
 
+	
+
 	if( validate_fg == true ){
+		if( data_array.length < 2 ){
+			alert('담당자를 2인 이상 등록하세요.');
+			validate_fg = false;
+			return false;
+		}
+
 		$.ajax({
 			type     : 'POST',
 			url      : '/groupware/project/staff_insert/',
