@@ -59,6 +59,13 @@ function get_list(){
 }
 
 function application_approved(approved_no){
+	if( $data.length < 2 ){
+		alert('담당자 지정을 완료해주세요.');
+		return false;
+	}
+	if(!confirm('결재를 등록하시겠습니까?')){
+		return false;
+	}
 
 	base_show('hide');
 	$.ajax({
@@ -72,11 +79,12 @@ function application_approved(approved_no){
 		success: function(data){
 			if(data.result!='ok'){
 				alert(data.result + ',' + data.msg);
+				bootbox.hideAll();
 			}else{
 				base_show('show');
 				alert('저장됨');
+				bootbox.hideAll();
 				location.reload();
-
 			}
 		},error:function(err){
 			alert(err.responseText);

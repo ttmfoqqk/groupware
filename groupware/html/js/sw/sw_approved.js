@@ -295,11 +295,8 @@ function call_project_staff_modal(no,kind,callback){
 function call_project_staff(project_no,approved_no,kind){
 	var no = kind=='0' ? project_no : approved_no;
 	call_project_staff_modal(no,kind,function(){
-		if(confirm('결재를 등록하시겠습니까?')){
-			application_approved(approved_no);
-		}else{
-			return false;
-		}
+		application_approved(approved_no);
+		return false;
 	});
 }
 
