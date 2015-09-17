@@ -153,6 +153,8 @@ function modal_submit(){
 
 	var data_array = new Array();
 	var validate_fg = false;
+	
+	loof1:
 	$('.pop-row').each(function(eq){
 		var data_info  = new Object();
 		var menu_no = $(this).find('select[name="pop_menu_no"]');
@@ -176,14 +178,23 @@ function modal_submit(){
 		validate_fg = true;
 
 		if(menu_no.val() && user_no.val()){
+
+			for(i=0; i<data_array.length; i++){
+				if( data_array[i].user_no == user_no.val() ){
+					alert('이미 지정된 담당자 입니다.');
+					user_no.focus();
+					validate_fg = false;
+					return false;
+				}
+			}
+			
 			data_info.menu_no = menu_no.val();
 			data_info.user_no = user_no.val();
 			data_info.bigo    = bigo.val();
 			data_array.push(data_info);
 		}
-
 	});
-	//console.log(JSON.stringify(data_array));return false;
+
 	if( validate_fg == true ){
 		$.ajax({
 			type     : 'POST',
