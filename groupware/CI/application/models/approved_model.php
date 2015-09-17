@@ -262,6 +262,8 @@ class Approved_model extends CI_Model{
 	public function set_approved_delete($set_no){
 		$this->db->delete('sw_approved','no in('.$set_no.')');
 		$this->set_approved_staff_delete('approved_no in('.$set_no.')');
+		$this->temp_document_staff_delete('approved_no in('.$set_no.')');
+
 		$this->set_approved_contents_delete('approved_no in('.$set_no.')');
 	}
 	
@@ -347,8 +349,10 @@ class Approved_model extends CI_Model{
 		$this->db->delete('sw_document_staff',$option);
 	}
 
-	public function temp_document_staff_insert($option,$staff){
-		$this->temp_document_staff_delete($staff);
+	public function temp_document_staff_insert($option,$staff=null){
+		if( !is_null($staff) ){
+			$this->temp_document_staff_delete($staff);
+		}
 		$this->db->insert_batch('sw_document_staff',$option);
 	}
 }

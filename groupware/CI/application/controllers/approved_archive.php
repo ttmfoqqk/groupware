@@ -224,17 +224,30 @@ class Approved_archive extends CI_Controller{
 				'eData'      =>$eData,
 				'order'      =>$order
 			);
-			$result = $this->approved_model->set_approved_insert($option);
+			$insert_id = $this->approved_model->set_approved_insert($option);
+
+			if($approved_kind == '1'){
+				// 일반업무 등록시 담당자 self insert -> sw_document_staff;
+				$option = array();
+				array_push($option,array(
+					'approved_no' => $insert_id,
+					'menu_no'     => $department,
+					'user_no'     => $this->session->userdata('no'),
+					'order'       => 1
+				));
+				$result = $this->approved_model->temp_document_staff_insert($option);
+			}
 
 			if($contents){
 				$option = array(
-					'approved_no' =>$result,
+					'approved_no' =>$insert_id,
 					'user_no'     =>$this->session->userdata('no'),
 					'contents'    =>$contents
 				);
 				$result = $this->approved_model->set_approved_contents_insert($option);
 			}
-			alert('등록되었습니다.', site_url('approved_archive/lists/') ); //신규 등록 첫페이지로
+
+			alert('등록되었습니다.', site_url('approved_archive/lists/') );
 		}elseif( $action_type == 'edit' ){
 			
 			$this->form_validation->set_rules('action_type','폼 액션','required');

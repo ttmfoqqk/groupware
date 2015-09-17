@@ -154,7 +154,6 @@ function modal_submit(){
 	var data_array = new Array();
 	var validate_fg = false;
 	
-	loof1:
 	$('.pop-row').each(function(eq){
 		var data_info  = new Object();
 		var menu_no = $(this).find('select[name="pop_menu_no"]');
