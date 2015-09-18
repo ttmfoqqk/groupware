@@ -216,6 +216,7 @@ class Approved_model extends CI_Model{
 		$this->db->select('receiver_contents.contents as receiver_contents');
 
 		$this->db->select('status.status as status');
+		$this->db->select('status.created as status_created');
 
 		$this->db->from('sw_approved as approved');
 		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');

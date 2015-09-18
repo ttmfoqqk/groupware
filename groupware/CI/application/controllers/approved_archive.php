@@ -98,6 +98,8 @@ class Approved_archive extends CI_Controller{
 
 		$this->load->view('approved/list_archive_v',$data);
 
+		//echo $this->db->last_query();
+
 	}
 	public function write(){
 		$no     = $this->input->get('no');
