@@ -138,6 +138,7 @@ class Meeting extends CI_Controller{
 		$contents    = $this->input->post('contents');
 		$order       = $this->input->post('order');
 		$is_active   = $this->input->post('is_active');
+		$oldFile     = $this->input->post('oldFile');
 		$parameters  = urldecode($this->input->post('parameters'));
 		
 		if( $action_type == 'create' ){
@@ -150,6 +151,23 @@ class Meeting extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			
+			$file_name = '';
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/meeting/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = false;
+			
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_name = $upload_data['file_name'];
+				}
+			}
 
 			$option = array(
 				'menu_no'   => $menu_no,
@@ -157,7 +175,8 @@ class Meeting extends CI_Controller{
 				'name'      => $title,
 				'contents'  => $contents,
 				'order'     => $order,
-				'is_active' => $is_active
+				'is_active' => $is_active,
+				'file'      => $file_name
 			);
 			$result = $this->meeting_model->get_meeting_insert($option);
 			alert('등록되었습니다.', site_url('meeting/lists/') ); //신규 등록 첫페이지로
@@ -175,12 +194,34 @@ class Meeting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$file_name = $oldFile;
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/meeting/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = false;
+			
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_name = $upload_data['file_name'];
+						
+					if( $oldFile ){
+						unlink($config['upload_path'].$oldFile);
+					}
+				}
+			}
+			
 			$option = array(
 				'menu_no'   => $menu_no,
 				'name'      => $title,
 				'contents'  => $contents,
 				'order'     => $order,
-				'is_active' => $is_active
+				'is_active' => $is_active,
+				'file'      => $file_name
 			);
 			$this->meeting_model->get_meeting_update($option,array('no'=>$no));
 
