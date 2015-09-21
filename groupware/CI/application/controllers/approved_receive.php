@@ -140,27 +140,32 @@ class Approved_receive extends CI_Controller{
 
 
 		$data['data'] = array(
-			'no'          => $result->no,
-			'kind'        => $result->kind,
-			'user_no'     => $result->user_no,
-			'menu_no'     => $result->menu_no,
-			'menu_name'   => $result->menu_name,
-			'title'       => $result->title,
-			'document_name' => $result->document_name,
-			'sData'       => substr($result->sData,0,10),
-			'eData'       => substr($result->eData,0,10),
-			'file'        => $result->file,
-			'order'       => $result->order,
-			'created'     => substr($result->created,0,10),
-			'sender_name' => $result->sender_name,
-			'sender_menu' => $result->sender_part,
-			'pPoint'      => $result->pPoint,
-			'mPoint'      => $result->mPoint,
-			'order'       => $result->order,
-			'p_contents'  => nl2br($result->p_contents),
-			'contents'    => $result->receiver_contents,
-			'status'      => $result->status
+			'no'             => $result->no,
+			'kind'           => $result->kind,
+			'user_no'        => $result->user_no,
+			'menu_no'        => $result->menu_no,
+			'menu_name'      => $result->menu_name,
+			'title'          => $result->title,
+			'document_name'  => $result->document_name,
+			'sData'          => substr($result->sData,0,10),
+			'eData'          => substr($result->eData,0,10),
+			'file'           => $result->file,
+			'order'          => $result->order,
+			'created'        => substr($result->created,0,10),
+			'sender_name'    => $result->sender_name,
+			'sender_menu'    => $result->sender_part,
+			'pPoint'         => $result->pPoint,
+			'mPoint'         => $result->mPoint,
+			'order'          => $result->order,
+			'p_contents'     => nl2br($result->p_contents),
+			'contents'       => $result->receiver_contents,
+			'status'         => $result->status,
+			'status_created' => $result->status_created
 		);
+		
+		
+		$data['fg_btn_send']   = false;
+		$data['fg_btn_receiv'] = ($result->status=='b' && $result->status_created > date("Y-m-d", strtotime(date('Y-m-d')."-3 day")) ? true : false);
 
 		/* 결재자들 */
 		$option = array(
@@ -221,6 +226,16 @@ class Approved_receive extends CI_Controller{
 			}
 
 			alert('결재 되었습니다.', site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
+		}elseif ( $action_type == 'edit' ){
+			if($contents){
+				$option = array(
+					'approved_no' =>$no,
+					'user_no'     =>$this->session->userdata('no'),
+					'contents'    =>$contents
+				);
+				$result = $this->approved_model->set_approved_contents_insert($option);
+			}
+			alert('수정 되었습니다.', site_url('approved_receive/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}else{
 			alert('잘못된 접근입니다.');
 		}

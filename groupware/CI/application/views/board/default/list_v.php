@@ -7,7 +7,6 @@
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
 					<h2>&nbsp;</h2>
-					<span>-parameters 점검,upload/download 관련 작업 요망</span>
 				</div>
 			</div>
 			<div class="row">

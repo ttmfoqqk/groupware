@@ -39,14 +39,14 @@
 										<tr>
 											<th>첨부파일</th>
 											<td colspan="5">
-											<?foreach($files as $lt){
-												echo '[no : '.$lt['no'].', original_name : '.$lt['original_name'].', upload_name : '.$lt['upload_name'].'] ';
-											}?>
+											<?foreach($files as $lt){?>
+												<a href="<?php echo site_url('download?path=upload/board/&oname='.$lt['original_name'].'&uname='.$lt['upload_name'])?>"><?php echo $lt['original_name'];?></a>
+											<?}?>
 											</td>
 										</tr>
 										<tr>
 											<th>내용</th>
-											<td colspan="5" style="height:400px;"><?echo $data['contents'];?></td>
+											<td colspan="5" style="height:400px;"><?echo nl2br($data['contents']);?></td>
 										</tr>
 									</tbody>
 								</table>
@@ -82,19 +82,4 @@
 </div>
 <!-- / page-content -->
 
-
-
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/jquery.dataTables.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.tableTools.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.bootstrap.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.responsive.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/summernote/summernote.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>

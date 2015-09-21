@@ -77,7 +77,7 @@ class Board_model extends CI_Model{
 
 		return $result;
 	}
-	public function get_board_detail($option,$method){
+	public function get_board_detail($option,$method=null){
 		if( $method == 'view' ){
 			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$option['no']."' ";
 			$this->db->query($sql);
@@ -101,6 +101,12 @@ class Board_model extends CI_Model{
 		$this->db->insert('sw_board_file',$option);
 		$result = $this->db->insert_id();
 		return $result;
+	}
+	public function set_board_file_update($option,$where){
+		$this->db->update('sw_board_file',$option,$where);
+	}
+	public function set_board_file_delete($option){
+		$this->db->delete('sw_board_file',$option);
 	}
 	public function get_board_file_list($option){
 		$query = $this->db->get_where('sw_board_file',$option);

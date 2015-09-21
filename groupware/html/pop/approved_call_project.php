@@ -141,6 +141,7 @@ function onlick(data){
 		var pPoint  = data.pPoint;
 		var mPoint  = data.mPoint;
 		var file    = data.file;
+		var file_link = file ? '<a href="../../download?path=upload/project/&oname='+file+'&uname='+file+'">'+file+'</a>' : '' ;
 		var created = data.created;
 		
 		var staff_no        = data.staff_no;
@@ -167,7 +168,7 @@ function onlick(data){
 	$('#project_date').text(sDate +' ~ '+ eDate);
 	$('#project_pPoint').text('+'+pPoint);
 	$('#project_mPoint').text('-'+mPoint);
-	$('#project_file').text(file);
+	$('#project_file').html(file_link);
 	
 	bootbox.hideAll();
 }

@@ -154,6 +154,7 @@ class Project extends CI_Controller{
 		$pPoint       = $this->input->post('pPoint');
 		$mPoint       = $this->input->post('mPoint');
 		$order        = $this->input->post('order');
+		$oldFile      = $this->input->post('oldFile');
 		$parameters   = urldecode($this->input->post('parameters'));
 		
 		if( $action_type == 'create' ){
@@ -170,6 +171,23 @@ class Project extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			
+			$file_name = '';
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/project/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = false;
+			
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_name = $upload_data['file_name'];
+				}
+			}
 
 			$option = array(
 				'menu_part_no' =>$menu_part_no,
@@ -181,6 +199,7 @@ class Project extends CI_Controller{
 				'eData'        =>$eData,
 				'pPoint'       =>$pPoint,
 				'mPoint'       =>$mPoint,
+				'file'         =>$file_name,
 				'order'        =>$order
 			);
 			$result = $this->project_model->get_project_insert($option);
@@ -204,6 +223,27 @@ class Project extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$file_name = $oldFile;
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/project/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = false;
+					
+				$this->load->library('upload', $config);
+					
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_name = $upload_data['file_name'];
+					
+					if( $oldFile ){
+						unlink($config['upload_path'].$oldFile);
+					}
+				}
+			}
+			
 			$option = array(
 				'menu_part_no' =>$menu_part_no,
 				'menu_no'      =>$menu_no,
@@ -213,6 +253,7 @@ class Project extends CI_Controller{
 				'eData'        =>$eData,
 				'pPoint'       =>$pPoint,
 				'mPoint'       =>$mPoint,
+				'file'         =>$file_name,
 				'order'        =>$order
 			);
 			$this->project_model->get_project_update($option,array('no'=>$no));
@@ -237,6 +278,7 @@ class Project extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 	}
+
 
 	public function _lists(){
 		//검색 파라미터

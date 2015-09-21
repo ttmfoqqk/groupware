@@ -102,7 +102,7 @@
 																	echo '</div><div class="row col-xs-12 p0 m0" style="border-top:1px solid #ddd;">';
 																}
 															}?>
-														<div>
+														</div>
 														
 													</td>
 												</tr>

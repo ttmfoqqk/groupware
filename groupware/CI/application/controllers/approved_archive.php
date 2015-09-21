@@ -158,6 +158,13 @@ class Approved_archive extends CI_Controller{
 				'p_contents'    => nl2br($result->p_contents),
 				'document_name' => $result->document_name
 			);
+			if($result->file){
+				if($result->kind=='0'){
+					$data['data']['file_link'] = '<a href="'.site_url('download?path=upload/project/&oname='.$data['data']['file'].'&uname='.$data['data']['file']).'">'.$data['data']['file'].'</a>';
+				}else{
+					$data['data']['file_link'] = '<a href="'.site_url('download?path=upload/approved/&oname='.$data['data']['file'].'&uname='.$data['data']['file']).'">'.$data['data']['file'].'</a>';
+				}
+			}
 		}
 		
 		$this->load->view('approved/write_archive_v',$data);
@@ -188,6 +195,7 @@ class Approved_archive extends CI_Controller{
 			$file        = $this->input->post('d_file');
 			$order       = $this->input->post('d_order');
 		}
+		$oldFile    = $this->input->post('oldFile');
 		$parameters = urldecode($this->input->post('parameters'));
 		
 		if( $action_type == 'create' ){
@@ -213,6 +221,25 @@ class Approved_archive extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			
+			if( $approved_kind == '1' ){
+				$file_name = '';
+				if( $_FILES['d_file']['name'] ) {
+					$config['upload_path']   = 'upload/approved/';
+					$config['allowed_types'] = FILE_ALL_TYPE;
+					$config['encrypt_name']  = false;
+						
+					$this->load->library('upload', $config);
+						
+					if ( !$this->upload->do_upload('d_file') ){
+						$upload_error = $this->upload->display_errors('','') ;
+						alert($upload_error);
+					}else{
+						$upload_data = $this->upload->data();
+						$file_name = $upload_data['file_name'];
+					}
+				}
+			}
 
 			
 
@@ -224,6 +251,7 @@ class Approved_archive extends CI_Controller{
 				'title'      =>$title,
 				'sData'      =>$sData,
 				'eData'      =>$eData,
+				'file'       =>$file_name,
 				'order'      =>$order
 			);
 			$insert_id = $this->approved_model->set_approved_insert($option);
@@ -278,12 +306,36 @@ class Approved_archive extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			if( $approved_kind == '1' ){
+				$file_name = $oldFile;
+				if( $_FILES['d_file']['name'] ) {
+					$config['upload_path']   = 'upload/approved/';
+					$config['allowed_types'] = FILE_ALL_TYPE;
+					$config['encrypt_name']  = false;
+						
+					$this->load->library('upload', $config);
+						
+					if ( !$this->upload->do_upload('d_file') ){
+						$upload_error = $this->upload->display_errors('','') ;
+						alert($upload_error);
+					}else{
+						$upload_data = $this->upload->data();
+						$file_name = $upload_data['file_name'];
+							
+						if( $oldFile ){
+							unlink($config['upload_path'].$oldFile);
+						}
+					}
+				}
+			}
+			
 			$option = array(
 				'project_no' =>$task_no,
 				'menu_no'    =>$department,
 				'title'      =>$title,
 				'sData'      =>$sData,
 				'eData'      =>$eData,
+				'file'       =>$file_name,
 				'order'      =>$order
 			);
 			$this->approved_model->set_approved_update($option,array('no'=>$no));

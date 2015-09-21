@@ -20,9 +20,10 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" enctype="multipart/form-data" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="oldFile" id="oldFile" value="<?echo $data['file'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 								<div class="form-group">
@@ -118,6 +119,13 @@
 									<label class="col-lg-2 col-md-3 control-label" for="userfile">첨부파일</label>
 									<div class="col-lg-10 col-md-9">
 										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+										
+										<div>
+										<br>
+										<?if($data['file']){?>
+										<a href="<?php echo site_url('download?path=upload/project/&oname='.$data['file'].'&uname='.$data['file'])?>"><?php echo $data['file'];?></a>
+										<?}?>
+										</div>
 									</div>
 								</div>
 								<div class="form-group">
@@ -161,10 +169,4 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>

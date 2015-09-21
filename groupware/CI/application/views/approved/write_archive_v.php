@@ -20,10 +20,11 @@
 						</div>
 						<div class="panel-body">
 
-							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+							<form id="project-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" enctype="multipart/form-data" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
 							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 							<input type="hidden" name="task_no" id="task_no" value="<?echo $data['project_no'];?>">
+							<input type="hidden" name="oldFile" id="oldFile" value="<?echo $data['file'];?>">
 							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 
 
@@ -98,7 +99,7 @@
 												</tr>
 												<tr>
 													<th>첨부파일</th>
-													<td id="project_file"><?echo $data['file'];?></td>
+													<td id="project_file"><?echo $data['file_link'];?></td>
 													<th >순서</th>
 													<td class="p5"><input type="text" id="p_order" name="p_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>
 												</tr>
@@ -168,7 +169,13 @@
 												<tr>
 													<th>첨부파일</th>
 													<td class="p5">
-														<input type="file" id="d_file" name="d_file" class="filestyle" data-size="sm" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+														<input type="file" id="d_file" name="d_file" class="filestyle" data-size="sm" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+														
+														<div>
+														<?if($data['file']){?>
+														<a href="<?php echo site_url('download?path=upload/approved/&oname='.$data['file'].'&uname='.$data['file'])?>"><?php echo $data['file'];?></a>
+														<?}?>
+														</div>
 													</td>
 													<th>순서</th>
 													<td class="p5"><input type="text" id="d_order" name="d_order" class="form-control input-sm input-mini" value="<?echo $data['order'];?>"></td>

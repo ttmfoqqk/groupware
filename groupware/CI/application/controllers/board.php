@@ -8,7 +8,9 @@ class Board extends CI_Controller{
 		$this->load->model('board_model');
 
 		$this->PAGE_CONFIG['cur_page']      = $this->uri->segment(4,1);
-		$this->PAGE_CONFIG['params']        = array();
+		$this->PAGE_CONFIG['params']        = array(
+			'title' => !$this->input->get('title') ? '' : $this->input->get('title')
+		);
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
 
 		$option = array(
@@ -86,117 +88,91 @@ class Board extends CI_Controller{
 		$this->load->view('board/default/list_v',$data);
 	}
 
-	public function view(){
+	/*
+	 * 상세내용
+	 */
+	private function views($mode=null){
 		$no = $this->input->get('no');
-
 		$option = array(
-			'no'=>$no,
-			'code'=>$this->board['code']
+				'no'=>$no,
+				'code'=>$this->board['code']
 		);
 		$result = $this->board_model->get_board_detail($option,'view');
-		
 		if ($result['data']->num_rows() <= 0){
 			alert('잘못된 접근입니다.');
 		}
 		$result_data = $result['data']->row();
-
 		$data['data'] = array(
-			'no'        => $result_data->no,
-			'user_no'   => $result_data->user_no,
-			'user_id'   => $result_data->user_id,
-			'user_name' => $result_data->user_name,
-			'subject'   => $result_data->subject,
-			'contents'  => nl2br($result_data->contents),
-			'count_hit' => $result_data->count_hit,
-			'ip'        => $result_data->ip,
-			'created'   => $result_data->created
+				'no'          => $result_data->no,
+				'original_no' => $result_data->original_no,
+				'depth'       => $result_data->depth,
+				'order'       => $result_data->order,
+				'user_no'     => $result_data->user_no,
+				'user_id'     => $result_data->user_id,
+				'user_name'   => $result_data->user_name,
+				'subject'     => $result_data->subject,
+				'contents'    => $result_data->contents,
+				'count_hit'   => $result_data->count_hit,
+				'ip'          => $result_data->ip,
+				'is_notice' => $result_data->is_notice,
+				'created'     => $result_data->created
 		);
 		$data['files'] = $result['files'];
+		return $data;
+	}
 
+	public function view(){
+		$data = $this->views('view');
 		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['list_url']   = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		$data['edit_url']   = site_url('board/edit/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string'].'&no='.$result_data->no);
-		$data['reply_url']  = site_url('board/reply/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string'].'&no='.$result_data->no);
+		$data['edit_url']   = site_url('board/edit/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string'].'&no='.$data['data']['no']);
+		$data['reply_url']  = site_url('board/reply/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string'].'&no='.$data['data']['no']);
 		$data['reply_fg']   = $this->board['reply'];
 
 		$this->load->view('board/default/view_v',$data);
 	}
 
 	public function write(){
-		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['list_url']   = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$data['data'] = array(
+				'no'          => 0,
+				'original_no' => 0,
+				'depth'       => 0,
+				'order'       => 0,
+				'user_no'     => 0,
+				'user_id'     => '',
+				'user_name'   => '',
+				'subject'     => '',
+				'contents'    => '',
+				'count_hit'   => 0,
+				'ip'          => '',
+				'is_notice'   => 1,
+				'created'     => ''
+		);
+		$data['files'] = $this->board_model->get_board_file_list(array('parent_no'=>0));
+		
+		$data['action_type'] = 'create';
+		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['list_url']    = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$this->load->view('board/default/write_v',$data);
 	}
 
 	public function edit(){
-		$no = $this->input->get('no');
-		$option = array(
-			'no'=>$no,
-			'code'=>$this->board['code']
-		);
-		$result = $this->board_model->get_board_detail($option,'edit');
-		
-		if ($result['data']->num_rows() <= 0){
-			alert('잘못된 접근입니다.');
-		}
-
-		$result_data = $result['data']->row();
-
-		if($result_data->user_id == $this->session->userdata('id')){
-			('잘못된 접근입니다.');
-		}
-
-		$data['data'] = array(
-			'no'        => $result_data->no,
-			'user_no'   => $result_data->user_no,
-			'user_id'   => $result_data->user_id,
-			'user_name' => $result_data->user_name,
-			'subject'   => $result_data->subject,
-			'contents'  => $result_data->contents,
-			'count_hit' => $result_data->count_hit,
-			'ip'        => $result_data->ip,
-			'is_notice' => $result_data->is_notice,
-			'created'   => $result_data->created
-		);
-		$data['files']      = $result['files'];
-		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['list_url']   = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		$this->load->view('board/default/edit_v',$data);
+		$data = $this->views();
+		$data['action_type'] = 'edit';
+		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['list_url']    = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$this->load->view('board/default/write_v',$data);
 	}
 
 	public function reply(){
-		if($this->board['reply'] == 1)alert('답글이 제한된 게시판입니다.');
-
-		$no = $this->input->get('no');
-		$option = array(
-			'no'=>$no,
-			'code'=>$this->board['code']
-		);
-		$result = $this->board_model->get_board_detail($option,'edit');
+		$data = $this->views();
+		$data['data']['subject'] = '답변: '.$data['data']['subject'];
+		$data['data']['contents'] = $data['data']['contents'];
 		
-		if ($result['data']->num_rows() <= 0){
-			alert('잘못된 접근입니다.');
-		}
-
-		$result_data = $result['data']->row();
-		$data['data'] = array(
-			'no'          => $result_data->no,
-			'original_no' => $result_data->original_no,
-			'depth'       => $result_data->depth,
-			'order'       => $result_data->order,
-			'user_no'     => $result_data->user_no,
-			'user_id'     => $result_data->user_id,
-			'user_name'   => $result_data->user_name,
-			'subject'     => $result_data->subject,
-			'contents'    => $result_data->contents,
-			'count_hit'   => $result_data->count_hit,
-			'ip'          => $result_data->ip,
-			'created'     => $result_data->created
-		);
-		$data['files']      = $result['files'];
-		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['list_url']   = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		$this->load->view('board/default/reply_v',$data);
+		$data['action_type'] = 'reply';
+		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['list_url']    = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$this->load->view('board/default/write_v',$data);
 	}
 
 	public function proc(){
@@ -210,8 +186,9 @@ class Board extends CI_Controller{
 		$is_notice   = $this->input->post('is_notice')=='on'?0:1;
 		$depth       = $this->input->post('depth')==''?0:$this->input->post('depth');
 		$order       = $this->input->post('order')==''?0:$this->input->post('order');
+		$oldFile     = $this->input->post('oldFile');
 
-		$parameters  = $this->input->post('parameters');
+		$parameters  = urldecode($this->input->post('parameters'));
 
 		if( $action_type == 'create' ){
 			
@@ -279,6 +256,37 @@ class Board extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			
+			$file_insert_fg = false;
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/board/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = true;
+			
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_insert_fg = true;
+					
+					if( $oldFile ){
+						unlink($config['upload_path'].$oldFile);
+						$this->board_model->set_board_file_delete(array('code'=>$this->board['code'],'parent_no'=>$contents_no));
+					}
+				}
+			}
+			if( $file_insert_fg ){
+				$option_filse = array(
+						'code'          => $this->board['code'],
+						'parent_no'     => $contents_no ,
+						'original_name' => $upload_data['orig_name'],
+						'upload_name'   => $upload_data['file_name']
+				);
+				$this->board_model->set_board_file_insert($option_filse);
+			}
 
 			$option = array(
 				'subject'   =>$subject,
@@ -291,7 +299,7 @@ class Board extends CI_Controller{
 			);
 			$this->board_model->set_board_update($option,$where);
 
-			alert('수정되었습니다.', site_url('board/view/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].'?no='.$contents_no .'&'. $parameters ) );
+			alert('수정되었습니다.', site_url('board/view/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters.'?no='.$contents_no ) );
 
 		}elseif( $action_type == 'reply' ){
 			if($this->board['reply'] == 1)alert('답글이 제한된 게시판입니다.');
@@ -303,6 +311,23 @@ class Board extends CI_Controller{
 
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
+			}
+			
+			$file_insert_fg = false;
+			if( $_FILES['userfile']['name'] ) {
+				$config['upload_path']   = 'upload/board/';
+				$config['allowed_types'] = FILE_ALL_TYPE;
+				$config['encrypt_name']  = true;
+			
+				$this->load->library('upload', $config);
+			
+				if ( !$this->upload->do_upload() ){
+					$upload_error = $this->upload->display_errors('','') ;
+					alert($upload_error);
+				}else{
+					$upload_data = $this->upload->data();
+					$file_insert_fg = true;
+				}
 			}
 			
 			// 원본글 no,depth
@@ -330,7 +355,19 @@ class Board extends CI_Controller{
 				'ip'            =>$this->input->ip_address()
 			);
 			$result = $this->board_model->set_board_insert($option);
-			alert('등록되었습니다.', site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].'?'. $parameters ) );
+			
+			if( $file_insert_fg ){
+				$option_filse = array(
+						'code'          => $this->board['code'],
+						'parent_no'     => $result ,
+						'original_name' => $upload_data['orig_name'],
+						'upload_name'   => $upload_data['file_name']
+				);
+				$this->board_model->set_board_file_insert($option_filse);
+			}
+			
+			
+			alert('등록되었습니다.', site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters ) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('contents_no','게시판 no','required');
 			if ($this->form_validation->run() == FALSE){

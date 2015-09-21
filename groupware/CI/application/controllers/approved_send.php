@@ -165,12 +165,9 @@ class Approved_send extends CI_Controller{
 			'status_created' => $result->status_created
 		);
 		
-		/*
-		 * 결재요청 ,결재하기 버튼 fg
-		 */
-		$data['fg_btn_send']   = ($result->status=='a' && $result->status_created > date('Y-m-d') ? true : false);
-		$data['fg_btn_receiv'] = false;
 		
+		$data['fg_btn_send']   = ($result->status=='a' && $result->status_created > date('Y-m-d') ? true : false);
+		$data['fg_btn_receiv'] = false;		
 
 		/* 결재자들 */
 		$option = array(

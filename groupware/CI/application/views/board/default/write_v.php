@@ -21,33 +21,59 @@
 						<div class="panel-body">
 							
 							<form id="board_form_write_board" name="board_form_write_board" action="<?echo BOARD_FORM;?>" method="post" class="form-horizontal group-border stripped" enctype="multipart/form-data">
-							<input type="hidden" name="action_type" id="action_type" value="create">
+							<input type="hidden" name="action_type" id="action_type" value="<?php echo $action_type;?>">
+							<input type="hidden" name="contents_no" id="contents_no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="original_no" id="original_no" value="<?echo $data['original_no'];?>">
+							<input type="hidden" name="depth" id="depth" value="<?echo $data['depth'];?>">
+							<input type="hidden" name="order" id="order" value="<?echo $data['order'];?>">
+							<?
+							if($action_type=='edit'){
+								foreach($files as $lt){
+							?><input type="hidden" name="oldFile" id="oldFile" value="<?echo $lt['upload_name'];?>">
+							<?
+								}
+							}
+							?>
+							
 							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
 
 								
 								<div class="form-group">
 									<label for="subject" class="col-lg-2 col-md-3 control-label">제목</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="subject" name="subject" type="text" class="form-control" maxlength="200" placeholder="제목">
+										<input id="subject" name="subject" type="text" class="form-control" maxlength="200" placeholder="제목" value="<?echo $data['subject'];?>">
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="contents" class="col-lg-2 col-md-3 control-label">내용</label>
 									<div class="col-lg-10 col-md-9" id="tx_trex_container">
-										<textarea id="contents" name="contents" class="form-control" rows="20" placeholder="내용"></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="20" placeholder="내용"><?echo $data['contents'];?></textarea>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-lg-2 col-md-3 control-label" for="">File upload</label>
+									<label class="col-lg-2 col-md-3 control-label" for="">첨부파일</label>
 									<div class="col-lg-10 col-md-9">
-										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="Find file" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+										<div>
+										
+										<br>
+										<?
+										if($action_type=='edit'){
+											foreach($files as $lt){?>
+											<a href="<?php echo site_url('download?path=upload/board/&oname='.$lt['original_name'].'&uname='.$lt['upload_name'])?>"><?php echo $lt['original_name'];?></a>
+										<?
+											}
+										}
+										?>
+										</div>
 									</div>
+									
 								</div>
 								<div class="form-group">
 									<label for="" class="col-lg-2 col-md-3 control-label"> </label>
 									<div class="col-lg-10 col-md-9">
 										<div class="checkbox-custom checkbox-inline">
-											<input type="checkbox" id="is_notice" name="is_notice">
+											<input type="checkbox" id="is_notice" name="is_notice" <?echo $data['is_notice']==0?'checked':''; ?>>
 											<label for="is_notice">공지</label>
 										</div>
 									</div>
@@ -77,22 +103,6 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-
-
-
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/jquery.dataTables.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.tableTools.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.bootstrap.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/tables/datatables/dataTables.responsive.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/checkall/jquery.checkAll.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/summernote/summernote.js"></script>
 <script src="<?echo $this->config->base_url()?>daumeditor/js/editor_loader.js" type="text/javascript" charset="utf-8"></script>
 <script src="<?echo $this->config->base_url()?>daumeditor/js/editor_creator.js" type="text/javascript" charset="utf-8"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>
