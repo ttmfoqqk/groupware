@@ -77,7 +77,34 @@
 							<!-- 검색 -->
 
 
-							<div class="row col-xs-12">gantt</div>
+							<div class="row col-xs-12">
+							<?php foreach($user as $lt){?>
+								<span class="label m20 mr10" style="background-color:<?php echo $lt['color']?>;vertical-align:middle;">&nbsp;&nbsp;</span><?php echo $lt['name'];?>
+							<?php }?>
+							
+							<table class="table table-bordered table-hover">
+								<thead>
+									<tr>
+										<th rowspan="3" style="width:100px;vertical-align:middle;">항목</th>
+										<th>월</th>
+									</tr>
+									<tr>
+										<td>일</td>
+									</tr>
+									<tr>
+										<td>요일</td>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach($user as $lt){?>
+									<tr>
+										<th><?php echo $lt['name'];?></th>
+										<td>준비중</td>
+									</tr>
+									<?php }?>
+								</tbody>
+							</table>
+							</div>
 
 						</div>
 					</div>
@@ -97,7 +124,4 @@
 <!-- / page-content -->
 
 <!-- 폼 날짜 -->
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>

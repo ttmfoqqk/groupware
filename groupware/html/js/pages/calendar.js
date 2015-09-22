@@ -70,8 +70,8 @@ $(document).ready(function() {
 		    week: "MMM d YYYY",      // Sep 13 2009
 		    day: 'dddd, MMM d, YYYY' // Tuesday, Sep 8, 2009
 		},
-		editable: true,
-		droppable: true, // this allows things to be dropped onto the calendar !!!
+		editable: false,
+		droppable: false, // this allows things to be dropped onto the calendar !!!
 		drop: function(date, allDay) { // this function is called when something is dropped
 			var $externalEvent = $(this);
 			// retrieve the dropped element's stored Event Object

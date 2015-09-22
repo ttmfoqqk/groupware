@@ -143,7 +143,7 @@
 									<div class="col-lg-2 col-md-2">
 										<div id="component-colorpicker" class="input-group colorpicker-element">
 											<span class="input-group-addon"><i style="background-color: rgb(89, 161, 101);"></i></span>
-											<input type="text"  class="form-control" id="color" name="color" value=<?php echo $data['color']?>>
+											<input type="text"  class="form-control" id="color" name="color" value="<?php echo $data['color'];?>">
 										</div>
 									</div>
 								</div>

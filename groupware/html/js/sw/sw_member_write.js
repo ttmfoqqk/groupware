@@ -24,8 +24,9 @@ $(document).ready(function() {
 	
 	$(".input-daterange").datepicker(koDatePickerOpt);
 	
+	var color_value = $('#color').val() ? $('#color').val() : '#1fba5d';
 	$('#component-colorpicker').colorpicker({
-    	color: '#1fba5d'
+    	color: color_value
     });
     
 })
