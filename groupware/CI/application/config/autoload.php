@@ -64,7 +64,7 @@ $autoload['libraries'] = array('session','database','pagination');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('cookie','url','alert_helper','user_permission');
+$autoload['helper'] = array('cookie','url','alert_helper','user_permission','date');
 
 
 /*

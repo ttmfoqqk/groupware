@@ -27,15 +27,15 @@
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="sData" id="sData" value="<?echo $this->input->get('sData')?>" />
+											<input type="text" class="form-control" name="sData" id="sData" value="<?echo $sData?>"/>
 											<span class="input-group-addon">to</span>
-											<input type="text" class="form-control" name="eData" id="eData" value="<?echo $this->input->get('eData')?>"/>
+											<input type="text" class="form-control" name="eData" id="eData" value="<?echo $eData?>"/>
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
-										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
-										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">이달</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">3개월</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">6개월</button>
 										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
 									</div>
 								</div>
@@ -78,29 +78,97 @@
 
 
 							<div class="row col-xs-12">
-							<?php foreach($user as $lt){?>
+							<?php foreach($data as $lt){?>
 								<span class="label m20 mr10" style="background-color:<?php echo $lt['color']?>;vertical-align:middle;">&nbsp;&nbsp;</span><?php echo $lt['name'];?>
 							<?php }?>
 							
-							<table class="table table-bordered table-hover">
+							
+							<?php 
+							$item['width'] = 30;
+							$diff = abs(strtotime($eData) - strtotime($sData));
+							
+							$years = floor($diff / (365*60*60*24));
+							$months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+							$days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+							
+							$months = ($years*12) + $months;
+							$yoil = array("일","월","화","수","목","금","토");
+							?>
+							<table class="table table-bordered table-hover" style="table-layout:fixed;width:<?php echo ($months+1)*$item['width']*30?>px;">
 								<thead>
 									<tr>
-										<th rowspan="3" style="width:100px;vertical-align:middle;">항목</th>
-										<th>월</th>
+										<th rowspan="3" style="width:200px;vertical-align:middle;">항목</th>
+										<?
+										for($i=0;$i<=$months;$i++){
+											$tmp_month = date('Y-m-d', strtotime($sData.'+'.$i.' month'));
+											$tmp_days  = days_in_month(date_format(date_create($tmp_month), 'm'),date_format(date_create($tmp_month), 'Y'));
+											echo '<th class="text-center" colspan="'.$tmp_days.'">'.date_format(date_create($tmp_month), 'Y-m').'</th>';
+										}
+										?>
 									</tr>
 									<tr>
-										<td>일</td>
+										<?
+										for($i=0;$i<=$months;$i++){
+											$tmp_month = date('Y-m-d', strtotime($sData.'+'.$i.' month'));
+											$tmp_days  = days_in_month(date_format(date_create($tmp_month), 'm'),date_format(date_create($tmp_month), 'Y'));
+											
+											for($k=1;$k<=$tmp_days;$k++){
+												echo '<td style="width:'.$item['width'].'px;" class="pr0 pl0 text-center">'.$k.'</td>';
+											}
+										}
+										?>
 									</tr>
 									<tr>
-										<td>요일</td>
+										<?
+										for($i=0;$i<=$months;$i++){
+											$tmp_month = date('Y-m-d', strtotime($sData.'+'.$i.' month'));
+											$tmp_days  = days_in_month(date_format(date_create($tmp_month), 'm'),date_format(date_create($tmp_month), 'Y'));
+											
+											
+											for($k=1;$k<=$tmp_days;$k++){
+												$tmp_day   = date('Y-m-d', strtotime($tmp_month.'+'.($k-1).' day'));
+												echo '<td style="width:'.$item['width'].'px;" class="pr0 pl0 text-center">'.$yoil[date('w',strtotime($tmp_day))].'</td>';
+											}
+										}
+										?>
 									</tr>
 								</thead>
 								<tbody>
-									<?php foreach($user as $lt){?>
+									<?php foreach($data as $lt){?>
 									<tr>
 										<th><?php echo $lt['name'];?></th>
-										<td>준비중</td>
+										<?
+										for($i=0;$i<=$months;$i++){
+											$tmp_month = date('Y-m-d', strtotime($sData.'+'.$i.' month'));
+											$tmp_days  = days_in_month(date_format(date_create($tmp_month), 'm'),date_format(date_create($tmp_month), 'Y'));
+											
+											for($k=1;$k<=$tmp_days;$k++){
+												echo '<td> </td>';
+											}
+										}
+										?>
 									</tr>
+									<?php foreach($lt['list'] as $list){?>
+									<tr>
+										<td><?php echo $list['title'];?></td>
+										<?
+										for($i=0;$i<=$months;$i++){
+											$tmp_month = date('Y-m-d', strtotime($sData.'+'.$i.' month'));
+											$tmp_days  = days_in_month(date_format(date_create($tmp_month), 'm'),date_format(date_create($tmp_month), 'Y'));
+											
+											for($k=1;$k<=$tmp_days;$k++){
+												$tmp_day = date('Y-m-d', strtotime($tmp_month.'+'.($k-1).' day'));
+												$tmp_bg  = '';
+												if( $list['sData'] <= $tmp_day && $list['eData'] >= $tmp_day ){
+													$tmp_bg = $lt['color'];
+												}
+												echo '<td class="pl0 pr0 pt15"><div style="width:100%;height:10px;background-color:'.$tmp_bg.'"></div></td>';
+											}
+										}
+										?>
+										
+									</tr>
+									<?php }?>
 									<?php }?>
 								</tbody>
 							</table>
@@ -124,4 +192,4 @@
 <!-- / page-content -->
 
 <!-- 폼 날짜 -->
-<script src="<?echo $this->config->base_url()?>html/js/sw/sw_project.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_schedule.js"></script>

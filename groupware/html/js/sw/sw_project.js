@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$(".input-daterange").datepicker({language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true,autoclose:true});
+	$(".input-daterange").datepicker();
 	/* 리스트 페이지 */
 	
 	// 부서,분류 selectbox

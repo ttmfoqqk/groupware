@@ -7,11 +7,11 @@ class Schedule extends CI_Controller{
 		
 		//검색 파라미터
 		$this->PAGE_CONFIG['params'] = array(
-				'sData'        => !$this->input->get('sData')        ? '' : $this->input->get('sData')       ,
-				'eData'        => !$this->input->get('eData')        ? '' : $this->input->get('eData')       ,
-				'menu_part_no' => !$this->input->get('menu_part_no') ? '' : $this->input->get('menu_part_no'),
-				'menu_no'      => !$this->input->get('menu_no')      ? '' : $this->input->get('menu_no')     ,
-				'userName'     => !$this->input->get('userName')     ? '' : $this->input->get('userName')    ,
+				'sData'        => !$this->input->get('sData')        ? date('Y-m') : $this->input->get('sData'),
+				'eData'        => !$this->input->get('eData')        ? date('Y-m') : $this->input->get('eData'),
+				'menu_part_no' => !$this->input->get('menu_part_no') ? '' : $this->input->get('menu_part_no')  ,
+				'menu_no'      => !$this->input->get('menu_no')      ? '' : $this->input->get('menu_no')       ,
+				'userName'     => !$this->input->get('userName')     ? '' : $this->input->get('userName')      ,
 				'title'        => !$this->input->get('title')        ? '' : $this->input->get('title')
 		);
 		//링크용 파라미터 쿼리
@@ -41,18 +41,48 @@ class Schedule extends CI_Controller{
 	}
 	
 	public function lists(){
-		$option['where'] = array();
-		$option['like'] = array();
+		$data['sData'] = $this->PAGE_CONFIG['params']['sData'];
+		$data['eData'] = $this->PAGE_CONFIG['params']['eData'];
+		
+		$option['where'] = array(
+			'project.menu_no' => $this->PAGE_CONFIG['params']['menu_no'],
+			'staff.menu_no' => $this->PAGE_CONFIG['params']['menu_part_no']
+		);
+		$option['like'] = array(
+			'project.title' => $this->PAGE_CONFIG['params']['title'],
+			'user.name' => $this->PAGE_CONFIG['params']['userName'],
+		);
+		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.sData,"%Y-%m") <= "'.$data['sData'].'") or (date_format(project.eData,"%Y-%m") >= "'.$data['eData'].'" and date_format(project.eData,"%Y-%m") <= "'.$data['sData'].'"))';
 		
 		$get_data = $this->project_model->get_schedule($option);
 		
-		$data['user'] = $get_data['user'];
 		
-		/*
-		 * json return ?
-		 * view javascript append 생성
-		 */
+		$data['data'] = $get_data['user'];
 		$data['list'] = $get_data['list'];
+		
+		$i = 0;
+		foreach($data['data'] as $user){
+			$k = 0;
+			$list_array = array();
+			foreach($data['list'] as $list){
+				if (in_array($list['id'] , $user) ){
+					array_push($list_array, $list);
+					unset($data['list'][$k]);
+				}
+				$k++;
+			}
+			$data['data'][$i]['list'] = $list_array;
+			$i++;
+		}
+		
+		$j = 0;
+		foreach($data['data'] as $test){
+			if( count($test['list']) ==0 ){
+				unset($data['data'][$j]);
+			}
+			$j++;
+		}
+		//echo json_encode($data['data']);
 		
 		$this->load->view('project/project_schedule_v',$data);
 	}

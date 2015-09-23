@@ -124,9 +124,10 @@ class Project_model extends CI_Model{
 		
 		
 		
-		$this->db->select('*');
+		$this->db->select('no,id,name,color');
 		$this->db->from('sw_user');
 		$this->db->order_by('order','ASC');
+		$this->db->order_by('no','ASC');
 		$query = $this->db->get();
 		$result['user'] = $query->result_array();
 		
@@ -136,12 +137,13 @@ class Project_model extends CI_Model{
 		$this->db->select('project.eData');
 		$this->db->select('user.id');
 		$this->db->select('user.name');
-		$this->db->select('user.color');
 		$this->db->from('sw_project AS project');
 		$this->db->join('sw_project_staff AS staff','project.no = staff.project_no');
 		$this->db->join('sw_user AS user','staff.user_no = user.no');
 		$this->db->order_by('user.no','ASC');
+		
 		$this->db->where($where);
+		$this->db->where($option['custom']);
 		$this->db->like($like);
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();
