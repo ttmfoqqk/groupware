@@ -56,6 +56,8 @@ class Schedule extends CI_Controller{
 		
 		$get_data = $this->project_model->get_schedule($option);
 		
+		//echo $this->db->last_query();
+		
 		
 		$data['data'] = $get_data['user'];
 		$data['list'] = $get_data['list'];
@@ -75,6 +77,9 @@ class Schedule extends CI_Controller{
 			$i++;
 		}
 		
+		/*
+		 * 목록없는 회원 지우기
+		 */
 		$j = 0;
 		foreach($data['data'] as $test){
 			if( count($test['list']) ==0 ){

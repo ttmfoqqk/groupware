@@ -75,6 +75,11 @@ class Menu extends CI_Controller{
 			$menuData['items'][$menuItem['no']] = $menuItem;
 			$menuData['parents'][$menuItem['parent_no']][] = $menuItem['no'];
 		}
+		
+		//$test = $this->organization_model->get_organization_search(1,'children');
+		//echo join(',', $test);
+		//echo join('->', $test['name']);
+		//echo join('->', $test['no']);
 
 		//echo json_encode($menuData);
 
