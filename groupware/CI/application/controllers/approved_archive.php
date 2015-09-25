@@ -54,14 +54,15 @@ class Approved_archive extends CI_Controller{
 	public function lists(){
 		// 검색 파라미터
 		// 해당 일자가 포함된 진행기간 검색 sData,eData
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
 		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'approved.sData <='   => $this->PAGE_CONFIG['params']['sData'],
-			'approved.eData >='   => $eData,
+			//'approved.sData <='   => $sData,
+			//'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
@@ -76,6 +77,21 @@ class Approved_archive extends CI_Controller{
 			'approved.title' => $this->PAGE_CONFIG['params']['title'],
 			'IF(approved.kind = 0, project_user.name , document_user.name )' => $this->PAGE_CONFIG['params']['name_receiver']
 		);
+		
+		$custom_sData = '';
+		$custom_eData = '';
+		$custom_query = '';
+		if($sData){
+			$custom_sData = '(approved.sData >= "'.$sData.'" or approved.eData >= "'.$sData.'")';
+		}
+		if($eData){
+			$custom_eData = '(approved.sData <= "'.$eData.'" or approved.eData <= "'.$eData.'")';
+		}
+		if($sData && $eData){
+			$option['custom'] = '( '.$custom_sData.' and '.$custom_eData.' )';
+		}else{
+			$option['custom'] = $custom_sData . $custom_eData;
+		}
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);

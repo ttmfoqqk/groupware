@@ -21,7 +21,7 @@
 						<div class="panel-body">
 							
 							<!-- 검색 -->
-							<form class="form-horizontal">
+							<form class="form-horizontal" action="<?php echo site_url('approved_send/lists/');?>">
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">진행기간</label>

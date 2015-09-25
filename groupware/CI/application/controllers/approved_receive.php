@@ -70,6 +70,7 @@ class Approved_receive extends CI_Controller{
 	public function lists(){
 		// 검색 파라미터
 		// 해당 일자가 포함된 진행기간 검색 sData,eData
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
 		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
@@ -78,8 +79,8 @@ class Approved_receive extends CI_Controller{
 		
 
 		$option['where'] = array(
-			'approved.sData <='   => $this->PAGE_CONFIG['params']['sData'],
-			'approved.eData >='   => $eData,
+			//'approved.sData <='   => $sData,
+			//'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
 			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
@@ -95,6 +96,21 @@ class Approved_receive extends CI_Controller{
 			'sss.sender_name'    => $this->PAGE_CONFIG['params']['name_sender'],
 			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
 		);
+		
+		$custom_sData = '';
+		$custom_eData = '';
+		$custom_query = '';
+		if($sData){
+			$custom_sData = '(approved.sData >= "'.$sData.'" or approved.eData >= "'.$sData.'")';
+		}
+		if($eData){
+			$custom_eData = '(approved.sData <= "'.$eData.'" or approved.eData <= "'.$eData.'")';
+		}
+		if($sData && $eData){
+			$option['custom'] = '( '.$custom_sData.' and '.$custom_eData.' )';
+		}else{
+			$option['custom'] = $custom_sData . $custom_eData;
+		}
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);

@@ -16,6 +16,10 @@ class Project_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		$custom = $option['custom'];
+		if(!$custom){
+			$custom = array();
+		}
 
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_project');
@@ -25,6 +29,7 @@ class Project_model extends CI_Model{
 		$this->db->join('sw_project_staff d','sw_project.no = d.project_no and d.order=1','left');
 		$this->db->join('sw_menu d1','d.menu_no = d1.no','left');
 		$this->db->join('sw_user d2','d.user_no = d2.no','left');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 		$query = $this->db->get();
@@ -51,6 +56,7 @@ class Project_model extends CI_Model{
 		$this->db->join('(select B1.project_no as project_no,count(*) AS cnt from sw_approved as B1 join sw_approved_status as B2 on( B1.no = B2.approved_no) where B1.kind = 0 and B2.order > 1 and B2.status is not null group by B1.project_no) AS checks','sw_project.no = checks.project_no','left');
 		$this->db->order_by('sw_project.order','ASC');
 		$this->db->order_by('sw_project.no','DESC');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 		$this->db->limit($limit,$offset);

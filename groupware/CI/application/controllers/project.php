@@ -47,14 +47,15 @@ class Project extends CI_Controller{
 	public function lists(){
 		// 검색 파라미터
 		// 해당 일자가 포함된 진행기간 검색 sData,eData
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
+
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'sw_project.sData <='     => $this->PAGE_CONFIG['params']['sData'],
-			'sw_project.eData >='     => $eData,
+			//'sw_project.sData <='     => $sData,
+			//'sw_project.eData >='     => $eData,
 			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
 			'sw_project.created <'    => $ewData,
 			'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
@@ -64,12 +65,29 @@ class Project extends CI_Controller{
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
 			'title'  => $this->PAGE_CONFIG['params']['title']
 		);
+		
+		$custom_sData = '';
+		$custom_eData = '';
+		$custom_query = '';
+		if($sData){
+			$custom_sData = '(sw_project.sData >= "'.$sData.'" or sw_project.eData >= "'.$sData.'")';
+		}
+		if($eData){
+			$custom_eData = '(sw_project.sData <= "'.$eData.'" or sw_project.eData <= "'.$eData.'")';
+		}
+		if($sData && $eData){
+			$option['custom'] = '( '.$custom_sData.' and '.$custom_eData.' )';
+		}else{
+			$option['custom'] = $custom_sData . $custom_eData;
+		}
+
 		/*
 			list - 결재 등록된것 checkbox 삭제 금지
 			view - 결재 등록된것 button 삭제 금지
 		*/
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
+
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록

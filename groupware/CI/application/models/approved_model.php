@@ -19,6 +19,10 @@ class Approved_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		$custom = $option['custom'];
+		if(!$custom){
+			$custom = array();
+		}
 
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_approved AS approved');
@@ -36,6 +40,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
 		$this->db->where('status.approved_no is null');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 		//$this->db->group_by('project_staff.project_no,document_staff.approved_no');
@@ -69,6 +74,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
 		$this->db->where('status.approved_no is null');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 		
@@ -143,6 +149,10 @@ class Approved_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		$custom = $option['custom'];
+		if(!$custom){
+			$custom = array();
+		}
 
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_approved AS approved');
@@ -153,6 +163,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 
@@ -177,6 +188,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 		$this->db->order_by('approved.order','ASC');

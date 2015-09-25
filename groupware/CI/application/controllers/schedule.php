@@ -52,7 +52,7 @@ class Schedule extends CI_Controller{
 			'project.title' => $this->PAGE_CONFIG['params']['title'],
 			'user.name' => $this->PAGE_CONFIG['params']['userName'],
 		);
-		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.sData,"%Y-%m") <= "'.$data['sData'].'") or (date_format(project.eData,"%Y-%m") >= "'.$data['eData'].'" and date_format(project.eData,"%Y-%m") <= "'.$data['sData'].'"))';
+		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.sData,"%Y-%m") <= "'.$data['eData'].'") or (date_format(project.eData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.eData,"%Y-%m") <= "'.$data['eData'].'"))';
 		
 		$get_data = $this->project_model->get_schedule($option);
 		
@@ -80,6 +80,7 @@ class Schedule extends CI_Controller{
 		/*
 		 * 목록없는 회원 지우기
 		 */
+		/*
 		$j = 0;
 		foreach($data['data'] as $test){
 			if( count($test['list']) ==0 ){
@@ -87,6 +88,7 @@ class Schedule extends CI_Controller{
 			}
 			$j++;
 		}
+		*/
 		//echo json_encode($data['data']);
 		
 		$this->load->view('project/project_schedule_v',$data);
