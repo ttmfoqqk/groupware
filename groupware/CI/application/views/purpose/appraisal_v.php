@@ -48,7 +48,7 @@
 									</div>
 
 									<div class="col-lg-3 col-md-3 col-sm-3">
-										<select id="d_option" name="d_option" data-value="<?echo $this->input->get('d_option')?>" class="fancy-select form-control">
+										<select id="d_option" name="d_option" data-value="<?echo $d_option;?>" class="fancy-select form-control">
 											<option value="">선택</option>
 										</select>
 									</div>

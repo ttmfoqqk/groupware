@@ -16,6 +16,10 @@ class Purpose_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		$custom = $option['custom'];
+		if(!$custom){
+			$custom = array();
+		}
 		
 		
 
@@ -48,6 +52,7 @@ class Purpose_model extends CI_Model{
 		$this->db->from('sw_project AS project');
 		$this->db->join('sw_project_staff AS staff','project.no = staff.project_no');
 		$this->db->join('sw_user AS user','staff.user_no = user.no');
+		$this->db->where($custom);
 		$this->db->where($where);
 		$this->db->like($like);
 
@@ -247,6 +252,7 @@ class Purpose_model extends CI_Model{
 		$data['percent_display'] = $result->percent_display;
 
 		$data['point_total']     = ($data['point_avg'] * $data['percent_display'] / 100) + $data['point_text'];
+		$data['point_total']     = ceil($data['point_total'] * 100) / 100;
 		$data['percent_total']   = $data['point_total'];
 
 		return $data;
@@ -265,6 +271,17 @@ class Purpose_model extends CI_Model{
 				$like[$key] = $val;
 			}
 		}
+		
+		$where2 = array();
+		foreach($option['where2'] as $key=>$val){
+			if($val!=''){
+				$where2[$key] = $val;
+			}
+		}
+		
+		/*
+		 * 지각누적 뽑기
+		 */
 
 		$this->db->select('ifnull(sum(point),0) AS sum',false);
 		$this->db->from('sw_other_point as point');
@@ -272,12 +289,21 @@ class Purpose_model extends CI_Model{
 		$this->db->where($where);
 		$this->db->like($like);
 		$query  = $this->db->get();
-		$result = $query->row();
+		$result['other'] = $query->row();
 		
-
+		$this->db->select('ifnull(sum(point),0) AS sum',false);
+		$this->db->from('sw_attendance_history as attendance');
+		$this->db->join('sw_user as user','attendance.user_no = user.no');
+		$this->db->join('sw_user_department as department','attendance.user_no = department.user_no');
+		$this->db->where($where2);
+		$this->db->like($like);
+		$query  = $this->db->get();
+		$result['attendance'] = $query->row();
+		
+		$tmp_sum = $result['other']->sum + $result['attendance']->sum;
 		$data = array(
-			'sum' => $result->sum,
-			'percent_sum' => $result->sum < 0 ? 0 : $result->sum
+			'sum' => $tmp_sum,
+			'percent_sum' => $tmp_sum < 0 ? 0 : $tmp_sum
 		);
 		return $data;
 	}

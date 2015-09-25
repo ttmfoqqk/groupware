@@ -84,18 +84,21 @@ class Purpose extends CI_Controller{
 				break;
 			}
 		}
+		
+		$data['d_option'] = $d_option;
 
 		
 		// approved point
 		$option['where'] = array(
-			'date_format(project.sData,"%Y-%m") <=' => $eDate,
-			'date_format(project.eData,"%Y-%m") >=' => $sDate,
+			//'date_format(project.sData,"%Y-%m") <=' => $eDate,
+			//'date_format(project.eData,"%Y-%m") >=' => $sDate,
 			'staff.menu_no'    => $this->PAGE_CONFIG['params']['department']
 			//'staff.sender' => $this->session->userdata('no') //개인용
 		);
 		$option['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
+		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$sDate.'" and date_format(project.sData,"%Y-%m") <= "'.$eDate.'") or (date_format(project.eData,"%Y-%m") >= "'.$sDate.'" and date_format(project.eData,"%Y-%m") <= "'.$eDate.'"))';
 
 		$option['test']['where'] = array(
 			'DATE_FORMAT(status.created,"%Y-%m") >=' => $sDate,
@@ -143,6 +146,13 @@ class Purpose extends CI_Controller{
 			'menu_no' => $this->PAGE_CONFIG['params']['department']
 			//'user_no' => $this->session->userdata('no')
 		);
+		$option['where2'] = array(
+				'DATE_FORMAT(sData,"%Y-%m") >=' => $sDate,
+				'DATE_FORMAT(sData,"%Y-%m") <=' => $eDate,
+				'department.menu_no' => $this->PAGE_CONFIG['params']['department']
+				//'user_no' => $this->session->userdata('no')
+		);
+		
 		$option['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
