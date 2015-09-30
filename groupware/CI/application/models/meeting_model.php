@@ -4,31 +4,18 @@ class Meeting_model extends CI_Model{
 		parent::__construct();
 	}
 	public function get_meeting_list($option=null,$limit=null,$offset=null){
-		$where = array();
-		foreach($option['where'] as $key=>$val){
-			if($val!=''){
-				$this->db->where($key, $val);
-				$where[$key] = $val;
-			}
-		}
-		$like = array();
-		foreach($option['like'] as $key=>$val){
-			if($val!=''){
-				$like[$key] = $val;
-			}
-		}
-
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_meeting meeting');
 		$this->db->join('sw_menu menu','meeting.menu_no = menu.no');
 		$this->db->join('sw_user user','meeting.user_no = user.no');
-		$this->db->where($where);
-		$this->db->like($like);
+		set_options($option);
+		
 		$query = $this->db->get();
 		$query = $query->row();
 		$result['total'] = $query->total;
-
+		
 		$this->db->select('meeting.*');
+		$this->db->select('menu.no as menu_no');
 		$this->db->select('menu.name as menu_name');
 		$this->db->select('user.name as user_name');
 		$this->db->from('sw_meeting meeting');
@@ -36,14 +23,14 @@ class Meeting_model extends CI_Model{
 		$this->db->join('sw_user user','meeting.user_no = user.no');
 		$this->db->order_by('meeting.order','ASC');
 		$this->db->order_by('meeting.no','DESC');
-		$this->db->where($where);
-		$this->db->like($like);
 		$this->db->limit($limit,$offset);
+		set_options($option);
 
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();
 		return $result;
 	}
+
 	public function get_meeting_detail($option){
 		$this->db->select('meeting.*');
 		$this->db->select('user.name as user_name');

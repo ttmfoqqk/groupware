@@ -66,9 +66,9 @@ class Approved_archive extends CI_Controller{
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'approved.menu_no'    => $this->PAGE_CONFIG['params']['part_sender'],
-			'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no ) = ' => $this->PAGE_CONFIG['params']['part_receiver'],
-			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
+			//'approved.menu_no'    => $this->PAGE_CONFIG['params']['part_sender'],
+			//'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no ) = ' => $this->PAGE_CONFIG['params']['part_receiver'],
+			//'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
 
 			'approved.user_no'    => $this->session->userdata('no') // 나의 결재 정보
 		);
@@ -76,6 +76,16 @@ class Approved_archive extends CI_Controller{
 			'user.name'      => $this->PAGE_CONFIG['params']['name_sender'],
 			'approved.title' => $this->PAGE_CONFIG['params']['title'],
 			'IF(approved.kind = 0, project_user.name , document_user.name )' => $this->PAGE_CONFIG['params']['name_receiver']
+		);
+		
+		$array_sender   = search_node($this->PAGE_CONFIG['params']['part_sender'],'children');
+		$array_receiver = search_node($this->PAGE_CONFIG['params']['part_receiver'],'children');
+		$array_menu     = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+			'approved.menu_no' => $array_sender,
+			'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no )' => $array_receiver,
+			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
 		);
 		
 		$custom_sData = '';

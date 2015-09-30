@@ -45,13 +45,22 @@ class Schedule extends CI_Controller{
 		$data['eData'] = $this->PAGE_CONFIG['params']['eData'];
 		
 		$option['where'] = array(
-			'project.menu_no' => $this->PAGE_CONFIG['params']['menu_no'],
-			'staff.menu_no' => $this->PAGE_CONFIG['params']['menu_part_no']
+			//'project.menu_no' => $this->PAGE_CONFIG['params']['menu_no'],
+			//'staff.menu_no' => $this->PAGE_CONFIG['params']['menu_part_no']
 		);
 		$option['like'] = array(
 			'project.title' => $this->PAGE_CONFIG['params']['title'],
 			'user.name' => $this->PAGE_CONFIG['params']['userName'],
 		);
+		
+		$array_part = search_node($this->PAGE_CONFIG['params']['menu_part_no'],'children');
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+				'staff.menu_no' => $array_part,
+				'project.menu_no' => $array_menu
+		);
+		
 		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.sData,"%Y-%m") <= "'.$data['eData'].'") or (date_format(project.eData,"%Y-%m") >= "'.$data['sData'].'" and date_format(project.eData,"%Y-%m") <= "'.$data['eData'].'"))';
 		
 		$get_data = $this->project_model->get_schedule($option);

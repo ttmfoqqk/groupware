@@ -82,20 +82,27 @@ class Approved_send extends CI_Controller{
 			//'approved.eData >='   => $eData,
 			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
 			'approved.created <'  => $ewData,
-			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
+			//'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
+			//'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.part_receiver'=> $this->PAGE_CONFIG['params']['part_receiver'],
 			'status.sender'       => $this->session->userdata('no'),
 			'status.status'       => $this->PAGE_CONFIG['status'],
 			'status.created >'    => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
 			'status.created <'    => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
 			
 		);
-		
 
 		$option['like'] = array(
 			'rrr.receiver_name' => $this->PAGE_CONFIG['params']['name_receiver'],
 			'approved.title'    => $this->PAGE_CONFIG['params']['title'],
+		);
+		
+		$array_part = search_node($this->PAGE_CONFIG['params']['part_receiver'],'children');
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+			'status.part_receiver' => $array_part,
+			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
 		);
 		
 		$custom_sData = '';

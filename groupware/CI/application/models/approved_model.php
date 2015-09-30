@@ -7,23 +7,6 @@ class Approved_model extends CI_Model{
 		보관함 TEST 리스트
 	*/
 	public function approved_archive_list($option=null,$limit=null,$offset=null){
-		$where = array();
-		foreach($option['where'] as $key=>$val){
-			if($val!=''){
-				$where[$key] = $val;
-			}
-		}
-		$like = array();
-		foreach($option['like'] as $key=>$val){
-			if($val!=''){
-				$like[$key] = $val;
-			}
-		}
-		$custom = $option['custom'];
-		if(!$custom){
-			$custom = array();
-		}
-
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('sw_user AS user','approved.user_no = user.no');
@@ -40,10 +23,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
 		$this->db->where('status.approved_no is null');
-		$this->db->where($custom);
-		$this->db->where($where);
-		$this->db->like($like);
-		//$this->db->group_by('project_staff.project_no,document_staff.approved_no');
+		set_options($option);
 
 		$query = $this->db->get();
 		$query = $query->row();
@@ -52,6 +32,7 @@ class Approved_model extends CI_Model{
 
 		$this->db->select('approved.*');
 		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
+		$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no');
 		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
 		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
 		$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
@@ -74,18 +55,14 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
 		
 		$this->db->where('status.approved_no is null');
-		$this->db->where($custom);
-		$this->db->where($where);
-		$this->db->like($like);
-		
-		
 		$this->db->order_by('approved.order','ASC');
 		$this->db->order_by('approved.no','DESC');
-		
 		$this->db->limit($limit,$offset);
+		set_options($option);
 
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();
+
 		return $result;
 	}
 
@@ -137,23 +114,6 @@ class Approved_model extends CI_Model{
 		-> 받은결재 공통작업?
 	*/
 	public function approved_send_list($option=null,$limit=null,$offset=null){
-		$where = array();
-		foreach($option['where'] as $key=>$val){
-			if($val!=''){
-				$where[$key] = $val;
-			}
-		}
-		$like = array();
-		foreach($option['like'] as $key=>$val){
-			if($val!=''){
-				$like[$key] = $val;
-			}
-		}
-		$custom = $option['custom'];
-		if(!$custom){
-			$custom = array();
-		}
-
 		$this->db->select('count(*) as total');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
@@ -163,16 +123,16 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
-		$this->db->where($custom);
-		$this->db->where($where);
-		$this->db->like($like);
+		set_options($option);
 
 		$query = $this->db->get();
 		$query = $query->row();
 		$result['total'] = $query->total;
+		
 
 		$this->db->select('approved.*');
 		$this->db->select('user.name as user_name');
+		$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no ');
 		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
 		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
 		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
@@ -188,12 +148,10 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
-		$this->db->where($custom);
-		$this->db->where($where);
-		$this->db->like($like);
 		$this->db->order_by('approved.order','ASC');
 		$this->db->order_by('approved.no','DESC');
 		$this->db->limit($limit,$offset);
+		set_options($option);
 
 		$query = $this->db->get();
 		$result['list'] = $query->result_array();

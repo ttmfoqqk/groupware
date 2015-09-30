@@ -97,6 +97,14 @@ class Approved_receive extends CI_Controller{
 			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
 		);
 		
+		$array_sender = search_node($this->PAGE_CONFIG['params']['part_sender'],'children');
+		$array_menu   = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+			'status.part_sender' => $array_sender,
+			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
+		);
+		
 		$custom_sData = '';
 		$custom_eData = '';
 		$custom_query = '';

@@ -54,8 +54,14 @@ class Meeting extends CI_Controller{
 		$option['where'] = array(
 			'meeting.created >=' => $this->PAGE_CONFIG['params']['sData'],
 			'meeting.created <'  => $eData,
-			'meeting.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],
+			//'meeting.menu_no'    => $this->PAGE_CONFIG['params']['menu_no'],
 			'meeting.is_active'  => $this->PAGE_CONFIG['params']['active']
+		);
+		
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+
+		$option['where_in'] = array(
+				'meeting.menu_no' => $array_menu
 		);
 		$option['like'] = array(
 			'user.name'     => $this->PAGE_CONFIG['params']['user_name'],
@@ -65,7 +71,7 @@ class Meeting extends CI_Controller{
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->meeting_model->get_meeting_list($option,PAGING_PER_PAGE,$offset);
 
-		//echo $this->db->last_query();
+		
 
 		$data['total']         = $get_data['total'];   // 전체글수
 		$data['list']          = $get_data['list'];    // 글목록

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$(".input-daterange").datepicker({format: 'yyyy-mm-dd'});
+	$(".input-daterange").datepicker();
 	/* 리스트 페이지 */
 	
 	// 부서,분류 selectbox
@@ -29,7 +29,10 @@ $(document).ready(function() {
 		});
 	}
 	
-	if($part_receiver.length>0 && $menu_no.length>0){
+	
+	
+	//if($part_receiver.length>0 && $menu_no.length>0){
+	if($menu_no.length>0){
 		var $menu_no_method = $menu_no.attr('data-method').split(',');
 		
 		$menu_no.create_menu({

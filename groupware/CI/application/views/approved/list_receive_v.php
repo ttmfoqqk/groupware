@@ -75,7 +75,7 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<select id="menu_no" name="menu_no" data-method="project" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
+										<select id="menu_no" name="menu_no" data-method="project,document" data-value="<?echo $this->input->get('menu_no');?>" class="fancy-select form-control">
 											<option value="">분류</option>
 										</select>
 									</div>
@@ -123,7 +123,7 @@
 											</div>
 										</th-->
 										<th style="width:60px;">순서</th>
-										<th class="per8">분류</th>
+										<th class="per15">분류</th>
 										<th>제목</th>
 										<th class="per8">진행기간</th>
 										<th class="per8">결재</th>
@@ -135,6 +135,7 @@
 								<tbody>
 								<?php foreach($list as $lt){
 									$anchor = $anchor_url.'&no='.$lt['no'];
+									$menu = search_node($lt['menu_no'],'parent');
 									?>
 									<tr>
 										<!--td>
@@ -144,7 +145,7 @@
 											</div>
 										</td-->
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['order']?0:$lt['order']; ?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $menu['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '+'.$lt['pPoint'] : '');?></a></td>
@@ -161,6 +162,7 @@
 								<?}?>
 								</tbody>
 							</table>
+							</form>
 
 							<div class="panel-body" style="text-align:center;"><?echo $pagination;?></div>
 
@@ -180,9 +182,5 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-
-<!-- 폼 날짜 -->
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_approved.js"></script>

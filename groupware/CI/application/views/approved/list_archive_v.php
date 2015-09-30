@@ -139,7 +139,7 @@
 											</div>
 										</th>
 										<th style="width:60px;">순서</th>
-										<th class="per8">분류</th>
+										<th class="per15">분류</th>
 										<th>제목</th>
 										<th class="per8">진행기간</th>
 										<th class="per8">결재</th>
@@ -152,6 +152,7 @@
 								<tbody>
 								<?php foreach($list as $lt){
 									$anchor = $anchor_url.'&no='.$lt['no'];
+									$menu = search_node($lt['menu_no'],'parent');
 									?>
 									<tr>
 										<td>
@@ -161,7 +162,7 @@
 											</div>
 										</td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo !$lt['order']?0:$lt['order']; ?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $menu['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['title'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['sData'],0,10);?> ~ <?echo substr($lt['eData'],0,10);?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '+'.$lt['pPoint'] : '');?></a></td>

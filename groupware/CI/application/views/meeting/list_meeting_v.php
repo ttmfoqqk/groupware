@@ -92,7 +92,7 @@
 											</div>
 										</th>
 										<th style="width:50px;">순서</th>
-										<th class="per10">분류</th>
+										<th class="per15">분류</th>
 										<th>제목</th>
 										<th class="per10">사용여부</th>
 										<th class="per10">등록일자</th>
@@ -102,6 +102,7 @@
 								<tbody>
 								<?php foreach($list as $lt){
 									$anchor = $anchor_url.'&no='.$lt['no'];
+									$menu = search_node($lt['menu_no'],'parent');
 									?>
 									<tr>
 										<td>
@@ -111,7 +112,7 @@
 											</div>
 										</td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['order'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['menu_name'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $menu['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['is_active']=='0'?'사용':'비사용');?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['created'],0,10);?></a></td>

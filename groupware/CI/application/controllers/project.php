@@ -58,12 +58,20 @@ class Project extends CI_Controller{
 			//'sw_project.eData >='     => $eData,
 			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
 			'sw_project.created <'    => $ewData,
-			'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
-			'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no']
+			//'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
+			//'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no']
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
 			'title'  => $this->PAGE_CONFIG['params']['title']
+		);
+		
+		$array_part = search_node($this->PAGE_CONFIG['params']['menu_part_no'],'children');
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+			'sw_project.menu_part_no' => $array_part,
+			'sw_project.menu_no'      => $array_menu
 		);
 		
 		$custom_sData = '';
