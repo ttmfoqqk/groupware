@@ -1,21 +1,49 @@
-<form class="form-horizontal">
-<div class="row form-group ">
-	<label class="col-lg-2 col-md-2 control-label" for="">진행기간</label>
-	<div class="col-lg-6 col-md-6">
-		<div class="input-daterange input-group">
-			<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-			<input type="text" class="form-control" name="sData" id="sData" value="" />
-			<span class="input-group-addon">to</span>
-			<input type="text" class="form-control" name="eData" id="eData" value=""/>
+<form class="form-horizontal" id="pop_document_form">
+	<div class="row form-group ">
+		<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
+		<div class="col-lg-6 col-md-6">
+			<div class="input-daterange input-group">
+				<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+				<input type="text" class="form-control" name="pop_sData" id="pop_sData" value="" />
+				<span class="input-group-addon">to</span>
+				<input type="text" class="form-control" name="pop_eData" id="pop_eData" value=""/>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4">
+			<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
+			<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
+			<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
+			<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
 		</div>
 	</div>
-	<div class="col-lg-4 col-md-4">
-		<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
-		<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
-		<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
-		<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
+	<div class="form-group col-lg-12 col-md-12">
+		<label class="col-lg-2 col-md-2 control-label" for="">담당부서</label>
+		<div class="col-lg-3 col-md-3">
+			<select class="fancy-select form-control" id="pop_department" name="pop_department" data-method="department">
+				<option value="">선택</option>
+			</select>
+		</div>
+		<label class="col-lg-2 col-md-2 control-label" for="">담당자</label>
+		<div class="col-lg-3 col-md-3">
+			<input type="text" class="form-control" id="pop_name" name="pop_name" placeholder="등록자" value="">
+		</div>
 	</div>
-</div>
+	<div class="form-group col-lg-12 col-md-12">
+		<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
+		<div class="col-lg-3 col-md-3">
+			<select class="fancy-select form-control" id="pop_menu_no" name="pop_menu_no" data-method=project>
+				<option value="">선택</option>
+			</select>
+		</div>
+		
+		<label class="col-lg-2 col-md-2 control-label" for="">제목</label>
+		<div class="col-lg-3 col-md-3">
+			<input type="text" class="form-control" id="pop_title" name="pop_title" placeholder="제목">
+		</div>
+		<div class="col-lg-2 col-md-2">
+			<button type="submit" class="btn btn-primary btn-alt mr5 mb10">검 색</button>
+		</div>
+	</div>
 </form>
 
 <table class="table table-bordered">
@@ -51,6 +79,32 @@ $pagination    = $('#pagination');
 $table_list    = $('#table-list');
 $list_template = $table_list.html();
 
+
+$pop_department = $('#pop_department');
+$pop_menu_no = $('#pop_menu_no');
+$pop_sData   = $('#pop_sData');
+$pop_eData   = $('#pop_eData');
+$pop_name    = $('#pop_name');
+$pop_title   = $('#pop_title');
+
+
+$pop_department.create_menu({
+	method : $pop_department.attr('data-method'),
+	value  : $pop_department.attr('data-value')
+});
+
+$pop_menu_no.create_menu({
+	method : $pop_menu_no.attr('data-method'),
+	value  : $pop_menu_no.attr('data-value')
+});
+
+$('#pop_document_form').submit(function(){
+	get_list();
+	return false;
+});
+
+
+
 function get_list( pagination ){
 	if( !pagination || pagination == undefined ){
 		pagination = 1;
@@ -58,7 +112,7 @@ function get_list( pagination ){
 	// parameters 생성 url 적용 보내기
 	// 등록가능한 업무중 1차 결재요청자 의 업무 검색
 	var list_url   = '/groupware/project/lists/';
-	var parameters = '?sData=&eData=&menu_no=&userName=&title=';	
+	var parameters = '?sData=' + $pop_sData.val() + '&eData=' + $pop_eData.val() + '&menu_part_no=' + $pop_department.val() + '&menu_no=' + $pop_menu_no.val() + '&title=' + $pop_title.val() + '&userName='+$pop_name.val();
 	
 	list_url  += pagination;
 	list_url  += parameters;	

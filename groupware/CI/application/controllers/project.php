@@ -300,24 +300,38 @@ class Project extends CI_Controller{
 
 	public function _lists(){
 		//검색 파라미터
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
 		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
 		$ewData = $this->PAGE_CONFIG['params']['ewData'];
 		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
 
 		$option['where'] = array(
-			'sw_project.sData >='   => $this->PAGE_CONFIG['params']['sData'],
-			'sw_project.eData <'    => $eData,
-			'sw_project.created >=' => $this->PAGE_CONFIG['params']['swData'],
-			'sw_project.created <'  => $ewData,
-			'menu_part_no'          => $this->PAGE_CONFIG['params']['menu_part_no'],
-			'menu_no'               => $this->PAGE_CONFIG['params']['menu_no'],
-			'd.user_no'             => $this->session->userdata('no')
+			//'sw_project.sData >='   => $sData,
+			//'sw_project.eData <'    => $eData,
+			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
+			'sw_project.created <'    => $ewData,
+			'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
+			'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no'],
+			'd.user_no'               => $this->session->userdata('no')
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
 			'title'  => $this->PAGE_CONFIG['params']['title']
 		);
+		$custom_sData = '';
+		$custom_eData = '';
+		$custom_query = '';
+		if($sData){
+			$custom_sData = '(sw_project.sData >= "'.$sData.'" or sw_project.eData >= "'.$sData.'")';
+		}
+		if($eData){
+			$custom_eData = '(sw_project.sData <= "'.$eData.'" or sw_project.eData <= "'.$eData.'")';
+		}
+		if($sData && $eData){
+			$option['custom'] = '( '.$custom_sData.' and '.$custom_eData.' )';
+		}else{
+			$option['custom'] = $custom_sData . $custom_eData;
+		}
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);

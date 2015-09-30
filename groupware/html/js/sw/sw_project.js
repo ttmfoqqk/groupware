@@ -32,54 +32,30 @@ $(document).ready(function() {
 
 	// 진행기간 datepicker
 	btn_sToday.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-0);
 	});
 	btn_sWeek.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 6);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-7);
 	});
 	btn_sMonth.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 29);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-30);
 	});
 	btn_sReset.click(function(){
-		sData.datepicker('setDate', "");
-		eData.datepicker('setDate', "");
+		set_btn_datepicker(sData,eData,null);
 	});
 	
 	// 등록일자 datepicker
 	btn_swToday.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		swData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		ewData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(swData,ewData,-0);
 	});
 	btn_swWeek.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 6);
-		swData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		ewData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(swData,ewData,-7);
 	});
 	btn_swMonth.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 29);
-		swData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		ewData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(swData,ewData,-30);
 	});
 	btn_swReset.click(function(){
-		swData.datepicker('setDate', "");
-		ewData.datepicker('setDate', "");
+		set_btn_datepicker(swData,ewData,null);
 	});
 
 	$('#btn_list_delete').on('click',function(){
@@ -105,28 +81,16 @@ $(document).ready(function() {
 	var btn_WsReset = $('#WsReset');
 
 	btn_WsToday.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		set_btn_datepicker(sData,eData,+0);
 	});
 	btn_WsWeek.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth + 6);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		set_btn_datepicker(sData,eData,+7);
 	});
 	btn_WsMonth.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth + 29);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', myDate));
+		set_btn_datepicker(sData,eData,+30);
 	});
 	btn_WsReset.click(function(){
-		sData.datepicker('setDate', "");
-		eData.datepicker('setDate', "");
+		set_btn_datepicker(sData,eData,null);
 	});
 
 	$('#contents_setting_delete').on('click',function(){
@@ -284,5 +248,32 @@ function call_document_modal(){
 	$('.modal-dialog').addClass('modal70');
 
 	// 팝업 호출
-	$('#modal-body').load('/groupware/html/pop/project_call_document.php');
+	$('#modal-body').load('/groupware/html/pop/project_call_document.php',function(responseTxt, statusTxt, xhr){
+		if(statusTxt == "success"){
+			$(this).find('.input-daterange').datepicker();
+			
+			var sData  = $(this).find('#pop_sData');
+			var eData  = $(this).find('#pop_eData');
+			
+			var btn_sToday = $(this).find('#sToday');
+			var btn_sWeek  = $(this).find('#sWeek');
+			var btn_sMonth = $(this).find('#sMonth');
+			var btn_sReset = $(this).find('#sReset');
+			
+			
+			btn_sToday.click(function(){
+				set_btn_datepicker(sData,eData,-0);
+			});
+			btn_sWeek.click(function(){
+				set_btn_datepicker(sData,eData,-7);
+			});
+			btn_sMonth.click(function(){
+				set_btn_datepicker(sData,eData,-30);
+			});
+			btn_sReset.click(function(){
+				set_btn_datepicker(sData,eData,null);
+			});
+			
+		}
+	});
 }

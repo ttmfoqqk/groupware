@@ -305,3 +305,27 @@ $(document).ready(function() {
 function pad(numb) {
 	return (numb < 10 ? '0' : '') + numb;
 }
+
+
+function set_btn_datepicker( sDate , eDate , days ){
+	if(days == null ){
+		sDate.datepicker('setDate', '');
+		eDate.datepicker('setDate', '');
+	}else{
+		var myDate  = new Date();
+		var getDate = myDate.getDate();
+		myDate.setDate(getDate + days);
+		if(days <= 0){
+			sDate.datepicker('setDate', myDate );
+			eDate.datepicker('setDate', Date() );
+		}else{
+			sDate.datepicker('setDate', Date() );
+			eDate.datepicker('setDate', myDate );
+		}
+	}
+}
+
+
+
+
+

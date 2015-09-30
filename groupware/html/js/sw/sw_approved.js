@@ -257,7 +257,34 @@ function call_data_modal(mode){
 	$('.modal-dialog').addClass('modal70');
 
 	// 팝업 호출
-	$('#modal-body').load(load_url);
+	$('#modal-body').load(load_url,function(responseTxt, statusTxt, xhr){
+		if(statusTxt == "success"){
+			$(this).find('.input-daterange').datepicker();
+			
+			var sData  = $(this).find('#pop_sData');
+			var eData  = $(this).find('#pop_eData');
+			
+			var btn_sToday = $(this).find('#sToday');
+			var btn_sWeek  = $(this).find('#sWeek');
+			var btn_sMonth = $(this).find('#sMonth');
+			var btn_sReset = $(this).find('#sReset');
+			
+			
+			btn_sToday.click(function(){
+				set_btn_datepicker(sData,eData,-0);
+			});
+			btn_sWeek.click(function(){
+				set_btn_datepicker(sData,eData,-7);
+			});
+			btn_sMonth.click(function(){
+				set_btn_datepicker(sData,eData,-30);
+			});
+			btn_sReset.click(function(){
+				set_btn_datepicker(sData,eData,null);
+			});
+			
+		}
+	});
 }
 
 
