@@ -85,7 +85,7 @@
 												</tr>
 												<tr>
 													<th>내용</th>
-													<td id="project_contents" colspan="3"><?echo $data['p_contents'];?></td>
+													<td id="project_contents" colspan="3"><?echo nl2br($data['p_contents']);?></td>
 												</tr>
 												<tr>
 													<th>진행기간</th>

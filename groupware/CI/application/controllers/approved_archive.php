@@ -7,9 +7,8 @@ class Approved_archive extends CI_Controller{
 
 		$this->load->model('approved_model');
 		
-		//현재 페이지 
-		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment(3,1);
-		//검색 파라미터
+		$this->PAGE_CONFIG['segment']  = 3;
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
 		$this->PAGE_CONFIG['params'] = array(
 			'sData'        => !$this->input->get('sData')        ? '' : $this->input->get('sData')        ,
 			'eData'        => !$this->input->get('eData')        ? '' : $this->input->get('eData')        ,
@@ -23,7 +22,6 @@ class Approved_archive extends CI_Controller{
 			'doc_no'       => !$this->input->get('doc_no')       ? '' : $this->input->get('doc_no')       ,
 			'title'        => !$this->input->get('title')        ? '' : $this->input->get('title')
 		);
-		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -52,24 +50,10 @@ class Approved_archive extends CI_Controller{
 	}
 
 	public function lists(){
-		// 검색 파라미터
-		// 해당 일자가 포함된 진행기간 검색 sData,eData
-		$sData  = $this->PAGE_CONFIG['params']['sData'];
-		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
-		$ewData = $this->PAGE_CONFIG['params']['ewData'];
-		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
-
 		$option['where'] = array(
-			//'approved.sData <='   => $sData,
-			//'approved.eData >='   => $eData,
-			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
-			'approved.created <'  => $ewData,
+			'date_format(approved.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
+			'date_format(approved.created,"%Y-%m-%d") <'  => $this->PAGE_CONFIG['params']['ewData'],
 			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			//'approved.menu_no'    => $this->PAGE_CONFIG['params']['part_sender'],
-			//'IF(approved.kind = 0, project_staff.menu_no , document_staff.menu_no ) = ' => $this->PAGE_CONFIG['params']['part_receiver'],
-			//'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
-
 			'approved.user_no'    => $this->session->userdata('no') // 나의 결재 정보
 		);
 		$option['like'] = array(
@@ -88,6 +72,9 @@ class Approved_archive extends CI_Controller{
 			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
 		);
 		
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
+		$eData  = $this->PAGE_CONFIG['params']['eData'];
+		
 		$custom_sData = '';
 		$custom_eData = '';
 		$custom_query = '';
@@ -103,11 +90,10 @@ class Approved_archive extends CI_Controller{
 			$option['custom'] = $custom_sData . $custom_eData;
 		}
 
-		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
-		$data['total']         = $get_data['total'];   // 전체글수
-		$data['list']          = $get_data['list'];    // 글목록
+		$data['total']         = $this->approved_model->approved_archive_list($option,null,null,'count');
+		$data['list']          = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);
 		$data['anchor_url']    = site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']); // 글 링크
 		$data['write_url']     = site_url('approved_archive/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
@@ -117,81 +103,44 @@ class Approved_archive extends CI_Controller{
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 3;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_archive_v',$data);
-
-		//echo $this->db->last_query();
-
 	}
+	
 	public function write(){
-		$no     = $this->input->get('no');
-		$option = array('approved.no'=>$no);
-		$result = $this->approved_model->approved_archive_detail($option);
-
-		$data['action_type'] = 'create';
-		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']  = site_url('approved_archive/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
-		$data['list_url']    = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-
-		$data['data'] = array(
-			'no'            => '-',
-			'kind'          => '',
-			'project_no'    => '',
-			'user_no'       => '',
-			'menu_no'       => '',
-			'title'         => '',
-			'sData'         => '',
-			'eData'         => '',
-			'file'          => '',
-			'order'         => 0,
-			'created'       => Date('Y-m-d'),
-			'user_name'     => $this->session->userdata('name'),
-			'part_name'     => '',
-			'category_name' => '',
-			'pPoint'        => '',
-			'mPoint'        => '',
-			'contents'      => '',
-			'p_contents'    => '',
-			'document_name' => ''
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		$option['where'] = array(
+				'approved.no'=>$no
+		);		
+		$setVla = array(
+			'created'   => Date('Y-m-d'),
+			'user_name' => $this->session->userdata('name')
 		);
-
-		if ($result->num_rows() > 0){
-			$result = $result->row();
-
+		
+		$data['data'] = $this->approved_model->approved_archive_detail($option,$setVla);
+		
+		if( !is_numeric($data['data']['no']) ){
+			$data['action_type'] = 'create';
+		}else{
 			$data['action_type'] = 'edit';
-			$data['data'] = array(
-				'no'            => $result->no,
-				'kind'          => $result->kind,
-				'project_no'    => $result->project_no,
-				'user_no'       => $result->user_no,
-				'menu_no'       => $result->menu_no,
-				'title'         => $result->title,
-				'sData'         => substr($result->sData,0,10),
-				'eData'         => substr($result->eData,0,10),
-				'file'          => $result->file,
-				'order'         => $result->order,
-				'created'       => substr($result->created,0,10),
-				'user_name'     => $result->user_name,
-				'part_name'     => $result->part_name,
-				'category_name' => $result->category_name,
-				'pPoint'        => $result->pPoint,
-				'mPoint'        => $result->mPoint,
-				'contents'      => $result->contents,
-				'p_contents'    => nl2br($result->p_contents),
-				'document_name' => $result->document_name
-			);
-			if($result->file){
-				if($result->kind=='0'){
+			
+			if($data['data']['file']){
+				if($data['data']['kind']=='0'){
 					$data['data']['file_link'] = '<a href="'.site_url('download?path=upload/project/&oname='.$data['data']['file'].'&uname='.$data['data']['file']).'">'.$data['data']['file'].'</a>';
 				}else{
 					$data['data']['file_link'] = '<a href="'.site_url('download?path=upload/approved/&oname='.$data['data']['file'].'&uname='.$data['data']['file']).'">'.$data['data']['file'].'</a>';
 				}
 			}
 		}
+
+		$data['action_type'] = 'create';
+		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
+		$data['action_url']  = site_url('approved_archive/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']    = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		
 		$this->load->view('approved/write_archive_v',$data);
 	}
