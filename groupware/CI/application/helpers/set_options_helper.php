@@ -6,7 +6,7 @@ function set_options($option=null) {
 
 	if( isset($option['where']) ){
 		foreach($option['where'] as $key=>$val){
-			if($val!=''){
+			if($val !== ''){
 				$CI->db->where($key,$val);
 			}
 		}
@@ -14,7 +14,7 @@ function set_options($option=null) {
 	
 	if( isset($option['where_in']) ){
 		foreach($option['where_in'] as $key=>$val){
-			if($val!=''){
+			if($val !== ''){
 				$CI->db->where_in($key,$val);
 			}
 		}
@@ -22,7 +22,7 @@ function set_options($option=null) {
 	
 	if( isset($option['like']) ){
 		foreach($option['like'] as $key=>$val){
-			if($val!=''){
+			if($val !== ''){
 				$CI->db->like($key,$val);
 			}
 		}
@@ -33,5 +33,25 @@ function set_options($option=null) {
 			$CI->db->where($option['custom']);
 		}
 	}
+}
+
+function set_detail_field($query,$setVla=array()){
+	$count = $query->num_rows();
+	if($count <= 0){
+		foreach ($query->list_fields() as $field){
+			if( array_key_exists($field,$setVla) ){
+				$result[$field]=$setVla[$field];
+			}else{
+				$result[$field]='';
+			}
+		}
+	}else{
+		$query = $query->row();
+		foreach ($query as $key=>$val){
+			$result[$key]=$val;
+		}
+	}
+	
+	return $result;
 }
 ?>

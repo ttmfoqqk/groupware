@@ -50,7 +50,7 @@
 								<div class="form-group">
 									<label for="title" class="col-lg-2 col-md-3 control-label">제목</label>
 									<div class="col-lg-10 col-md-9">
-										<input id="title" name="title" type="text" class="form-control"  placeholder="제목" value="<?echo $data['title'];?>" maxlength="20">
+										<input id="title" name="title" type="text" class="form-control"  placeholder="제목" value="<?echo $data['name'];?>" maxlength="20">
 									</div>
 								</div>
 								<!-- End .form-group  -->
