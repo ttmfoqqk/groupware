@@ -3,12 +3,10 @@ class Project extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-
 		$this->load->model('project_model');
 		
-		//현재 페이지 
-		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment(3,1);
-		//검색 파라미터
+		$this->PAGE_CONFIG['segment']  = 3; 
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
 		$this->PAGE_CONFIG['params'] = array(
 			'sData'        => !$this->input->get('sData')        ? '' : $this->input->get('sData')       ,
 			'eData'        => !$this->input->get('eData')        ? '' : $this->input->get('eData')       ,
@@ -19,7 +17,6 @@ class Project extends CI_Controller{
 			'userName'     => !$this->input->get('userName')     ? '' : $this->input->get('userName')    ,
 			'title'        => !$this->input->get('title')        ? '' : $this->input->get('title')
 		);
-		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -45,21 +42,9 @@ class Project extends CI_Controller{
 		$this->lists();
 	}
 	public function lists(){
-		// 검색 파라미터
-		// 해당 일자가 포함된 진행기간 검색 sData,eData
-		$sData  = $this->PAGE_CONFIG['params']['sData'];
-		$eData  = $this->PAGE_CONFIG['params']['eData'];
-
-		$ewData = $this->PAGE_CONFIG['params']['ewData'];
-		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
-
 		$option['where'] = array(
-			//'sw_project.sData <='     => $sData,
-			//'sw_project.eData >='     => $eData,
-			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
-			'sw_project.created <'    => $ewData,
-			//'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
-			//'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no']
+			'date_format(sw_project.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
+			'date_format(sw_project.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
@@ -73,6 +58,9 @@ class Project extends CI_Controller{
 			'sw_project.menu_part_no' => $array_part,
 			'sw_project.menu_no'      => $array_menu
 		);
+		
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
+		$eData  = $this->PAGE_CONFIG['params']['eData'];
 		
 		$custom_sData = '';
 		$custom_eData = '';
@@ -89,17 +77,12 @@ class Project extends CI_Controller{
 			$option['custom'] = $custom_sData . $custom_eData;
 		}
 
-		/*
-			list - 결재 등록된것 checkbox 삭제 금지
-			view - 결재 등록된것 button 삭제 금지
-		*/
-		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
-
-		$data['total']         = $get_data['total'];   // 전체글수
-		$data['list']          = $get_data['list'];    // 글목록
-		$data['anchor_url']    = site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']); // 글 링크
+		$data['total']         = $this->project_model->get_project_list($option,null,null,'count');
+		$data['list']          = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
+		
+		$data['anchor_url']    = site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('project/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
 		$data['action_url']    = site_url('project/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
@@ -109,7 +92,7 @@ class Project extends CI_Controller{
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 3;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
@@ -117,52 +100,28 @@ class Project extends CI_Controller{
 		$this->load->view('project/project_v',$data);
 	}
 	public function write(){
-		$no     = $this->input->get('no');
-		$option = array('no'=>$no);
-		$result = $this->project_model->get_project_detail($option);
-
-		$data['action_type'] = 'create';
-		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']  = site_url('project/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
-
-		$data['data'] = array(
-			'no'           => '',
-			'menu_part_no' => '',
-			'menu_no'      => '',
-			'user_no'      => '',
-			'title'        => '',
-			'contents'     => '',
-			'sData'        => '',
-			'eData'        => '',
-			'pPoint'       => '0',
-			'mPoint'       => '0',
-			'file'         => '',
-			'order'        => '0',
-			'created'      => '',
-			'cnt'          => '0'
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		$option['where'] = array(
+			'no'=>$no
 		);
-		if ($result->num_rows() > 0){
-			$result = $result->row();
-
+		$setVla = array(
+			'pPoint' => '0',
+			'mPoint' => '0',
+			'order'  => '0',
+			'cnt'    => '0'
+		);
+		$data['data'] = $this->project_model->get_project_detail($option,$setVla);
+		
+		if( !$data['data']['no'] ){
+			$data['action_type'] = 'create';
+		}else{
 			$data['action_type'] = 'edit';
-			$data['data'] = array(
-				'no'           => $result->no,
-				'menu_part_no' => $result->menu_part_no,
-				'menu_no'      => $result->menu_no,
-				'user_no'      => $result->user_no,
-				'title'        => $result->title,
-				'contents'     => $result->contents,
-				'sData'        => substr($result->sData,0,10),
-				'eData'        => substr($result->eData,0,10),
-				'pPoint'       => $result->pPoint,
-				'mPoint'       => $result->mPoint,
-				'file'         => $result->file,
-				'order'        => $result->order,
-				'created'      => $result->created,
-				'cnt'          => $result->cnt
-			);
 		}
-		$data['list_url']  = site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+
+		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
+		$data['action_url'] = site_url('project/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']   = site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		
 		$this->load->view('project/project_write_v',$data);
 	}
 	public function proc(){
@@ -228,7 +187,7 @@ class Project extends CI_Controller{
 				'file'         =>$file_name,
 				'order'        =>$order
 			);
-			$result = $this->project_model->get_project_insert($option);
+			$result = $this->project_model->set_project_insert($option);
 			//alert('등록되었습니다.', site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 			alert('등록되었습니다.', site_url('project/lists/') ); //신규 등록 첫페이지로
 
@@ -270,7 +229,7 @@ class Project extends CI_Controller{
 				}
 			}
 			
-			$option = array(
+			$values = array(
 				'menu_part_no' =>$menu_part_no,
 				'menu_no'      =>$menu_no,
 				'title'        =>$title,
@@ -282,7 +241,10 @@ class Project extends CI_Controller{
 				'file'         =>$file_name,
 				'order'        =>$order
 			);
-			$this->project_model->get_project_update($option,array('no'=>$no));
+			$option['where'] = array(
+				'no'=>$no
+			);
+			$this->project_model->set_project_update($values,$option);
 
 			alert('수정되었습니다.', site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
@@ -297,7 +259,7 @@ class Project extends CI_Controller{
 			$set_no = is_array($no) ? implode(',',$no):$no;
 			
 			/* 데이터 삭제 */
-			$this->project_model->get_project_delete($set_no);
+			$this->project_model->set_project_delete($set_no);
 			
 			alert('삭제되었습니다.', site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
@@ -307,25 +269,27 @@ class Project extends CI_Controller{
 
 
 	public function _lists(){
-		//검색 파라미터
-		$sData  = $this->PAGE_CONFIG['params']['sData'];
-		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		$ewData = $this->PAGE_CONFIG['params']['ewData'];
-		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
-
 		$option['where'] = array(
-			//'sw_project.sData >='   => $sData,
-			//'sw_project.eData <'    => $eData,
-			'sw_project.created >='   => $this->PAGE_CONFIG['params']['swData'],
-			'sw_project.created <'    => $ewData,
-			'sw_project.menu_part_no' => $this->PAGE_CONFIG['params']['menu_part_no'],
-			'sw_project.menu_no'      => $this->PAGE_CONFIG['params']['menu_no'],
-			'd.user_no'               => $this->session->userdata('no')
+			'date_format(sw_project.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
+			'date_format(sw_project.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
+			'd.user_no' => $this->session->userdata('no')
 		);
 		$option['like'] = array(
 			'c.name' => $this->PAGE_CONFIG['params']['userName'],
 			'title'  => $this->PAGE_CONFIG['params']['title']
 		);
+		
+		$array_part = search_node($this->PAGE_CONFIG['params']['menu_part_no'],'children');
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		
+		$option['where_in'] = array(
+			'sw_project.menu_part_no' => $array_part,
+			'sw_project.menu_no'      => $array_menu
+		);
+		
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
+		$eData  = $this->PAGE_CONFIG['params']['eData'];
+		
 		$custom_sData = '';
 		$custom_eData = '';
 		$custom_query = '';
@@ -341,17 +305,16 @@ class Project extends CI_Controller{
 			$option['custom'] = $custom_sData . $custom_eData;
 		}
 
-		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
-		$data['total']         = $get_data['total'];   // 전체글수
-		$data['list']          = $get_data['list'];    // 글목록
+		$data['total']         = $this->project_model->get_project_list($option,null,null,'count');
+		$data['list']          = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
 
 		$config['base_url']    = '';
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 3;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
