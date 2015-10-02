@@ -160,7 +160,7 @@ class Approved_send extends CI_Controller{
 			$this->load->view('approved/view_project_v',$data);
 		}else{
 			$this->load->view('approved/view_document_v',$data);
-		}		
+		}
 	}
 
 	public function proc(){
