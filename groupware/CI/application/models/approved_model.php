@@ -21,6 +21,7 @@ class Approved_model extends CI_Model{
 			
 			$this->db->order_by('approved.order','ASC');
 			$this->db->order_by('approved.no','DESC');
+			$this->db->limit($limit,$offset);
 		}
 
 		$this->db->from('sw_approved AS approved');
@@ -93,55 +94,50 @@ class Approved_model extends CI_Model{
 		보낸 결재 리스트
 		-> 받은결재 공통작업?
 	*/
-	public function approved_send_list($option=null,$limit=null,$offset=null){
-		$this->db->select('count(*) as total');
-		$this->db->from('sw_approved AS approved');
-		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
-		$this->db->join('(select a.*,b.name as receiver_name from sw_approved_status as a join sw_user as b on a.receiver = b.no group by approved_no) AS rrr','approved.no = rrr.approved_no');
-		$this->db->join('(select a.*,b.name as sender_name from sw_approved_status as a join sw_user as b on a.sender = b.no group by approved_no) AS sss','approved.no = sss.approved_no');
-		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
-		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
-		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
-		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
-		set_options($option);
-
-		$query = $this->db->get();
-		$query = $query->row();
-		$result['total'] = $query->total;
+	public function approved_send_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
+		if($type == 'count'){
+			$this->db->select('count(*) as total');
+		}else{
+			$this->db->select('approved.*');
+			$this->db->select('user.name as user_name');
+			$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no ');
+			$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
+			$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
+			$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
+			$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+			$this->db->select('project.pPoint,project.mPoint');
+			
+			$this->db->order_by('approved.order','ASC');
+			$this->db->order_by('approved.no','DESC');
+			$this->db->limit($limit,$offset);
+		}
 		
-
-		$this->db->select('approved.*');
-		$this->db->select('user.name as user_name');
-		$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no ');
-		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
-		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
-		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
-		$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
-		$this->db->select('project.pPoint,project.mPoint');
 		$this->db->from('sw_approved AS approved');
 		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
 		$this->db->join('sw_user AS user','approved.user_no = user.no');
 		$this->db->join('(select a.*,b.name as receiver_name from sw_approved_status as a join sw_user as b on a.receiver = b.no group by approved_no) AS rrr','approved.no = rrr.approved_no');
 		$this->db->join('(select a.*,b.name as sender_name from sw_approved_status as a join sw_user as b on a.sender = b.no group by approved_no) AS sss','approved.no = sss.approved_no');
-		
 		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
-		$this->db->order_by('approved.order','ASC');
-		$this->db->order_by('approved.no','DESC');
-		$this->db->limit($limit,$offset);
 		set_options($option);
-
 		$query = $this->db->get();
-		$result['list'] = $query->result_array();
+		
+		if($type == 'count'){
+			$query  = $query->row();
+			$result = $query->total;
+		}else{
+			$result = $query->result_array();
+		}
+		
 		return $result;
 	}
 	
 	/*
 		보낸/받은결재 공통 디테일?
 	*/
-	public function approved_send_detail($option=null){
+	public function approved_send_detail($option=NULL,$setVla=array()){
 		$where = array();
 		foreach($option as $key=>$val){
 			if($val!=''){
@@ -150,21 +146,18 @@ class Approved_model extends CI_Model{
 		}
 
 		$this->db->select('approved.*');
-
+		$this->db->select('date_format(approved.created,"%Y-%m-%d") as created',false);
 		$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
 		$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
-		$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
-		$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+		$this->db->select('IF( approved.kind = 0, date_format(project.sData,"%Y-%m-%d") , date_format(approved.sData,"%Y-%m-%d") ) as sData ',false);
+		$this->db->select('IF( approved.kind = 0, date_format(project.eData,"%Y-%m-%d") , date_format(approved.eData,"%Y-%m-%d") ) as eData ',false);
 		$this->db->select('IF( approved.kind = 0, project.file  , approved.file  ) as file  ');
 		$this->db->select('project.pPoint,project.mPoint,project.contents as p_contents');
 		$this->db->select('document.name as document_name');
-
 		$this->db->select('sender_part.name as sender_part');
 		$this->db->select('sender_name.name as sender_name');
-
 		$this->db->select('sender_contents.contents as sender_contents');
 		$this->db->select('receiver_contents.contents as receiver_contents');
-
 		$this->db->select('status.status as status');
 		$this->db->select('status.created as status_created');
 
@@ -172,19 +165,17 @@ class Approved_model extends CI_Model{
 		$this->db->join('sw_approved_status AS status','approved.no = status.approved_no');
 		$this->db->join('sw_menu AS sender_part','approved.menu_no = sender_part.no');
 		$this->db->join('sw_user AS sender_name','approved.user_no = sender_name.no');
-
 		$this->db->join('sw_approved_contents AS sender_contents','approved.no = sender_contents.approved_no and status.sender = sender_contents.user_no','left');
 		$this->db->join('sw_approved_contents AS receiver_contents','approved.no = receiver_contents.approved_no and status.receiver = receiver_contents.user_no','left');
-
 		$this->db->join('sw_project AS project','approved.project_no = project.no','left');
 		$this->db->join('sw_menu AS project_menu','project.menu_no = project_menu.no','left');
-
 		$this->db->join('sw_document AS document','approved.project_no = document.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		set_options($option);
 		
-		$this->db->where($where);
+		$query  = $this->db->get();
+		$result = set_detail_field($query,$setVla);
 		
-		$result = $this->db->get();
 		return $result;
 	}
 

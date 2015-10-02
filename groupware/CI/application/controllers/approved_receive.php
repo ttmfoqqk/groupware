@@ -1,20 +1,14 @@
 <?
 class Approved_receive extends CI_Controller{
 	private $PAGE_CONFIG;
-
 	public function __construct() {
 		parent::__construct();
-		
 		$this->load->model('approved_model');
 
-		// page segment 위치
-		$this->PAGE_CONFIG['uri_segment'] = 4;
-		//현재 페이지 검색모드 all default
-		$this->PAGE_CONFIG['set_page']    = $this->uri->segment(3,'all');
-		//현재 페이지 
-		$this->PAGE_CONFIG['cur_page']    = $this->uri->segment($this->PAGE_CONFIG['uri_segment'],1);
-		//검색 파라미터
-		$this->PAGE_CONFIG['params'] = array(
+		$this->PAGE_CONFIG['segment']  = 4;
+		$this->PAGE_CONFIG['set_page'] = $this->uri->segment(3,'all');
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
+		$this->PAGE_CONFIG['params']   = array(
 			'sData'        => !$this->input->get('sData')        ? '' : $this->input->get('sData')        ,
 			'eData'        => !$this->input->get('eData')        ? '' : $this->input->get('eData')        ,
 			'swData'       => !$this->input->get('swData')       ? '' : $this->input->get('swData')       ,
@@ -38,8 +32,6 @@ class Approved_receive extends CI_Controller{
 			default :
 				$this->PAGE_CONFIG['status'] = $this->PAGE_CONFIG['set_page'];
 		}
-
-		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -52,7 +44,6 @@ class Approved_receive extends CI_Controller{
 		}else{
 			if(method_exists($this, $method)){
 				set_cookie('left_menu_open_cookie',site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page']),'0');
-				
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
 				$this->$method();
@@ -68,33 +59,21 @@ class Approved_receive extends CI_Controller{
 	}
 
 	public function lists(){
-		// 검색 파라미터
-		// 해당 일자가 포함된 진행기간 검색 sData,eData
-		$sData  = $this->PAGE_CONFIG['params']['sData'];
-		$eData  = $this->PAGE_CONFIG['params']['eData'];
-		//$eData  = !$eData ? '' : date("Y-m-d", strtotime($eData."+1 day"));
-		$ewData = $this->PAGE_CONFIG['params']['ewData'];
-		$ewData = !$ewData ? '' : date("Y-m-d", strtotime($ewData."+1 day"));
-
-		
-
 		$option['where'] = array(
-			//'approved.sData <='   => $sData,
-			//'approved.eData >='   => $eData,
-			'approved.created >=' => $this->PAGE_CONFIG['params']['swData'],
-			'approved.created <'  => $ewData,
+			'date_format(approved.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
+			'date_format(approved.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
 			'IF(approved.kind = 0, project.menu_no , document.menu_no) = ' => $this->PAGE_CONFIG['params']['menu_no'],
-			'approved.no'         => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.part_sender'  => $this->PAGE_CONFIG['params']['part_sender'],
-			'status.receiver'     => $this->session->userdata('no'),
-			'status.status'       => $this->PAGE_CONFIG['status'],
-			'status.created >'    => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
-			'status.created <'    => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
+			'approved.no'        => $this->PAGE_CONFIG['params']['doc_no'],
+			'status.part_sender' => $this->PAGE_CONFIG['params']['part_sender'],
+			'status.receiver'    => $this->session->userdata('no'),
+			'status.status'      => $this->PAGE_CONFIG['status'],
+			'status.created >'   => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
+			'status.created <'   => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
 		);
 		
 		$option['like'] = array(
-			'sss.sender_name'    => $this->PAGE_CONFIG['params']['name_sender'],
-			'approved.title'      => $this->PAGE_CONFIG['params']['title'],
+			'sss.sender_name' => $this->PAGE_CONFIG['params']['name_sender'],
+			'approved.title'  => $this->PAGE_CONFIG['params']['title'],
 		);
 		
 		$array_sender = search_node($this->PAGE_CONFIG['params']['part_sender'],'children');
@@ -104,6 +83,9 @@ class Approved_receive extends CI_Controller{
 			'status.part_sender' => $array_sender,
 			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
 		);
+		
+		$sData  = $this->PAGE_CONFIG['params']['sData'];
+		$eData  = $this->PAGE_CONFIG['params']['eData'];
 		
 		$custom_sData = '';
 		$custom_eData = '';
@@ -121,10 +103,9 @@ class Approved_receive extends CI_Controller{
 		}
 
 		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
 
-		$data['total']         = $get_data['total'];   // 전체글수
-		$data['list']          = $get_data['list'];    // 글목록
+		$data['total']         = $this->approved_model->approved_send_list($option,null,null,'count');
+		$data['list']          = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('approved_receive/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['action_url']    = site_url('approved_receive/proc/' .$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']);
@@ -133,7 +114,7 @@ class Approved_receive extends CI_Controller{
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = $this->PAGE_CONFIG['uri_segment'];
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
@@ -142,68 +123,40 @@ class Approved_receive extends CI_Controller{
 	}
 
 	public function write(){
-		$data['action_type'] = 'edit';
-		$data['app_type']    = 'receive';
-		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']  = site_url('approved_receive/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
-		$data['list_url']    = site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		
-		$no = $this->input->get('no');
-		$option = array(
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		$option['where'] = array(
 			'approved.no'     => $no,
 			'status.receiver' => $this->session->userdata('no'),
 			'status.status'   => $this->PAGE_CONFIG['status']
 		);
-		$result = $this->approved_model->approved_send_detail($option);
-
-		if ($result->num_rows() <= 0){
+		
+		$data['data'] = $this->approved_model->approved_send_detail($option);
+		
+		if( !$data['data']['no'] ){
 			alert('잘못된 접근입니다.');
 		}
 		
-		$result = $result->row();
-
-
-		$data['data'] = array(
-			'no'             => $result->no,
-			'kind'           => $result->kind,
-			'user_no'        => $result->user_no,
-			'menu_no'        => $result->menu_no,
-			'menu_name'      => $result->menu_name,
-			'title'          => $result->title,
-			'document_name'  => $result->document_name,
-			'sData'          => substr($result->sData,0,10),
-			'eData'          => substr($result->eData,0,10),
-			'file'           => $result->file,
-			'order'          => $result->order,
-			'created'        => substr($result->created,0,10),
-			'sender_name'    => $result->sender_name,
-			'sender_menu'    => $result->sender_part,
-			'pPoint'         => $result->pPoint,
-			'mPoint'         => $result->mPoint,
-			'order'          => $result->order,
-			'p_contents'     => nl2br($result->p_contents),
-			'contents'       => $result->receiver_contents,
-			'status'         => $result->status,
-			'status_created' => $result->status_created
-		);
-		
-		
+		$data['action_type']   = 'edit';
+		$data['app_type']      = 'receive';
+		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
+		$data['action_url']    = site_url('approved_receive/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
+		$data['list_url']      = site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['fg_btn_send']   = false;
-		$data['fg_btn_receiv'] = ($result->status=='b' && $result->status_created > date("Y-m-d", strtotime(date('Y-m-d')."-3 day")) ? true : false);
+		$data['fg_btn_receiv'] = ($data['data']['status']=='b' && $data['data']['status_created'] > date("Y-m-d", strtotime(date('Y-m-d')."-3 day")) ? true : false);
 
 		/* 결재자들 */
 		$option = array(
-			'approved_no' => $result->no
+			'approved_no' => $data['data']['no']
 		);
 		$data['approved_list'] = $this->approved_model->get_approved_staff_list($option);
 		
 		/* 내용들 */
 		$option = array(
-			'approved_no' => $result->no
+			'approved_no' => $data['data']['no']
 		);
 		$data['contents_list'] = $this->approved_model->get_approved_contents_list($option);
 
-		if( $result->kind == '0' ){
+		if( $data['data']['kind'] == '0' ){
 			$this->load->view('approved/view_project_v',$data);
 		}else{
 			$this->load->view('approved/view_document_v',$data);

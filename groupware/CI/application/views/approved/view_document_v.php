@@ -40,7 +40,7 @@
 												</tr>
 												<tr>
 													<th>담당부서</th>
-													<td><?echo $data['sender_menu'];?></td>
+													<td><?echo $data['sender_part'];?></td>
 													<th>담당자</th>
 													<td><?echo $data['sender_name'];?></td>
 												</tr>
@@ -123,7 +123,7 @@
 									</div>
 									<?if($data['status']=='a'){?>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?echo $data['contents'];?></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?echo $data['receiver_contents'];?></textarea>
 									</div>
 									<?}?>
 								</div>
