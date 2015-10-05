@@ -1,3 +1,6 @@
+<?php 
+header("Cache-Control: no-store, no-cache, must-revalidate");
+?>
 <!doctype html>
 <!--[if lt IE 8]><html class="no-js lt-ie8"> <![endif]-->
 <html class="no-js">
