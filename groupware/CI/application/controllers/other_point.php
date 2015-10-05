@@ -40,15 +40,19 @@ class Other_point extends CI_Controller{
 		$this->lists();
 	}
 	public function lists(){
+		$array_menu = search_node($this->PAGE_CONFIG['params']['department'],'children');
 		$option['where'] = array(
 			'other.date <=' => $this->PAGE_CONFIG['params']['sData'],
 			'other.date >=' => $this->PAGE_CONFIG['params']['eData'],
-			'menu.no'       => $this->PAGE_CONFIG['params']['department'],
+			//'menu.no'       => $this->PAGE_CONFIG['params']['department'],
 			'other.point'   => $this->PAGE_CONFIG['params']['point']
 		);
 		$option['like'] = array(
 			'user.name'   => $this->PAGE_CONFIG['params']['user_name'],
 			'other.title' => $this->PAGE_CONFIG['params']['title']
+		);
+		$option['where_in'] = array(
+			'menu.no' => $array_menu
 		);
 
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;

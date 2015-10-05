@@ -11,6 +11,7 @@ class Other_point_model extends CI_Model{
 		}else{
 			$this->db->select('other.*');
 			$this->db->select('sum(sum.point) as sPoint');
+			$this->db->select('menu.no as menu_no');
 			$this->db->select('menu.name as menu_name');
 			$this->db->select('user.name as user_name');
 			

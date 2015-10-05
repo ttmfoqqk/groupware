@@ -123,9 +123,11 @@
 										</td>
 									</tr>
 									
-									<?php foreach($list as $lt){?>
+									<?php foreach($list as $lt){
+										$menu = search_node($lt['menu_no'],'parent');
+									?>
 									<tr>
-										<td><?echo $lt['menu_name'];?></td>
+										<td><?echo $menu['name'];?></td>
 										<td><?echo $lt['user_name'];?></td>
 										<td><?echo $lt['title'];?></td>
 										<td><?echo $lt['point'];?></td>
