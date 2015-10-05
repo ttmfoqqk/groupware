@@ -4,22 +4,33 @@ class Board_model extends CI_Model{
 		parent::__construct();
 	}
 	/* 게시판 설정 */
-	public function get_setting_list($option=null,$limit=null,$offset=null){
-		$this->db->select('count(*) as total');
+	public function get_setting_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
+		if($type == 'count'){
+			$this->db->select('count(*) as total');
+		}else{
+			$this->db->select('*');
+			$this->db->order_by('order','ASC');
+			$this->db->order_by('no','DESC');
+		}
+		$this->db->from('sw_board_list');
 		$this->db->where('activated',0);
-		$query = $this->db->get_where('sw_board_list',$option );
-		$query = $query->row();
-		$result['total'] = $query->total;
+		set_options($option);
+		$query = $this->db->get();
 		
-		$this->db->where('activated',0);
-		$this->db->order_by('order','ASC');
-		$this->db->order_by('no','DESC');
-		$query = $this->db->get_where('sw_board_list',$option,$limit,$offset);
-		$result['list'] = $query->result_array();
+		if($type == 'count'){
+			$query  = $query->row();
+			$result = $query->total;
+		}else{
+			$result = $query->result_array();
+		}
+		
 		return $result;
 	}
-	public function get_setting_detail($option){
-		$result = $this->db->get_where('sw_board_list',$option);
+	public function get_setting_detail($option=NULL,$setVla=array()){
+		set_options($option);
+		$query  = $this->db->get('sw_board_list');
+		$result = set_detail_field($query,$setVla);
+		
 		return $result;
 	}
 	public function set_setting_insert($option){
@@ -32,61 +43,54 @@ class Board_model extends CI_Model{
 
 
 	/* 게시판 */
-	public function get_board_list($option=null,$limit=null,$offset=null){
-		$where = array();
-		foreach($option['where'] as $key=>$val){
-			if($val!=''){
-				$this->db->where($key, $val);
-				$where[$key] = $val;
-			}
+	public function get_board_list($option=NULL,$code=0,$limit=NULL,$offset=NULL,$type=NULL){
+		if($type == 'count'){
+			$this->db->select('count(*) as total');
+		}elseif($type == 'notice'){
+			$this->db->select('*');
+			$this->db->where('is_notice',0);
+		}else{
+			$this->db->select('*');
+			$this->db->limit($limit,$offset);
 		}
-		$like = array();
-		foreach($option['like'] as $key=>$val){
-			if($val!=''){
-				$like[$key] = $val;
-			}
+		if($type != 'count'){
+			$this->db->order_by('original_no','DESC');
+			$this->db->order_by('order','ASC');
 		}
-
-		$this->db->select('count(*) as total');
+		if($type != 'notice'){
+			set_options($option);
+		}
+		$this->db->from('sw_board_contents');
+		$this->db->where('code',$code);
 		$this->db->where('is_delete',0);
-		$this->db->where($where);
-		$this->db->like($like);
-		$query = $this->db->get('sw_board_contents');
-		$query = $query->row();
-		$result['total'] = $query->total;
 		
-
-
-		$this->db->where('is_delete',0);
-		$this->db->where($where);
-		$this->db->like($like);
-		$this->db->order_by('original_no','DESC');
-		$this->db->order_by('order','ASC');
-		$query = $this->db->get('sw_board_contents',$limit,$offset);
-		$result['list'] = $query->result_array();
-
-
-
-		$this->db->where('is_delete',0);
-		$this->db->where('is_notice',0);
-		$this->db->where($option['code']);
-		$this->db->order_by('original_no','DESC');
-		$this->db->order_by('order','ASC');
-		$query = $this->db->get('sw_board_contents');
-		$result['notice'] = $query->result_array();
-
+		$query = $this->db->get();
+		
+		if($type == 'count'){
+			$query  = $query->row();
+			$result = $query->total;
+		}else{
+			$result = $query->result_array();
+		}
+		
 		return $result;
 	}
-	public function get_board_detail($option,$method=null){
+	public function get_board_detail($option=NULL,$setVla=array(),$method=null){
 		if( $method == 'view' ){
-			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$option['no']."' ";
+			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$option['where']['no']."' ";
 			$this->db->query($sql);
 		}
+		$this->db->select('*');
+		$this->db->from('sw_board_contents');
 		$this->db->where('is_delete',0);
-		$result['data']  = $this->db->get_where('sw_board_contents',$option);
-		$result['files'] = $this->get_board_file_list(array('parent_no'=>$option['no']));
+		set_options($option);
+		
+		$query  = $this->db->get();
+		$result = set_detail_field($query,$setVla);
+		
 		return $result;
 	}
+	
 	public function set_board_insert($option){
 		$this->db->set('created', 'NOW()', false);
 		$this->db->insert('sw_board_contents',$option);
@@ -109,7 +113,8 @@ class Board_model extends CI_Model{
 		$this->db->delete('sw_board_file',$option);
 	}
 	public function get_board_file_list($option){
-		$query = $this->db->get_where('sw_board_file',$option);
+		set_options($option);
+		$query = $this->db->get('sw_board_file');
 		$result = $query->result_array();
 		return $result;
 	}

@@ -1,17 +1,13 @@
 <?
 class Board_setting extends CI_Controller{
 	private $PAGE_CONFIG;
-
 	public function __construct() {
-       parent::__construct();
-	   
-	   $this->load->model('board_model');
+		parent::__construct();
+		$this->load->model('board_model');
 
-		//현재 페이지 
+		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment(3,1);
-		//검색 파라미터
-		$this->PAGE_CONFIG['params'] = array();
-		//링크용 파라미터 쿼리
+		$this->PAGE_CONFIG['params']   = array();
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -42,10 +38,8 @@ class Board_setting extends CI_Controller{
 		$option = array();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
-		$get_board = $this->board_model->get_setting_list($option,PAGING_PER_PAGE,$offset);
-
-		$data['total']         = $get_board['total'];
-		$data['list']          = $get_board['list'];
+		$data['total']         = $this->board_model->get_setting_list($option,null,null,'count');
+		$data['list']          = $this->board_model->get_setting_list($option,PAGING_PER_PAGE,$offset);
 		$data['anchor_url']    = site_url('board_setting/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('board_setting/write/'.$this->PAGE_CONFIG['params_string']);
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
@@ -55,7 +49,7 @@ class Board_setting extends CI_Controller{
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 3;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
@@ -64,44 +58,31 @@ class Board_setting extends CI_Controller{
 	}
 
 	public function write(){
-		$no = $this->input->get('no');
-		$option = array(
-			'no'=>$no
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		$option['where'] = array(
+				'no'=>$no
+		);
+		
+		$setVla = array(
+			'type'       => 'default',
+			'activated'  => '0',
+			'reply'      => '1',
+			'comment'    => '1',
+			'order'      => '0'
 		);
 
-		$result = $this->board_model->get_setting_detail($option);
+		$data['data'] = $this->board_model->get_setting_detail($option,$setVla);
+		
+		if( !$data['data']['no'] ){
+			$data['action_type'] = 'create';
+		}else{
+			$data['action_type'] = 'edit';
+		}
 
-		$data['action_type'] = 'create';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['action_url']  = site_url('board_setting/proc/'.$this->PAGE_CONFIG['cur_page']);
 
-		$data['data'] = array(
-			'no'         => '',
-			'code'       => '',
-			'type'       => 'default',
-			'name'       => '',
-			'activated'  => '0',
-			'permission' => '',
-			'reply'      => '1',
-			'comment'    => '1',
-			'order'      => '0',
-		);
-		if ($result->num_rows() > 0){
-			$result = $result->row();
-
-			$data['action_type'] = 'edit';
-			$data['data'] = array(
-				'no'         => $result->no,
-				'code'       => $result->code,
-				'type'       => $result->type,
-				'name'       => $result->name,
-				'activated'  => $result->activated,
-				'permission' => $result->permission,
-				'reply'      => $result->reply,
-				'comment'    => $result->comment,
-				'order'      => $result->order,
-			);
-		}
+		
 		$data['list_url']  = site_url('board_setting/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$this->load->view('board/setting/write_v',$data);
 	}

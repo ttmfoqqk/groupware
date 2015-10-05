@@ -4,12 +4,15 @@ class Board extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-
 		$this->load->model('board_model');
-
-		$this->PAGE_CONFIG['cur_page']      = $this->uri->segment(4,1);
-		$this->PAGE_CONFIG['params']        = array(
-			'title' => !$this->input->get('title') ? '' : $this->input->get('title')
+		
+		$this->PAGE_CONFIG['segment']  = 4;
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
+		$this->PAGE_CONFIG['params']   = array(
+			'sData'     => !$this->input->get('sData')     ? '' : $this->input->get('sData')    ,
+			'eData'     => !$this->input->get('eData')     ? '' : $this->input->get('eData')    ,
+			'subject'   => !$this->input->get('subject')   ? '' : $this->input->get('subject')  ,
+			'user_name' => !$this->input->get('user_name') ? '' : $this->input->get('user_name')
 		);
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
 
@@ -51,25 +54,21 @@ class Board extends CI_Controller{
 	}
 
 	public function lists(){
-		// option search 추가
 		$option['where'] = array(
-			'code' => $this->board['code']
+			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
+			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
 		);
 		$option['like'] = array(
-			'subject' => ''
+			'subject'   => $this->PAGE_CONFIG['params']['subject'],
+			'user_name' => $this->PAGE_CONFIG['params']['user_name']
 		);
 
-		$option['code'] = array(
-			'code' => $this->board['code']
-		);
-
-		$offset    = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_board = $this->board_model->get_board_list($option,PAGING_PER_PAGE,$offset);
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		
 		$data['board_name']    = $this->board['name'];
-		$data['total']         = $get_board['total'];
-		$data['notice']        = $get_board['notice'];
-		$data['list']          = $get_board['list'];
+		$data['total']         = $this->board_model->get_board_list($option,$this->board['code'],null,null,'count');
+		$data['notice']        = $this->board_model->get_board_list($option,$this->board['code'],null,null,'notice');
+		$data['list']          = $this->board_model->get_board_list($option,$this->board['code'],PAGING_PER_PAGE,$offset);
 		
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('board/view/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
@@ -80,7 +79,7 @@ class Board extends CI_Controller{
 		$config['base_url']    = site_url('board/lists/'.$this->board['code']);
 		$config['total_rows']  = $data['total'];
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 4;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination']    = $this->pagination->create_links();
@@ -92,32 +91,24 @@ class Board extends CI_Controller{
 	 * 상세내용
 	 */
 	private function views($mode=null){
-		$no = $this->input->get('no');
-		$option = array(
-				'no'=>$no,
-				'code'=>$this->board['code']
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		
+		$option['where'] = array(
+			'no'=>$no,
+			'code'=>$this->board['code']
 		);
-		$result = $this->board_model->get_board_detail($option,'view');
-		if ($result['data']->num_rows() <= 0){
+		$data['data']  = $this->board_model->get_board_detail($option,null,'view');
+		
+		$option['where'] = array(
+			'parent_no'=>$no,
+			'code'=>$this->board['code']
+		);
+		$data['files'] = $this->board_model->get_board_file_list($option);
+		
+		if( !$data['data']['no'] ){
 			alert('잘못된 접근입니다.');
 		}
-		$result_data = $result['data']->row();
-		$data['data'] = array(
-				'no'          => $result_data->no,
-				'original_no' => $result_data->original_no,
-				'depth'       => $result_data->depth,
-				'order'       => $result_data->order,
-				'user_no'     => $result_data->user_no,
-				'user_id'     => $result_data->user_id,
-				'user_name'   => $result_data->user_name,
-				'subject'     => $result_data->subject,
-				'contents'    => $result_data->contents,
-				'count_hit'   => $result_data->count_hit,
-				'ip'          => $result_data->ip,
-				'is_notice' => $result_data->is_notice,
-				'created'     => $result_data->created
-		);
-		$data['files'] = $result['files'];
+
 		return $data;
 	}
 
