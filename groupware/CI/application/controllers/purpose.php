@@ -3,11 +3,9 @@ class Purpose extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		
+
 		$this->load->model('purpose_model');
-		//현재 페이지 
 		$this->PAGE_CONFIG['set_page'] = $this->uri->segment(2,'search');
-		//검색 파라미터
 		$this->PAGE_CONFIG['params'] = array(
 			'd_year'     => !$this->input->get('d_year')     ? date('Y') : $this->input->get('d_year')   ,
 			'd_type'     => !$this->input->get('d_type')     ? 'm' : $this->input->get('d_type')         ,
@@ -15,7 +13,6 @@ class Purpose extends CI_Controller{
 			'department' => !$this->input->get('department') ? '' : $this->input->get('department')      ,
 			'user_name'  => !$this->input->get('user_name')  ? '' : $this->input->get('user_name')
 		);
-		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -37,6 +34,7 @@ class Purpose extends CI_Controller{
 			}
 		}
 	}
+	
 	public function index(){
 		$this->search();
 	}
@@ -44,6 +42,7 @@ class Purpose extends CI_Controller{
 		$data['list'] = array();
 		$this->load->view('purpose/search_v',$data);
 	}
+	
 	public function appraisal(){
 		$d_year   = $this->PAGE_CONFIG['params']['d_year'];
 		$d_type   = $this->PAGE_CONFIG['params']['d_type'];
@@ -90,23 +89,23 @@ class Purpose extends CI_Controller{
 		
 		// approved point
 		$option['where'] = array(
-			//'date_format(project.sData,"%Y-%m") <=' => $eDate,
-			//'date_format(project.eData,"%Y-%m") >=' => $sDate,
-			'staff.menu_no'    => $this->PAGE_CONFIG['params']['department']
+			'staff.menu_no' => $this->PAGE_CONFIG['params']['department']
 			//'staff.sender' => $this->session->userdata('no') //개인용
 		);
+		
 		$option['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
+		
 		$option['custom'] = '((date_format(project.sData,"%Y-%m") >= "'.$sDate.'" and date_format(project.sData,"%Y-%m") <= "'.$eDate.'") or (date_format(project.eData,"%Y-%m") >= "'.$sDate.'" and date_format(project.eData,"%Y-%m") <= "'.$eDate.'"))';
 
-		$option['test']['where'] = array(
+		$option['approved']['where'] = array(
 			'DATE_FORMAT(status.created,"%Y-%m") >=' => $sDate,
 			'DATE_FORMAT(status.created,"%Y-%m") <=' => $eDate,
 			'status.part_sender' => $this->PAGE_CONFIG['params']['department']
 			//'annual.user_no' => $this->session->userdata('no')
 		);
-		$option['test']['like'] = array(
+		$option['approved']['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
 
@@ -120,10 +119,9 @@ class Purpose extends CI_Controller{
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
 		$data['approved'] = $this->purpose_model->get_point_approved($option,$sDate,$eDate);
-
-
-
 		
+		
+		unset($option);
 		// chc point
 		$option['where'] = array(
 			'DATE_FORMAT(log.date,"%Y-%m") >=' => $sDate,
@@ -138,24 +136,26 @@ class Purpose extends CI_Controller{
 
 
 
-
+		unset($option);
 		// other point
-		$option['where'] = array(
+		$option['other']['where'] = array(
 			'DATE_FORMAT(date,"%Y-%m") >=' => $sDate,
 			'DATE_FORMAT(date,"%Y-%m") <=' => $eDate,
 			'menu_no' => $this->PAGE_CONFIG['params']['department']
 			//'user_no' => $this->session->userdata('no')
 		);
-		$option['where2'] = array(
-				'DATE_FORMAT(sData,"%Y-%m") >=' => $sDate,
-				'DATE_FORMAT(sData,"%Y-%m") <=' => $eDate,
-				'department.menu_no' => $this->PAGE_CONFIG['params']['department']
-				//'user_no' => $this->session->userdata('no')
+		$option['attendance']['where'] = array(
+			'DATE_FORMAT(sData,"%Y-%m") >=' => $sDate,
+			'DATE_FORMAT(sData,"%Y-%m") <=' => $eDate,
+			'department.menu_no' => $this->PAGE_CONFIG['params']['department']
+			//'user_no' => $this->session->userdata('no')
 		);
 		
-		$option['like'] = array(
+		$option['other']['like'] = array(
 			'user.name' => $this->PAGE_CONFIG['params']['user_name']
 		);
+		$option['attendance']['like'] = $option['other']['like'];
+		
 		$data['others'] = $this->purpose_model->get_point_other($option);
 		
 		/*
