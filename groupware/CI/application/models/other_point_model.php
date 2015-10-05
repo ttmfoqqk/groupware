@@ -4,48 +4,35 @@ class Other_point_model extends CI_Model{
 		parent::__construct();
 	}
 	
-	public function get_list($option=null,$limit=null,$offset=null){
-		$where = array();
-		foreach($option['where'] as $key=>$val){
-			if($val!=''){
-				$where[$key] = $val;
-			}
+	public function get_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
+		
+		if($type == 'count'){
+			$this->db->select('count(*) as total');
+		}else{
+			$this->db->select('other.*');
+			$this->db->select('sum(sum.point) as sPoint');
+			$this->db->select('menu.name as menu_name');
+			$this->db->select('user.name as user_name');
+			
+			$this->db->group_by('other.no');
+			$this->db->order_by('other.no','DESC');
+			$this->db->limit($limit,$offset);
 		}
-		$like = array();
-		foreach($option['like'] as $key=>$val){
-			if($val!=''){
-				$like[$key] = $val;
-			}
-		}
 
-		$this->db->select('count(*) as total');
-		$this->db->from('sw_other_point AS other');
-		$this->db->join('sw_user AS user','other.user_no = user.no');
-		$this->db->join('sw_menu AS menu','other.menu_no = menu.no');
-		$this->db->where($where);
-		$this->db->like($like);
-
-		$query = $this->db->get();
-		$query = $query->row();
-		$result['total'] = $query->total;
-
-
-		$this->db->select('other.*');
-		$this->db->select('sum(sum.point) as sPoint');
-		$this->db->select('menu.name as menu_name');
-		$this->db->select('user.name as user_name');
 		$this->db->from('sw_other_point AS other');
 		$this->db->join('sw_other_point AS sum','other.user_no = sum.user_no and other.no >= sum.no');
 		$this->db->join('sw_user AS user','other.user_no = user.no');
 		$this->db->join('sw_menu AS menu','other.menu_no = menu.no');
-		$this->db->where($where);
-		$this->db->like($like);
-		$this->db->group_by('other.no');
-		$this->db->order_by('other.no','DESC');
-		$this->db->limit($limit,$offset);
-
+		set_options($option);
 		$query = $this->db->get();
-		$result['list'] = $query->result_array();
+		
+		if($type == 'count'){
+			$query  = $query->row();
+			$result = $query->total;
+		}else{
+			$result = $query->result_array();
+		}
+		
 		return $result;
 	}
 

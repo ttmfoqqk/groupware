@@ -5,9 +5,8 @@ class Other_point extends CI_Controller{
 		parent::__construct();
 		$this->load->model('other_point_model');
 
-		//현재 페이지 
-		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment(3,1);
-		//검색 파라미터
+		$this->PAGE_CONFIG['segment']  = 3;
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
 		$this->PAGE_CONFIG['params'] = array(
 			'sData'      => !$this->input->get('sData')      ? '' : $this->input->get('sData')      ,
 			'eData'      => !$this->input->get('eData')      ? '' : $this->input->get('eData')      ,
@@ -16,7 +15,6 @@ class Other_point extends CI_Controller{
 			'title'      => !$this->input->get('title')      ? '' : $this->input->get('title')      ,
 			'point'      => !$this->input->get('point')      ? '' : $this->input->get('point')
 		);
-		//링크용 파라미터 쿼리
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -53,11 +51,10 @@ class Other_point extends CI_Controller{
 			'other.title' => $this->PAGE_CONFIG['params']['title']
 		);
 
-		$offset   = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-		$get_data = $this->other_point_model->get_list($option,PAGING_PER_PAGE,$offset);
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
-		$data['total']         = $get_data['total'];   // 전체글수
-		$data['list']          = $get_data['list'];    // 글목록
+		$data['total']         = $this->other_point_model->get_list($option,null,null,'count');
+		$data['list']          = $this->other_point_model->get_list($option,PAGING_PER_PAGE,$offset);
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
 		$data['action_url']    = site_url('other_point/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 
@@ -65,7 +62,7 @@ class Other_point extends CI_Controller{
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = 3;
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
 
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
