@@ -46,7 +46,7 @@
 										</tr>
 										<tr>
 											<th>내용</th>
-											<td colspan="5" style="height:400px;"><?echo nl2br($data['contents']);?></td>
+											<td colspan="5" style="height:400px;"><?echo $data['contents'];?></td>
 										</tr>
 									</tbody>
 								</table>

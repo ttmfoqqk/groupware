@@ -6,7 +6,7 @@ $bSuccessUpload = is_uploaded_file($_FILES['Filedata']['tmp_name']);
 // SUCCESSFUL
 if(bSuccessUpload) {
 	$tmp_name = $_FILES['Filedata']['tmp_name'];
-	$name = $_FILES['Filedata']['name'];
+	$name = time().$_FILES['Filedata']['name'];
 	
 	$filename_ext = strtolower(array_pop(explode('.',$name)));
 	$allow_file = array("jpg", "png", "bmp", "gif");
@@ -19,7 +19,7 @@ if(bSuccessUpload) {
 			mkdir($uploadDir, 0777);
 		}
 		
-		$newPath = $uploadDir.urlencode($_FILES['Filedata']['name']);
+		$newPath = $uploadDir.urlencode(time().$_FILES['Filedata']['name']);
 		
 		@move_uploaded_file($tmp_name, $newPath);
 		
