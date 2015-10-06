@@ -89,30 +89,29 @@ class Board extends CI_Controller{
 	/*
 	 * 상세내용
 	 */
-	private function views($mode=null){
+	private function views($setVla=array(),$mode=null){
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
-		
 		$option['where'] = array(
 			'no'=>$no,
 			'code'=>$this->board['code']
 		);
-		$data['data']  = $this->board_model->get_board_detail($option,null,'view');
+		$data['data']  = $this->board_model->get_board_detail($option,$setVla,$mode);
 		
 		$option['where'] = array(
 			'parent_no'=>$no,
 			'code'=>$this->board['code']
 		);
 		$data['files'] = $this->board_model->get_board_file_list($option);
-		
-		if( !$data['data']['no'] ){
-			alert('잘못된 접근입니다.');
-		}
 
 		return $data;
 	}
 
 	public function view(){
-		$data = $this->views('view');
+		$data = $this->views(null,'view');
+		if( !$data['data']['no'] ){
+			alert('잘못된 접근입니다.');
+		}
+		
 		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['list_url']   = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['edit_url']   = site_url('board/edit/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string'].'&no='.$data['data']['no']);
@@ -123,23 +122,17 @@ class Board extends CI_Controller{
 	}
 
 	public function write(){
-		$data['data'] = array(
-				'no'          => 0,
-				'original_no' => 0,
-				'depth'       => 0,
-				'order'       => 0,
-				'user_no'     => 0,
-				'user_id'     => '',
-				'user_name'   => '',
-				'subject'     => '',
-				'contents'    => '',
-				'count_hit'   => 0,
-				'ip'          => '',
-				'is_notice'   => 1,
-				'created'     => ''
+		$setVla = array(
+			'no'          => 0,
+			'original_no' => 0,
+			'depth'       => 0,
+			'order'       => 0,
+			'user_no'     => 0,
+			'count_hit'   => 0,
+			'is_notice'   => 1
 		);
-		$data['files'] = $this->board_model->get_board_file_list(array('parent_no'=>0));
-		
+		$data = $this->views($setVla);
+
 		$data['action_type'] = 'create';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['list_url']    = site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);

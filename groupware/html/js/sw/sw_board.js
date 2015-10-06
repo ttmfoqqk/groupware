@@ -1,46 +1,5 @@
 //------------- tables-data.js -------------//
 $(document).ready(function() {
-	/*
-	if( $('#contents').length > 0){
-		var config = {
-			initializedId: "",
-			wrapper: "tx_trex_container",
-			form: 'board_form_write_board',
-			txIconPath: "/daumeditor/images/icon/editor/",
-			txDecoPath: "/daumeditor/images/deco/contents/",
-			events: {
-				preventUnload: false
-			},
-			sidebar: {
-				attachbox: {
-					show: true
-				}
-			}
-		};
-
-		EditorCreator.convert(document.getElementById("contents"), '/daumeditor/pages/template/simple.html', function () {
-			EditorJSLoader.ready(function (Editor) {
-				new Editor(config);
-				Editor.modify({
-					content: document.getElementById("contents").value
-				});
-			});
-		});
-	}
-	*/
-
-	//------------- Data tables -------------//
-	//with tabletools
-	$('.table').checkAll({
-		masterCheckbox: '.check-all',
-		otherCheckboxes: '.check',
-		highlightElement: {
-            active: true,
-            elementClass: 'tr',
-            highlightClass: 'highlight'
-        }
-	});
-	
 	// 리스트 선택삭제
 	$('#btn_list_delete').on('click',function(){
 		//체크박스 체크
@@ -173,9 +132,6 @@ $(document).ready(function() {
 			subject: {
 				required : true,
 				maxlength: 200
-			},
-			contents: {
-				required: false
 			}
 		},
 		messages: {
@@ -192,58 +148,45 @@ $(document).ready(function() {
 			label.remove();
 		}
 	});
-
-	$('#test-submit-button').click(function(){
-		//saveContent();
-	});
-
-
-
-	function saveContent() {
-        Editor.save();
-    }
-
-    function validForm(editor) {
-		alert('validForm');
-        var validator = new Trex.Validator();
-        var content = editor.getContent();
-        if (!validator.exists(content)) {
-            alert('Content is empty');
-            return false;
-        }
-
-        return true;
-    }
-
-    function setForm(editor) {
-		alert('setForm');
-        var i, input;
-        var form = editor.getForm();
-        var content = editor.getContent();
-
-        var field = document.getElementById("contents");
-        field.value = content;
-
-        var images = editor.getAttachments('image');
-        for (i = 0; i < images.length; i++) {
-            input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'attach_image';
-            input.value = images[i].data.imageurl;
-            form.createField(input);
-        }
-
-        var files = editor.getAttachments('file');
-        for (i = 0; i < files.length; i++) {
-            input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'attach_file';
-            input.value = files[i].data.attachurl;
-            form.createField(input);
-        }
-        return true;
-    }
-
 	
+	if($('#contents').length > 0){
+	
+		var oEditors = [];
+		
+		nhn.husky.EZCreator.createInIFrame({
+			oAppRef: oEditors,
+			elPlaceHolder: "contents",
+			sSkinURI: "/groupware/SE2.8.2.O12056/SmartEditor2Skin.html",	
+			htParams : {
+				bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+				bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+				bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+				//aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
+				fOnBeforeUnload : function(){
+					//alert("완료!");
+				}
+			}, //boolean
+			fOnAppLoad : function(){
+				//예제 코드
+				//oEditors.getById["ir1"].exec("PASTE_HTML", ["로딩이 완료된 후에 본문에 삽입되는 text입니다."]);
+			},
+			fCreator: "createSEditor2"
+		});
+	
+	}
+	
+	function submitContents() {
+		oEditors.getById["contents"].exec("UPDATE_CONTENTS_FIELD", []);	// 에디터의 내용이 textarea에 적용됩니다.
+		
+		// 에디터의 내용에 대한 값 검증은 이곳에서 document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
+		
+		try {
+			$("#board_form_write_board").submit();
+		} catch(e) {}
+	}
+	
+	$('#board-submit-button').click(function(){
+		submitContents();
+	});
 	
 });

@@ -58,6 +58,8 @@
 		<!-- Other plugins ( load only nessesary plugins for every page) -->
 		<script src="<?echo $this->config->base_url()?>html/js/libs/date.js"></script>
 		<script src="<?echo $this->config->base_url()?>html/js/jquery.dynamic.js"></script>
-		<script src="<?echo $this->config->base_url()?>html/js/sw/sw_common.js"></script>		
+		<script src="<?echo $this->config->base_url()?>html/js/sw/sw_common.js"></script>
+		
+		<script src="<?echo $this->config->base_url()?>SE2.8.2.O12056/js/HuskyEZCreator.js" type="text/javascript" charset="utf-8"></script>
 	</body>
 <html>

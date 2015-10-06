@@ -47,7 +47,7 @@
 								<div class="form-group">
 									<label for="contents" class="col-lg-2 col-md-3 control-label">내용</label>
 									<div class="col-lg-10 col-md-9" id="tx_trex_container">
-										<textarea id="contents" name="contents" class="form-control" rows="20" placeholder="내용"><?echo $data['contents'];?></textarea>
+										<textarea id="contents" name="contents" style="width:100%;height:500px;"><?echo $data['contents'];?></textarea>
 									</div>
 								</div>
 								<div class="form-group">
@@ -83,7 +83,7 @@
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button type="submit" id="test-submit-button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button type="button" id="board-submit-button" class="btn btn-primary btn-alt mr5 mb10" >등록</button>
 								</div>
 
 							</form>
@@ -103,7 +103,4 @@
 	<!-- / page-content-wrapper -->
 </div>
 <!-- / page-content -->
-<script src="<?echo $this->config->base_url()?>daumeditor/js/editor_loader.js" type="text/javascript" charset="utf-8"></script>
-<script src="<?echo $this->config->base_url()?>daumeditor/js/editor_creator.js" type="text/javascript" charset="utf-8"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_board.js"></script>
-
