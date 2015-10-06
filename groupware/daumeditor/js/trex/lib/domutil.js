@@ -1524,6 +1524,9 @@ Object.extend($tom, /** @lends $tom */{
 		}
 		node.scrollIntoView(toTop);
 	},
+	getWindow: function(doc) {
+		return doc.defaultView || doc.parentWindow;
+	},
 	/**
 	 * 수직 스크롤 위치값을 반환한다.
 	 * @function
@@ -1531,10 +1534,12 @@ Object.extend($tom, /** @lends $tom */{
 	 *  $tom.getScrollTop(document)
 	 */
 	getScrollTop: function(doc) {
-		if(!doc) {
+		if (!doc) {
 			return 0;
 		}
-		return doc.documentElement.scrollTop >= 0 ? doc.documentElement.scrollTop : doc.body.scrollTop;
+		var win = this.getWindow(doc);
+		var prop = 'pageYOffset';
+		return (prop in win)? win[prop]:doc.documentElement.scrollTop;
 	},
 	/**
 	 * 수직 스크롤 값을 셋팅한다.

@@ -16,14 +16,13 @@ class Board extends CI_Controller{
 		);
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
 
-		$option = array(
+		$option['where'] = array(
 			'code' => $this->uri->segment(3) ,
 			'activated' => 0
 		);
-		$result = $this->board_model->get_setting_detail($option);
-		$this->board = $result->row_array();
-
-		if( !isset($this->board['no']) ){
+		$this->board = $this->board_model->get_setting_detail($option);
+		
+		if( !$this->board['no'] ){
 			alert('잘못된 게시판 코드 입니다.');
 		}
 		define('BOARD_TITLE'  , $this->board['name']);
