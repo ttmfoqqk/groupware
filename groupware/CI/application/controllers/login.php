@@ -17,8 +17,8 @@ class Login extends CI_Controller{
 		$this->load->library('form_validation');
 
 
-		$this->form_validation->set_rules('userid','아이디','required|min_length[5]|max_length[20]|');
-		$this->form_validation->set_rules('password','비밀번호','required|min_length[5]|max_length[20]');
+		$this->form_validation->set_rules('userid','아이디','required|max_length[20]|');
+		$this->form_validation->set_rules('password','비밀번호','required|max_length[20]');
 		
 		if($this->form_validation->run()==false){
 			alert('계정 정보를 확인해주세요.', $this->config->base_url() );

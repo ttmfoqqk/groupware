@@ -21,25 +21,21 @@ $(document).ready(function() {
 		rules: {
 			userid: {
 				required : true,
-				minlength: 5,
 				maxlength: 20,
 			},
 			password: {
 				required : true,
-				minlength: 5,
 				maxlength: 20,
 			}
 		},
 		messages: {
 			password: {
 				required: "비밀번호를 입력해주세요.",
-				minlength: "비밀번호는 5~20자 입니다.",
-				maxlength: "비밀번호는 5~20자 입니다."
+				maxlength: "비밀번호는 1~20자 입니다."
 			},
 			userid: {
 				required: "아이디를 입력해주세요.",
-				minlength: "아이디는 5~20자 입니다.",
-				maxlength: "아이디는 5~20자 입니다."
+				maxlength: "아이디는 1~20자 입니다."
 			}
 		},
 		highlight: function( label ) {
