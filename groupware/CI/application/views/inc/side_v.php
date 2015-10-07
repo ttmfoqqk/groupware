@@ -43,7 +43,7 @@
 							<li><a href="<?php echo site_url('member');?>"><span class="txt">사원관리</span></a></li>
 							<li><a href="<?php echo site_url('holiday');?>"><span class="txt">휴일설정</span></a></li>
 							<li><a href="<?php echo site_url('attendance/set');?>"><span class="txt">근태설정</span></a></li>
-							<li><a href="<?php echo site_url('attendance');?>"><span class="txt">근태현황</span></a></li>
+							<li><a href="<?php echo site_url('attendance/lists');?>"><span class="txt">근태현황</span></a></li>
 							<li><a href="<?php echo site_url('menu/lists/object');?>"><span class="txt">물품 분류</span></a></li>
 							<li><a href="<?php echo site_url('object');?>"><span class="txt">물품 정보</span></a></li>
 							<li><a href="<?php echo site_url('baseCode');?>"><span class="txt">기초코드</span></a></li>

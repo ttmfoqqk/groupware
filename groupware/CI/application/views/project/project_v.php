@@ -127,7 +127,7 @@
 										<td>
 										<?if( $lt['cnt'] <= 0 ){?>
 											<div class="checkbox-custom">
-												<input id="no" name="no" class="check" type="checkbox" value="<?echo $lt['no'];?>">
+												<input id="no" name="no[]" class="check" type="checkbox" value="<?echo $lt['no'];?>">
 												<label for="check"></label>
 											</div>
 										<?}else{?>
