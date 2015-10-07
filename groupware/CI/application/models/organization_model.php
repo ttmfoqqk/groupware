@@ -12,6 +12,7 @@ class Organization_model extends CI_Model{
 	}
 	public function get_organization_children($parent_no){
 		$this->db->where('parent_no', $parent_no);
+		$this->db->where('is_active',0);
 		$this->db->from('sw_menu');
 		return $this->db->count_all_results();
 	}
