@@ -72,7 +72,7 @@ function get_list(){
 	var number = 5;
 	$.ajax({
 		type : 'POST',
-		url  : '/groupware/company/site_lists/',
+		url  : '/groupware/information/site_lists/',
 		data : {
 			no : $no
 		},
@@ -172,7 +172,7 @@ function modal_submit(){
 	if( validate_fg == true ){
 		$.ajax({
 			type : 'POST',
-			url  : '/groupware/company/site_insert/',
+			url  : '/groupware/information/site_insert/',
 			data : {
 				no : $no,
 				json_data : JSON.stringify(data_array)

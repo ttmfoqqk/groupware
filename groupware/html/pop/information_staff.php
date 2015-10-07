@@ -80,7 +80,7 @@ function get_list(){
 	var number = 5;
 	$.ajax({
 		type : 'POST',
-		url  : '/groupware/company/staff_lists/',
+		url  : '/groupware/information/staff_lists/',
 		data : {
 			no : $no
 		},
@@ -198,7 +198,7 @@ function modal_submit(){
 	if( validate_fg == true ){
 		$.ajax({
 			type : 'POST',
-			url  : '/groupware/company/staff_insert/',
+			url  : '/groupware/information/staff_insert/',
 			data : {
 				no : $no,
 				json_data : JSON.stringify(data_array)

@@ -37,8 +37,8 @@
 					<li>
 						<a href="#"><i class="l-basic-home"></i> <span class="txt">회사관리</span></a>
 						<ul class="sub">
-							<li><a href="<?php echo site_url('company');?>"><span class="txt">회사정보</span></a></li>
-							<li><a href="<?php echo site_url('partner');?>"><span class="txt">거래처</span></a></li>
+							<li><a href="<?php echo site_url('information/lists/company');?>"><span class="txt">회사정보</span></a></li>
+							<li><a href="<?php echo site_url('information/lists/partner');?>"><span class="txt">거래처</span></a></li>
 							<li><a href="<?php echo site_url('menu/lists/department');?>"><span class="txt">부서 분류</span></a></li>
 							<li><a href="<?php echo site_url('member');?>"><span class="txt">사원관리</span></a></li>
 							<li><a href="<?php echo site_url('holiday');?>"><span class="txt">휴일설정</span></a></li>
@@ -118,14 +118,14 @@
 					<li>
 						<a href="#"><i class="l-basic-settings"></i> <span class="txt">DEVELOP</span></a>
 						<ul class="sub">
-							<li><a href="<?php echo site_url('develop');?>"><span class="txt">고객사 정보</span></a></li>
+							<li><a href="<?php echo site_url('information/lists/develop');?>"><span class="txt">고객사 정보</span></a></li>
 						</ul>
 					</li>
 					<!-- MARKETING -->
 					<li>
 						<a href="#"><i class="l-basic-world"></i> <span class="txt">MARKETING</span></a>
 						<ul class="sub">
-							<li><a href="<?php echo site_url('marketing');?>"><span class="txt">고객사 정보</span></a></li>
+							<li><a href="<?php echo site_url('information/lists/marketing');?>"><span class="txt">고객사 정보</span></a></li>
 							<li><a href="<?php echo site_url('account');?>"><span class="txt">계정관리</span></a></li>
 							<li><a href="<?php echo site_url('chc');?>"><span class="txt">CHC</span></a></li>
 						</ul>
