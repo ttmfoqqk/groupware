@@ -19,6 +19,27 @@ class Approved_send extends CI_Controller{
 			'doc_no'        => !$this->input->get('doc_no')        ? '' : $this->input->get('doc_no')        ,
 			'title'         => !$this->input->get('title')         ? '' : $this->input->get('title')
 		);
+		
+		$page_title = '보낸 결재';
+		switch( $this->PAGE_CONFIG['set_page'] ) {
+			case 'a' :
+				$page_title .= ' - 작업중';
+				break;
+			case 'b' :
+				$page_title .= ' - 결재대기';
+				break;
+			case 'c' :
+				$page_title .= ' - 결재완료';
+				break;
+			case 'd' :
+				$page_title .= ' - 반려';
+				break;
+			case 'ao' :
+				$page_title .= ' - 미결재';
+				break;
+			default :
+				$page_title = $page_title;
+		}
 
 		$this->PAGE_CONFIG['status'] = '';
 		switch( $this->PAGE_CONFIG['set_page'] ) {
@@ -33,6 +54,8 @@ class Approved_send extends CI_Controller{
 				$this->PAGE_CONFIG['status'] = $this->PAGE_CONFIG['set_page'];
 		}
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
+		
+		define('APPROVED_TITLE'  , $page_title);
     }
 
 	public function _remap($method){

@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>&nbsp;</h2>
+					<h2><?php echo APPROVED_TITLE;?></h2>
 				</div>
 			</div>
 			<div class="row">

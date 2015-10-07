@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?php echo $head_name?></h2>
+					<h2>회사규정</h2>
 				</div>
 			</div>
 			<div class="row">
