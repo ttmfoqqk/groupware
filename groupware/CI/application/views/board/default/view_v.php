@@ -27,21 +27,28 @@
 								<table id="tabletools" class="table table-bordered" cellspacing="0" width="100%">
 									<tbody>
 										<tr>
+											<th>제목</th>
+											<td colspan="5"><?echo $data['subject'];?></td>
+										</tr>
+										<tr>
 											<th class="per10">작성자</th>
 											<td class="per40"><?echo $data['user_name'];?></td>
 											<th class="per10">작성일</th>
 											<td class="per40"><?echo $data['created'];?></td>
 										</tr>
 										<tr>
-											<th>제목</th>
-											<td colspan="5"><?echo $data['subject'];?></td>
-										</tr>
-										<tr>
 											<th>첨부파일</th>
-											<td colspan="5">
+											<td>
 											<?foreach($files as $lt){?>
 												<a href="<?php echo site_url('download?path=upload/board/&oname='.$lt['original_name'].'&uname='.$lt['upload_name'])?>"><?php echo $lt['original_name'];?></a>
 											<?}?>
+											</td>
+											<th>분류</th>
+											<td>
+												<?php 
+												$menu = search_node($data['menu_no'],'parent');
+												echo $menu['name'];
+												?>
 											</td>
 										</tr>
 										<tr>

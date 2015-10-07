@@ -54,12 +54,12 @@ class Board extends CI_Controller{
 
 	public function lists(){
 		$option['where'] = array(
-			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
-			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
+			'date_format(board.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
+			'date_format(board.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
 		);
 		$option['like'] = array(
-			'subject'   => $this->PAGE_CONFIG['params']['subject'],
-			'user_name' => $this->PAGE_CONFIG['params']['user_name']
+			'board.subject'   => $this->PAGE_CONFIG['params']['subject'],
+			'board.user_name' => $this->PAGE_CONFIG['params']['user_name']
 		);
 
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
@@ -72,7 +72,7 @@ class Board extends CI_Controller{
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('board/view/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('board/write/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page']);
-		$data['action_url']    = site_url('board/proc/' .$this->board['code']);
+		$data['action_url']    = site_url('board/lists/'.$this->board['code']);
 
 		// pagination option
 		$config['base_url']    = site_url('board/lists/'.$this->board['code']);
@@ -92,8 +92,8 @@ class Board extends CI_Controller{
 	private function views($setVla=array(),$mode=null){
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(
-			'no'=>$no,
-			'code'=>$this->board['code']
+			'board.no'=>$no,
+			'board.code'=>$this->board['code']
 		);
 		$data['data']  = $this->board_model->get_board_detail($option,$setVla,$mode);
 		
@@ -170,6 +170,7 @@ class Board extends CI_Controller{
 		$depth       = $this->input->post('depth')==''?0:$this->input->post('depth');
 		$order       = $this->input->post('order')==''?0:$this->input->post('order');
 		$oldFile     = $this->input->post('oldFile');
+		$menu_no     = $this->input->post('menu_no');
 
 		$parameters  = urldecode($this->input->post('parameters'));
 
@@ -201,20 +202,21 @@ class Board extends CI_Controller{
 			}
 
 			$option = array(
-				'code'          =>$this->board['code'],
-				'depth'         =>0,
-				'order'         =>0,
-				'user_no'       =>$this->session->userdata('no'),
-				'user_id'       =>$this->session->userdata('id'),
-				'user_name'     =>$this->session->userdata('name'),
-				'subject'       =>$subject,
-				'contents'      =>$contents,
-				'is_notice'     =>$is_notice,
-				'is_delete'     =>0,
-				'count_hit'     =>0,
-				'count_reply'   =>0,
-				'count_comment' =>0,
-				'ip'            =>$this->input->ip_address()
+				'code'          => $this->board['code'],
+				'depth'         => 0,
+				'order'         => 0,
+				'user_no'       => $this->session->userdata('no'),
+				'user_id'       => $this->session->userdata('id'),
+				'user_name'     => $this->session->userdata('name'),
+				'subject'       => $subject,
+				'contents'      => $contents,
+				'is_notice'     => $is_notice,
+				'is_delete'     => 0,
+				'count_hit'     => 0,
+				'count_reply'   => 0,
+				'count_comment' => 0,
+				'ip'            => $this->input->ip_address(),
+				'menu_no'       => $menu_no
 			);
 			$result = $this->board_model->set_board_insert($option);
 			$this->board_model->set_board_update(array('original_no'=>$result,'parent_no'=>$result),array('no'=>$result));
@@ -263,18 +265,19 @@ class Board extends CI_Controller{
 			}
 			if( $file_insert_fg ){
 				$option_filse = array(
-						'code'          => $this->board['code'],
-						'parent_no'     => $contents_no ,
-						'original_name' => $upload_data['orig_name'],
-						'upload_name'   => $upload_data['file_name']
+					'code'          => $this->board['code'],
+					'parent_no'     => $contents_no ,
+					'original_name' => $upload_data['orig_name'],
+					'upload_name'   => $upload_data['file_name']
 				);
 				$this->board_model->set_board_file_insert($option_filse);
 			}
 
 			$option = array(
-				'subject'   =>$subject,
-				'contents'  =>$contents,
-				'is_notice' =>$is_notice
+				'subject'   => $subject,
+				'contents'  => $contents,
+				'is_notice' => $is_notice,
+				'menu_no'   => $menu_no
 			);
 			$where = array(
 				'no'=>$contents_no,
@@ -320,36 +323,36 @@ class Board extends CI_Controller{
 			$this->db->query($sql);
 
 			$option = array(
-				'code'          =>$this->board['code'],
-				'original_no'   =>$original_no,
-				'parent_no'     =>$contents_no,
-				'depth'         =>$depth+1,
-				'order'         =>$order+1,
-				'user_no'       =>$this->session->userdata('no'),
-				'user_id'       =>$this->session->userdata('id'),
-				'user_name'     =>$this->session->userdata('name'),
-				'subject'       =>$subject,
-				'contents'      =>$contents,
-				'is_notice'     =>$is_notice,
-				'is_delete'     =>0,
-				'count_hit'     =>0,
-				'count_reply'   =>0,
-				'count_comment' =>0,
-				'ip'            =>$this->input->ip_address()
+				'code'          => $this->board['code'],
+				'original_no'   => $original_no,
+				'parent_no'     => $contents_no,
+				'depth'         => $depth+1,
+				'order'         => $order+1,
+				'user_no'       => $this->session->userdata('no'),
+				'user_id'       => $this->session->userdata('id'),
+				'user_name'     => $this->session->userdata('name'),
+				'subject'       => $subject,
+				'contents'      => $contents,
+				'is_notice'     => $is_notice,
+				'is_delete'     => 0,
+				'count_hit'     => 0,
+				'count_reply'   => 0,
+				'count_comment' => 0,
+				'ip'            => $this->input->ip_address(),
+				'menu_no'       => $menu_no
 			);
 			$result = $this->board_model->set_board_insert($option);
 			
 			if( $file_insert_fg ){
 				$option_filse = array(
-						'code'          => $this->board['code'],
-						'parent_no'     => $result ,
-						'original_name' => $upload_data['orig_name'],
-						'upload_name'   => $upload_data['file_name']
+					'code'          => $this->board['code'],
+					'parent_no'     => $result ,
+					'original_name' => $upload_data['orig_name'],
+					'upload_name'   => $upload_data['file_name']
 				);
 				$this->board_model->set_board_file_insert($option_filse);
 			}
-			
-			
+
 			alert('등록되었습니다.', site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters ) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('contents_no','게시판 no','required');

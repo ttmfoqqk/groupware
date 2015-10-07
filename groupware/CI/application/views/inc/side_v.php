@@ -150,7 +150,7 @@
 						if($board_menu_json>0){
 							foreach ($board_menu_json as $lt) {
 						?>
-							<li><a href="<?php echo site_url('board/lists/'.$lt->code);?>"><span class="txt"><?php echo $lt->name;?></span></a></li>
+							<li><a href="<?php echo site_url('board/lists/'.$lt->code);?>"><span class="txt"> - <?php echo $lt->name;?></span></a></li>
 						<?	}
 						}?>
 						</ul>

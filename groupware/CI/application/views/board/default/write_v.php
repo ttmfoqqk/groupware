@@ -37,7 +37,14 @@
 							
 							<input type="hidden" name="parameters" id="parameters" value="<?echo urlencode($parameters);?>">
 
-								
+								<div class="form-group">
+									<label for="subject" class="col-lg-2 col-md-3 control-label">분류</label>
+									<div class="col-lg-10 col-md-9">
+										<select id="menu_no" name="menu_no" data-method="board" data-value="<?echo $data['menu_no'];?>" class="fancy-select form-control">
+											<option value="">분류</option>
+										</select>
+									</div>
+								</div>
 								<div class="form-group">
 									<label for="subject" class="col-lg-2 col-md-3 control-label">제목</label>
 									<div class="col-lg-10 col-md-9">

@@ -47,22 +47,27 @@ class Board_model extends CI_Model{
 		if($type == 'count'){
 			$this->db->select('count(*) as total');
 		}elseif($type == 'notice'){
-			$this->db->select('*');
+			$this->db->select('board.*');
+			$this->db->select('menu.no as menu_no');
+			$this->db->select('menu.name as menu_name');
 			$this->db->where('is_notice',0);
 		}else{
-			$this->db->select('*');
+			$this->db->select('board.*');
+			$this->db->select('menu.no as menu_no');
+			$this->db->select('menu.name as menu_name');
 			$this->db->limit($limit,$offset);
 		}
 		if($type != 'count'){
-			$this->db->order_by('original_no','DESC');
-			$this->db->order_by('order','ASC');
+			$this->db->order_by('board.original_no','DESC');
+			$this->db->order_by('board.order','ASC');
 		}
 		if($type != 'notice'){
 			set_options($option);
 		}
-		$this->db->from('sw_board_contents');
-		$this->db->where('code',$code);
-		$this->db->where('is_delete',0);
+		$this->db->from('sw_board_contents as board');
+		$this->db->join('sw_menu as menu','board.menu_no = menu.no','left');
+		$this->db->where('board.code',$code);
+		$this->db->where('board.is_delete',0);
 		
 		$query = $this->db->get();
 		
@@ -77,12 +82,16 @@ class Board_model extends CI_Model{
 	}
 	public function get_board_detail($option=NULL,$setVla=array(),$method=null){
 		if( $method == 'view' ){
-			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$option['where']['no']."' ";
+			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$option['where']['board.no']."' ";
 			$this->db->query($sql);
 		}
-		$this->db->select('*');
-		$this->db->from('sw_board_contents');
-		$this->db->where('is_delete',0);
+		$this->db->select('board.*');
+		$this->db->select('menu.no as menu_no');
+		$this->db->select('menu.name as menu_name');
+		$this->db->from('sw_board_contents as board');
+		$this->db->join('sw_menu as menu','board.menu_no = menu.no','left');
+		
+		$this->db->where('board.is_delete',0);
 		set_options($option);
 		
 		$query  = $this->db->get();
