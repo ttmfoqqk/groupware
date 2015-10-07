@@ -26,6 +26,9 @@ class Menu extends CI_Controller{
 		case 'project':
 			$menu_name = "업무 분류관리";
 			break;
+		case 'board':
+			$menu_name = "게시판 분류관리";
+			break;
 		}
 
 		define('MENU_NAME' , $menu_name);

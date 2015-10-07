@@ -143,6 +143,7 @@
 						<a href="#"><i class="l-basic-elaboration-message-dots"></i> <span class="txt">게시판</span></a>
 						<ul class="sub">
 							<li><a href="<?php echo site_url('board_setting/lists');?>"><span class="txt">게시판 관리</span></a></li>
+							<li><a href="<?php echo site_url('menu/lists/board');?>"><span class="txt">게시판 분류</span></a></li>
 						<?php 
 						// 게시판 목록셋팅 -> hooks/Common.php
 						$board_menu_json = json_decode(BOARD_LIST_JSON);
