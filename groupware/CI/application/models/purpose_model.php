@@ -158,7 +158,7 @@ class Purpose_model extends CI_Model{
 
 		$data['point_total']     = ($data['point_avg'] * $data['percent_display'] / 100) + $data['point_text'];
 		$data['point_total']     = ceil($data['point_total'] * 100) / 100;
-		$data['percent_total']   = $data['point_total'];
+		$data['percent_total']   = $data['point_total'] * 10;
 
 		return $data;
 	}
