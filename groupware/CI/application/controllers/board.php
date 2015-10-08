@@ -12,7 +12,8 @@ class Board extends CI_Controller{
 			'sData'     => !$this->input->get('sData')     ? '' : $this->input->get('sData')    ,
 			'eData'     => !$this->input->get('eData')     ? '' : $this->input->get('eData')    ,
 			'subject'   => !$this->input->get('subject')   ? '' : $this->input->get('subject')  ,
-			'user_name' => !$this->input->get('user_name') ? '' : $this->input->get('user_name')
+			'user_name' => !$this->input->get('user_name') ? '' : $this->input->get('user_name'),
+			'menu_no'   => !$this->input->get('menu_no')   ? '' : $this->input->get('menu_no')
 		);
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
 
@@ -54,12 +55,17 @@ class Board extends CI_Controller{
 
 	public function lists(){
 		$option['where'] = array(
-			'date_format(board.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
-			'date_format(board.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
+			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
+			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
 		);
 		$option['like'] = array(
-			'board.subject'   => $this->PAGE_CONFIG['params']['subject'],
-			'board.user_name' => $this->PAGE_CONFIG['params']['user_name']
+			'subject'   => $this->PAGE_CONFIG['params']['subject'],
+			'user_name' => $this->PAGE_CONFIG['params']['user_name']
+		);
+		
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		$option['where_in'] = array(
+			'menu_no' => $array_menu
 		);
 
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
@@ -92,10 +98,10 @@ class Board extends CI_Controller{
 	private function views($setVla=array(),$mode=null){
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(
-			'board.no'=>$no,
-			'board.code'=>$this->board['code']
+			'no'   => $no,
+			'code' => $this->board['code']
 		);
-		$data['data']  = $this->board_model->get_board_detail($option,$setVla,$mode);
+		$data['data'] = $this->board_model->get_board_detail($option,$setVla,$mode);
 		
 		$option['where'] = array(
 			'parent_no'=>$no,
