@@ -42,6 +42,13 @@ class Menu extends CI_Controller{
 
 	public function _remap($method){
 		login_check();
+		
+		if( $method == 'write' or $method == 'proc' or $method == 'moves' or $method == 'update' or $method == 'delete' or $method == 'create' ){
+			permission_check('menu-'.$this->PAGE_CONFIG['method'],'W');
+		}else{
+			permission_check('menu-'.$this->PAGE_CONFIG['method'],'R');
+		}
+		
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();

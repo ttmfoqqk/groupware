@@ -20,6 +20,7 @@ class Schedule extends CI_Controller{
 
 	public function _remap($method){
 		login_check();
+		permission_check('schedule','R');
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();

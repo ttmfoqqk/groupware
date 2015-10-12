@@ -12,6 +12,7 @@ class Account extends CI_Controller{
     }
 
 	public function _remap($method){
+		permission_check('account','W');
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();

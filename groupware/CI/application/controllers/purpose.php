@@ -39,11 +39,13 @@ class Purpose extends CI_Controller{
 		$this->search();
 	}
 	public function search(){
+		permission_check('purpose-search','R');
 		$data['list'] = array();
 		$this->load->view('purpose/search_v',$data);
 	}
 	
 	public function appraisal(){
+		permission_check('purpose-appraisal','R');
 		$d_year   = $this->PAGE_CONFIG['params']['d_year'];
 		$d_type   = $this->PAGE_CONFIG['params']['d_type'];
 		$d_option = $this->PAGE_CONFIG['params']['d_option'];

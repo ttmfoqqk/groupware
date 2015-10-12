@@ -5,19 +5,20 @@ class BaseCode extends CI_Controller{
 	
 	public function __construct() {
 		parent::__construct();
-		set_cookie('left_menu_open_cookie',site_url('baseCode'),'0');
-		login_check();
 		$this->load->model("md_company");
 		$this->md_company->setTable($this->TABLE_NAME);
     }
 
 	public function _remap($method){
+		login_check();
+		permission_check('baseCode','R');
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
 			}
 		}else{
 			if(method_exists($this, $method)){
+				set_cookie('left_menu_open_cookie',site_url('baseCode'),'0');
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
 				$this->$method();

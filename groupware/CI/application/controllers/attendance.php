@@ -14,6 +14,7 @@ class Attendance extends CI_Controller{
     }
 
 	public function _remap($method){
+		
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
@@ -40,6 +41,7 @@ class Attendance extends CI_Controller{
 	}
 	
 	public function lists(){
+		permission_check('att-list','R');
 		$this->CATEGORY = 'attendance';
 		$this->TABLE_NAME = 'sw_attendance_history';
 		$this->PAGE_NAME = '근태현황';
@@ -103,6 +105,7 @@ class Attendance extends CI_Controller{
 
 
 	public function set(){
+		permission_check('att-set','R');
 		$this->TABLE_NAME = 'sw_attendance';
 		$this->PAGE_NAME = '근태설정';
 		$this->md_company->setTable($this->TABLE_NAME);
@@ -159,7 +162,7 @@ class Attendance extends CI_Controller{
 		//누적 지각 옵션 값
 		$this->md_company->setTable('sw_base_code');
 		$ret = $this->md_company->get(array('key'=>'accrue_lateness_time'), 'name');
-		print_r($ret);
+		//print_r($ret);
 		$data['accure_lateness'] = isset($ret[0]['name']) ? $ret[0]['name'] : '';
 		
 		//페이지 타이틀 설정

@@ -40,7 +40,11 @@ class Information extends CI_Controller{
 
 	public function _remap($method){
 		login_check();
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'R');
+		if( $method == 'write' or $method == 'proc' ){
+			permission_check('info-'.$this->PAGE_CONFIG['set_page'],'W');
+		}else{
+			permission_check('info-'.$this->PAGE_CONFIG['set_page'],'R');
+		}
 		
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
@@ -102,8 +106,6 @@ class Information extends CI_Controller{
 	}
 
 	public function write(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'W');
-		
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(
 			'no'=>$no,
@@ -124,8 +126,6 @@ class Information extends CI_Controller{
 	}
 
 	public function proc(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'W');
-		
 		$this->load->library('form_validation');
 
 		$action_type  = $this->input->post('action_type');
@@ -230,8 +230,6 @@ class Information extends CI_Controller{
 	
 	/* 담당자 */
 	public function _staff_lists(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'R');
-		
 		$no = $this->input->post('no');
 		$option['where'] = array(
 			'information_no' => $no
@@ -241,8 +239,6 @@ class Information extends CI_Controller{
 	}
 	
 	public function _staff_insert(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'W');
-		
 		$no = $this->input->post('no');
 		$json_data  = json_decode($this->input->post('json_data'));
 	
@@ -282,8 +278,6 @@ class Information extends CI_Controller{
 	
 	/* 사이트 */
 	public function _site_lists(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'R');
-		
 		$no = $this->input->post('no');
 		$option['where'] = array(
 			'information_no'=>$no
@@ -293,8 +287,6 @@ class Information extends CI_Controller{
 	}
 	
 	public function _site_insert(){
-		permission_check('info-'.$this->PAGE_CONFIG['set_page'],'W');
-		
 		$no = $this->input->post('no');
 		$json_data  = json_decode($this->input->post('json_data'));
 	

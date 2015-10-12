@@ -6,13 +6,21 @@ class Rule extends CI_Controller{
 	
 	public function __construct() {
 		parent::__construct();
-		login_check();
+		
 		$this->load->model('md_company');
 		$this->load->model('md_rule');
 		$this->md_company->setTable($this->TABLE_NAME);
     }
 
 	public function _remap($method){
+		login_check();
+
+		if( $method == 'write' or $method == 'proc' ){
+			permission_check('rule','W');
+		}else{
+			permission_check('rule','R');
+		}
+		
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();

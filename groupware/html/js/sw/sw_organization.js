@@ -31,7 +31,7 @@ $(document).ready(function() {
 function action_move(obj){
 	$.ajax({
 		type     : 'POST',
-		url      : '/groupware/menu/moves',
+		url      : '/groupware/menu/moves/'+$category,
 		dataType : 'json',
 		data     : {
 			json_data : obj
@@ -61,7 +61,7 @@ function action_update(obj){
 				//alert(result);
 				$.ajax({
 					type     : 'POST',
-					url      : '/groupware/menu/update',
+					url      : '/groupware/menu/update/'+$category,
 					dataType : 'json',
 					data     : {
 						no : $no,
@@ -98,7 +98,7 @@ function action_delete(obj){
 			if(result){
 				$.ajax({
 					type     : 'POST',
-					url      : '/groupware/menu/delete',
+					url      : '/groupware/menu/delete/'+$category,
 					dataType : 'json',
 					data     : {
 						no : li.attr('data-id')
@@ -135,7 +135,7 @@ function action_insert(parent_no){
 			if( $.trim(result) ){
 				$.ajax({
 					type     : 'POST',
-					url      : '/groupware/menu/create',
+					url      : '/groupware/menu/create/'+$category,
 					dataType : 'html',
 					data     : {
 						category  : $category ,

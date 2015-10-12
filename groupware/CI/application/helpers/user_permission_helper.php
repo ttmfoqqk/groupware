@@ -21,6 +21,7 @@ function login_check() {
 // 권한 체크
 
 function permission_check($category,$per){
+	$CI     =& get_instance();
 	$result = permission_search($category,$per);
 
 	if($result == FALSE){

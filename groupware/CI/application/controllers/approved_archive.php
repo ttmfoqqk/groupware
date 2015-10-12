@@ -27,6 +27,12 @@ class Approved_archive extends CI_Controller{
 
 	public function _remap($method){
 		login_check();
+		if( $method == 'write' or $method == 'proc' ){
+			permission_check('app-archive','W');
+		}else{
+			permission_check('app-archive','R');
+		}
+		
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
