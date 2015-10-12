@@ -77,6 +77,16 @@ class _Common{
 		unset($count_approved);
 		unset($result);
 		unset($query);
+		
+		// 권한 목록
+		$CI->db->select('category,permission');
+		$CI->db->from('sw_user_permission');
+		$CI->db->where('user_no',$CI->session->userdata('no'));
+		$query = $CI->db->get();
+		$query = $query->result_array();
+		
+		define('PERMISSION_JSON', json_encode($query) );
+		unset($query);
 	}
 }
 ?>

@@ -18,5 +18,44 @@ function login_check() {
 		}
 	}
 }
-// 권한 체크??? true/false 리턴
+// 권한 체크
+
+function permission_check($category,$per){
+	$result = permission_search($category,$per);
+
+	if($result == FALSE){
+		if( $CI->input->is_ajax_request() ){
+			$return = array(
+				'result' => 'error',
+				'msg'    => 'no permission'
+			);
+			echo json_encode($return);
+			exit;
+		}else{
+			alert('권한이 없습니다.');
+			exit;
+		}
+	}
+}
+
+function permission_search($category=NULL,$per='R'){
+	$plug = FALSE;
+	$json = json_decode(PERMISSION_JSON);
+	
+	foreach($json as $item){
+		if($item->category == $category){
+			$permission = explode('|',$item->permission);
+			foreach($permission as $lt){
+				if($lt == $per){
+					$plug = TRUE;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	
+	return $plug;
+}
+
 ?>
