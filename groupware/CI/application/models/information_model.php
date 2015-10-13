@@ -11,6 +11,7 @@ class Information_model extends CI_Model{
 			$this->db->select('date_format(created,"%Y-%m-%d") as created',false);
 			$this->db->order_by('order','ASC');
 			$this->db->order_by('no','DESC');
+			$this->db->limit($limit,$offset);
 		}
 		$this->db->from('sw_information');
 		set_options($option);

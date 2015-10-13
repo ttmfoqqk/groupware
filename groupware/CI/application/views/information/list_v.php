@@ -78,7 +78,7 @@
 									</select>
 								</div>
 								<div class="pull-right">
-									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+									<button type="button" class="btn btn-alt mr5 mb10" onclick="location.href='<?php echo $excel_url;?>'">엑셀</button>
 								</div>
 								<!-- END 테이블 옵션  -->
 								
