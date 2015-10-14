@@ -11,11 +11,12 @@ class Approved_model extends CI_Model{
 			$this->db->select('count(*) as total');
 		}else{
 			$this->db->select('approved.*');
+			$this->db->select('date_format(approved.created,"%Y-%m-%d") as created',FALSE);
 			$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
 			$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no');
 			$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
-			$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
-			$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+			$this->db->select('IF( approved.kind = 0, date_format(project.sData,"%Y-%m-%m") , date_format(approved.sData,"%Y-%m-%d") ) as sData ',FALSE);
+			$this->db->select('IF( approved.kind = 0, date_format(project.eData,"%Y-%m-%m") , date_format(approved.eData,"%Y-%m-%d") ) as eData ',FALSE);
 			$this->db->select('project.pPoint,project.mPoint');
 			$this->db->select('user.name as user_name ');
 			
@@ -99,12 +100,13 @@ class Approved_model extends CI_Model{
 			$this->db->select('count(*) as total');
 		}else{
 			$this->db->select('approved.*');
+			$this->db->select('date_format(approved.created,"%Y-%m-%d") as created',false);
 			$this->db->select('user.name as user_name');
 			$this->db->select('IF( approved.kind = 0, project_menu.no , document_menu.no ) as menu_no ');
 			$this->db->select('IF( approved.kind = 0, project_menu.name , document_menu.name ) as menu_name ');
 			$this->db->select('IF( approved.kind = 0, project.title , approved.title ) as title ');
-			$this->db->select('IF( approved.kind = 0, project.sData , approved.sData ) as sData ');
-			$this->db->select('IF( approved.kind = 0, project.eData , approved.eData ) as eData ');
+			$this->db->select('IF( approved.kind = 0, date_format(project.sData,"%Y-%m-%d") , date_format(approved.sData,"%Y-%m-%d") ) as sData ',false);
+			$this->db->select('IF( approved.kind = 0, date_format(project.eData,"%Y-%m-%d") , date_format(approved.eData,"%Y-%m-%d") ) as eData ',false);
 			$this->db->select('project.pPoint,project.mPoint');
 			
 			$this->db->order_by('approved.order','ASC');

@@ -9,6 +9,8 @@ class Meeting_model extends CI_Model{
 			$this->db->select('count(*) as total');
 		}else{
 			$this->db->select('meeting.*');
+			$this->db->select('IF(meeting.is_active=0,"사용","비사용") as active',FALSE);
+			$this->db->select('date_format(meeting.created,"%Y-%m-%d") as created',FALSE);
 			$this->db->select('menu.no as menu_no');
 			$this->db->select('menu.name as menu_name');
 			$this->db->select('user.name as user_name');

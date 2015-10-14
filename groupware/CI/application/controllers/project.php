@@ -35,20 +35,22 @@ class Project extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
-				set_cookie('left_menu_open_cookie',site_url('project/'),'0');
-				$this->load->view('inc/header_v');
-				$this->load->view('inc/side_v');
-				$this->$method();
-				$this->load->view('inc/footer_v');
+				if($method == 'excel'){
+					$this->$method();
+				}else{
+					set_cookie('left_menu_open_cookie',site_url('project/'),'0');
+					$this->load->view('inc/header_v');
+					$this->load->view('inc/side_v');
+					$this->$method();
+					$this->load->view('inc/footer_v');
+				}
 			}else{
 				show_error('에러');
 			}
 		}
 	}
-	public function index(){
-		$this->lists();
-	}
-	public function lists(){
+	
+	private function getListOption(){
 		$option['where'] = array(
 			'date_format(sw_project.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
 			'date_format(sw_project.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
@@ -83,17 +85,25 @@ class Project extends CI_Controller{
 		}else{
 			$option['custom'] = $custom_sData . $custom_eData;
 		}
-
+		return $option;
+	}
+	
+	
+	public function index(){
+		$this->lists();
+	}
+	public function lists(){
+		$option = $this->getListOption();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
 		$data['total']         = $this->project_model->get_project_list($option,null,null,'count');
 		$data['list']          = $this->project_model->get_project_list($option,PAGING_PER_PAGE,$offset);
 		
 		$data['anchor_url']    = site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		$data['write_url']     = site_url('project/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
-		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']    = site_url('project/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
-		
+		$data['write_url']     = site_url('project/write/'.$this->PAGE_CONFIG['params_string']);
+		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['action_url']    = site_url('project/proc/' .$this->PAGE_CONFIG['cur_page']);
+		$data['excel_url']     = site_url('project/excel/'.$this->PAGE_CONFIG['params_string']);		
 		
 		$config['base_url']    = site_url('project/lists');
 		$config['total_rows']  = $data['total'];
@@ -106,6 +116,77 @@ class Project extends CI_Controller{
 
 		$this->load->view('project/project_v',$data);
 	}
+	
+	public function excel(){
+		$option = $this->getListOption();
+	
+		$data['total'] = $this->project_model->get_project_list($option,null,null,'count');
+		$data['list']  = $this->project_model->get_project_list($option,$data['total'],0);
+	
+	
+		$this->load->library('PHPExcel');
+		$objPHPExcel = new PHPExcel();
+	
+		$objPHPExcel->getProperties()->setCreator("groupware");
+		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
+		$objPHPExcel->getProperties()->setTitle("업무 정보");
+		$objPHPExcel->setActiveSheetIndex(0);
+	
+		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+		foreach (range('A', 'H') as $column){
+			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
+	
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
+				array(
+					'font' => array(
+						'bold' => true,
+						'size' => 14
+					),
+					'alignment' => array(
+						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+						'wrap'       => true
+					)
+				)
+			);
+		}
+	
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', '담당부서');
+		$objPHPExcel->getActiveSheet()->setCellValue('B1', '분류');
+		$objPHPExcel->getActiveSheet()->setCellValue('C1', '제목');
+		$objPHPExcel->getActiveSheet()->setCellValue('D1', '진행기간');
+		$objPHPExcel->getActiveSheet()->setCellValue('E1', '결재점수');
+		$objPHPExcel->getActiveSheet()->setCellValue('F1', '누락점수');
+		$objPHPExcel->getActiveSheet()->setCellValue('G1', '기안일자');
+		$objPHPExcel->getActiveSheet()->setCellValue('H1', '기안자');
+	
+		$row = 2;
+		foreach ( $data['list'] as $lt ) {
+			$part = search_node($lt['part_no'],'parent');
+			$menu = search_node($lt['menu_no'],'parent');
+	
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $part['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $menu['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['title']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['sData'].' ~ '.$lt['eData']);
+			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['pPoint']);
+			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['mPoint']);
+			$objPHPExcel->getActiveSheet()->setCellValue('G'.$row, $lt['created']);
+			$objPHPExcel->getActiveSheet()->setCellValue('H'.$row, $lt['user_name']);
+			$row ++;
+		}
+	
+		$filename = '업무 정보_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
+		header('Content-Type: application/vnd.ms-excel'); //mime type
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+		header('Cache-Control: max-age=0'); //no cache
+
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+		$objWriter->save('php://output');
+	}
+	
+	
 	public function write(){
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(

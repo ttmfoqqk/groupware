@@ -8,6 +8,9 @@ class Project_model extends CI_Model{
 			$this->db->select('count(*) as total');
 		}else{
 			$this->db->select('sw_project.*');
+			$this->db->select('date_format(sw_project.sData,"%Y-%m-%d") as sData',FALSE);
+			$this->db->select('date_format(sw_project.eData,"%Y-%m-%d") as eData',FALSE);
+			$this->db->select('date_format(sw_project.created,"%Y-%m-%d") as created',FALSE);
 			$this->db->select('a.no as part_no');
 			$this->db->select('a.name as part_name');
 			$this->db->select('b.name as menu_name');

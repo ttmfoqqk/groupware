@@ -74,6 +74,16 @@
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10"> 검 색</button>
 									</div>
 								</div>
+								
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num">
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="button" class="btn btn-alt mr5 mb10" onclick="location.href='<?php echo $excel_url;?>'">엑셀</button>
+								</div>
 
 
 							</form>
@@ -114,8 +124,8 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['order'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $menu['name'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['name'];?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['is_active']=='0'?'사용':'비사용');?></a></td>
-										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo substr($lt['created'],0,10);?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['active'];?></a></td>
+										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 									</tr>
 								<?php }?>

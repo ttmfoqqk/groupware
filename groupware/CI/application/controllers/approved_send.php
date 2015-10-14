@@ -71,44 +71,44 @@ class Approved_send extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
-				set_cookie('left_menu_open_cookie',site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page']),'0');
-				
-				$this->load->view('inc/header_v');
-				$this->load->view('inc/side_v');
-				$this->$method();
-				$this->load->view('inc/footer_v');
+				if($method == 'excel'){
+					$this->$method();
+				}else{
+					set_cookie('left_menu_open_cookie',site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page']),'0');
+					
+					$this->load->view('inc/header_v');
+					$this->load->view('inc/side_v');
+					$this->$method();
+					$this->load->view('inc/footer_v');
+				}
 			}else{
 				show_error('에러');
 			}
 		}
 	}
-
-	public function index(){
-		$this->lists();
-	}
-
-	public function lists(){
+	
+	private function getListOption(){
 		$option['where'] = array(
-			'date_format(approved.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
-			'date_format(approved.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
-			'approved.no'      => $this->PAGE_CONFIG['params']['doc_no'],
-			'status.sender'    => $this->session->userdata('no'),
-			'status.status'    => $this->PAGE_CONFIG['status'],
-			'status.created >' => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
-			'status.created <' => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
+				'date_format(approved.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['swData'],
+				'date_format(approved.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['ewData'],
+				'approved.no'      => $this->PAGE_CONFIG['params']['doc_no'],
+				'status.sender'    => $this->session->userdata('no'),
+				'status.status'    => $this->PAGE_CONFIG['status'],
+				'status.created >' => $this->PAGE_CONFIG['set_page']=='a'  ? date('Y-m-d') : '',
+				'status.created <' => $this->PAGE_CONFIG['set_page']=='ao' ? date('Y-m-d') : ''
 		);
-
+		
 		$option['like'] = array(
-			'rrr.receiver_name' => $this->PAGE_CONFIG['params']['name_receiver'],
-			'approved.title'    => $this->PAGE_CONFIG['params']['title'],
+				'rrr.receiver_name' => $this->PAGE_CONFIG['params']['name_receiver'],
+				'approved.title'    => $this->PAGE_CONFIG['params']['title'],
 		);
 		
 		$array_part = search_node($this->PAGE_CONFIG['params']['part_receiver'],'children');
 		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
 		
 		$option['where_in'] = array(
-			'status.part_receiver' => $array_part,
-			'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
+				'status.part_receiver' => $array_part,
+				'IF(approved.kind = 0, project.menu_no , document.menu_no)' => $array_menu
 		);
 		
 		$sData  = $this->PAGE_CONFIG['params']['sData'];
@@ -128,7 +128,19 @@ class Approved_send extends CI_Controller{
 		}else{
 			$option['custom'] = $custom_sData . $custom_eData;
 		}
+		return $option;
+	}
+	
+	
+	
+	
 
+	public function index(){
+		$this->lists();
+	}
+
+	public function lists(){
+		$option = $this->getListOption();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 
 		$data['total']         = $this->approved_model->approved_send_list($option,null,null,'count');
@@ -136,6 +148,7 @@ class Approved_send extends CI_Controller{
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('approved_send/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['action_url']    = site_url('approved_send/proc/' .$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']);
+		$data['excel_url']     = site_url('approved_send/excel/'.$this->PAGE_CONFIG['set_page'].$this->PAGE_CONFIG['params_string']);
 
 		$config['base_url']    = site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page']);
 		$config['total_rows']  = $data['total'];
@@ -147,6 +160,71 @@ class Approved_send extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_send_v',$data);
+	}
+	
+	public function excel(){
+		$option = $this->getListOption();
+	
+		$data['total'] = $this->approved_model->approved_send_list($option,null,null,'count');
+		$data['list']  = $this->approved_model->approved_send_list($option,$data['total'],0);
+	
+		$this->load->library('PHPExcel');
+		$objPHPExcel = new PHPExcel();
+	
+		$objPHPExcel->getProperties()->setCreator("groupware");
+		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
+		$objPHPExcel->getProperties()->setTitle("보낸 결재");
+		$objPHPExcel->setActiveSheetIndex(0);
+	
+		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+		foreach (range('A', 'G') as $column){
+			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
+	
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
+					array(
+							'font' => array(
+									'bold' => true,
+									'size' => 14
+							),
+							'alignment' => array(
+									'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+									'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+									'wrap'       => true
+							)
+					)
+			);
+		}
+	
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', '분류');
+		$objPHPExcel->getActiveSheet()->setCellValue('B1', '제목');
+		$objPHPExcel->getActiveSheet()->setCellValue('C1', '진행기간');
+		$objPHPExcel->getActiveSheet()->setCellValue('D1', '결재');
+		$objPHPExcel->getActiveSheet()->setCellValue('E1', '누락');
+		$objPHPExcel->getActiveSheet()->setCellValue('F1', '등록일자');
+		$objPHPExcel->getActiveSheet()->setCellValue('G1', '담당자');
+	
+		$row = 2;
+		foreach ( $data['list'] as $lt ) {
+			$menu = search_node($lt['menu_no'],'parent');
+	
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $menu['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['title']);
+			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['sData'].' ~ '.$lt['eData']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, ($lt['kind']=='0' ? '+'.$lt['pPoint'] : ''));
+			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, ($lt['kind']=='0' ? '-'.$lt['mPoint'] : ''));
+			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['created']);
+			$objPHPExcel->getActiveSheet()->setCellValue('G'.$row, $lt['user_name']);
+			$row ++;
+		}
+	
+		$filename = '보낸 결재_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
+		header('Content-Type: application/vnd.ms-excel'); //mime type
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+		header('Cache-Control: max-age=0'); //no cache
+
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+		$objWriter->save('php://output');
 	}
 
 	public function write(){

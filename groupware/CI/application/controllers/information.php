@@ -68,7 +68,7 @@ class Information extends CI_Controller{
 		}
 	}
 	
-	public function excel(){
+	private function getListOption(){
 		$option['where'] = array(
 				'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
 				'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData'],
@@ -80,98 +80,17 @@ class Information extends CI_Controller{
 				'bizNumber' => $this->PAGE_CONFIG['params']['bizNumber'],
 				'phone'     => $this->PAGE_CONFIG['params']['phone']
 		);
-		$data['total'] = $this->information_model->get_list($option,null,null,'count');
-		$data['list']  = $this->information_model->get_list($option,$data['total'],0);
-
-		/**
-		 * 엑셀 테스트
-		 */
-		$this->load->library('PHPExcel');
-
-		$objPHPExcel = new PHPExcel();
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("회사정보");
-		$objPHPExcel->setActiveSheetIndex(0);
-		
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'F') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-			
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					/*
-					'fill' => array(
-						'type' => PHPExcel_Style_Fill::FILL_SOLID,
-						'color' => array('rgb' => 'b8b8b8')
-					),					
-					'borders' => array(
-						'top'    => array('style' => PHPExcel_Style_Border::BORDER_DOUBLE),
-						'bottom' => array('style' => PHPExcel_Style_Border::BORDER_DOUBLE),
-						'left'   => array('style' => PHPExcel_Style_Border::BORDER_DOUBLE),
-						'right'  => array('style' => PHPExcel_Style_Border::BORDER_DOUBLE)
-					),
-					*/
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '구분');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '상호명');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '사업자번호');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '전화번호');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '팩스번호');
-		$objPHPExcel->getActiveSheet()->setCellValue('F1', '등록일자');
-		
-		$row = 2;
-		foreach ( $data['list'] as $lt ) {
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $lt['gubun']);
-			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['bizName']);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['bizNumber']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['phone']);
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['fax']);
-			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['created']);
-			$row ++;
-		}
-
-		$filename = PAGE_TITLE . '_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
-		
-		//save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
-		//if you want to save it as .XLSX Excel 2007 format
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+		return $option;
 	}
+	
+	
 
 	public function index(){
 		$this->lists();
 	}
 
 	public function lists(){
-		$option['where'] = array(
-			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
-			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData'],
-			'category' => $this->PAGE_CONFIG['set_page']
-		);
-		$option['like'] = array(
-			'gubun'     => $this->PAGE_CONFIG['params']['gubun'],
-			'bizName'   => $this->PAGE_CONFIG['params']['bizName'],
-			'bizNumber' => $this->PAGE_CONFIG['params']['bizNumber'],
-			'phone'     => $this->PAGE_CONFIG['params']['phone']
-		);
-
+		$option = $this->getListOption();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		
 		$data['total']         = $this->information_model->get_list($option,null,null,'count');
@@ -197,6 +116,66 @@ class Information extends CI_Controller{
 		$data['pagination']    = $this->pagination->create_links();
 
 		$this->load->view('information/list_v',$data);
+	}
+	
+	public function excel(){
+		$option = $this->getListOption();
+		$data['total'] = $this->information_model->get_list($option,null,null,'count');
+		$data['list']  = $this->information_model->get_list($option,$data['total'],0);
+	
+		$this->load->library('PHPExcel');
+	
+		$objPHPExcel = new PHPExcel();
+		$objPHPExcel->getProperties()->setCreator("groupware");
+		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
+		$objPHPExcel->getProperties()->setTitle("회사정보");
+		$objPHPExcel->setActiveSheetIndex(0);
+	
+		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+		foreach (range('A', 'F') as $column){
+			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
+				
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
+				array(
+					'font' => array(
+						'bold' => true,
+						'size' => 14
+					),
+					'alignment' => array(
+						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+						'wrap'       => true
+					)
+				)
+			);
+		}
+	
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', '구분');
+		$objPHPExcel->getActiveSheet()->setCellValue('B1', '상호명');
+		$objPHPExcel->getActiveSheet()->setCellValue('C1', '사업자번호');
+		$objPHPExcel->getActiveSheet()->setCellValue('D1', '전화번호');
+		$objPHPExcel->getActiveSheet()->setCellValue('E1', '팩스번호');
+		$objPHPExcel->getActiveSheet()->setCellValue('F1', '등록일자');
+	
+		$row = 2;
+		foreach ( $data['list'] as $lt ) {
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $lt['gubun']);
+			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['bizName']);
+			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['bizNumber']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['phone']);
+			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['fax']);
+			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['created']);
+			$row ++;
+		}
+	
+		$filename = PAGE_TITLE . '_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
+		header('Content-Type: application/vnd.ms-excel'); //mime type
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+		header('Cache-Control: max-age=0'); //no cache
+	
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+		$objWriter->save('php://output');
 	}
 
 	public function write(){

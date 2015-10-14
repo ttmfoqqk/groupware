@@ -96,18 +96,21 @@
 										<button type="submit" class="btn btn-primary btn-alt mr5 mb10"> 검 색</button>
 									</div>
 								</div>
+								
+								<div class="pull-left">
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num">
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
+									</select>
+								</div>
+								<div class="pull-right">
+									<button type="button" class="btn btn-alt mr5 mb10" onclick="location.href='<?php echo $excel_url;?>'">엑셀</button>
+								</div>
 
 
 							</form>
 							<!-- 검색 -->
-							<div class="pull-left">
-								<select id="board_type" name="board_type" class="fancy-select form-control">
-									<option value="10">10개</option>
-								</select>
-							</div>
-							<div class="pull-right">
-								<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
-							</div>
+							
 
 							<form id="approved-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="delete">
