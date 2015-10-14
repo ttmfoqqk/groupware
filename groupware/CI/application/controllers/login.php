@@ -25,18 +25,15 @@ class Login extends CI_Controller{
 		}else{
 			$this->load->model('member_model');
 
-			$pwd    = $this->input->post('password');
-			$salt   = $this->config->item('encryption_key');
-			$string = $pwd . $salt;
+			$userid   = $this->input->post('userid');
+			$password = $this->member_model->encryp($this->input->post('password'));
+			
+			$option['where'] =array(
+				'id'  => $userid,
+				'pwd' => $password
+			);
 
-			for($i=0;$i<10;$i++) {
-				$string = hash('sha512',$string . $pwd . $salt);
-			}
-
-			$result = $this->member_model->get_login(array(
-				'userid' => $this->input->post('userid'),
-				'password' => $string
-			));
+			$result = $this->member_model->get_login($option);
 
 			if( $result->num_rows() > 0 ){
 				$data = $result->row_array();

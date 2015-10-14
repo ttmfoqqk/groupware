@@ -6,8 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2>사원 설정</h2>
-					<span class="txt">사원 설정</span>
+					<h2>사원 관리</h2>
 				</div>
 			</div>
 			<div class="row">
@@ -17,78 +16,171 @@
 					<div class="panel panel-default">
 						<!-- Start .panel -->
 						<div class="panel-heading">
-							<h4 class="panel-title"><?echo ($data['name'] ? $data['name']:'게시판 생성');?></h4>
+							<h4 class="panel-title">사원 등록</h4>
 						</div>
+						
+						<!-- Start .panel-body -->
 						<div class="panel-body">
-
-							<form id="validate" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
-							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
-							<input type="hidden" name="user_no" id="user_no" value="<?echo $data['no'];?>">
-
+							<!-- top form(member-form-write-setting) start  -->
+							<form id="member-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form" enctype="multipart/form-data">
+								<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+								<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
 								<div class="form-group">
-									<label for="user_id" class="col-lg-2 col-md-3 control-label">아이디</label>
-									<div class="col-lg-10 col-md-9">
-										<input id="user_id" name="user_id" type="text" class="form-control" placeholder="아이디" value="<?echo $data['id'];?>" maxlength="20" <?echo $action_type=='edit'?'readonly':''; ?>>
+									<!-- col-lg-2 start (profile picture) -->
+									<div class="col-lg-2">
+										<div class="row">
+											<div class="col-lg-1"></div>
+											<div class="col-lg-10">
+												<a href="#" class="thumbnail">		
+													<img id="user_pic" alt="" src="<?php if($data['file'] != '') echo $this->config->base_url() . 'upload/member/' . $data['file']?>" style="height: 200px;">
+												</a>
+												<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
+											</div>
+											<div class="col-lg-1"></div>
+										</div>
+									</div>
+									<!-- col-lg-2 end -->
+									<!-- col-lg-10 start (id, pass, name, position)-->
+									<div class="col-lg-10">
+	                                    <div class="form-group">
+	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>아이디</label>
+	                                        <div class="col-lg-10 col-md-10">
+	                                            <input type="text" class="form-control" name="id" id="id" value=<?php echo $data['id']?> <?php if($action_type!="create") echo " disabled='disabled'";?>>
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>비밀번호</label>
+	                                        <div class="col-lg-10 col-md-10">
+	                                            <input type="password" class="form-control" name="pass" id="pass">
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>이름</label>
+	                                        <div class="col-lg-10 col-md-10">
+	                                            <input type="text" class="form-control lb-left-align" name="name" id="name" value=<?php echo $data['name']?>>
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="col-lg-2 col-md-2 control-label lb-left-align" for=""><font class="red">* </font>직급</label>
+	                                        <div class="col-lg-10 col-md-10">
+	                                            <input type="text" class="form-control" name="position" id="position" value=<?php echo $data['position']?>>
+	                                        </div>
+	                                    </div>
+									</div>
+									<!-- col-lg-10 end -->
+								</div>
+								<div class="form-group">
+									<label for="phone" class="col-lg-2 col-md-2 control-label lb-left-align">전화번호</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="phone" name="phone" type="text" class="form-control" placeholder="" maxlength="20" value=<?php echo $data['phone']?>>
 									</div>
 								</div>
-
 								<div class="form-group">
-								<?if($action_type=='edit'){?>
-									<label for="new_user_password" class="col-lg-2 col-md-3 control-label">비밀번호 변경</label>
-									<div class="col-lg-10 col-md-9">
-										<input id="new_user_password" name="new_user_password" type="password" class="form-control" placeholder="비밀번호 변경시 작성" maxlength="20" >
-									</div>
-								<?}else{?>
-									<label for="user_password" class="col-lg-2 col-md-3 control-label">비밀번호</label>
-									<div class="col-lg-10 col-md-9">
-										<input id="user_password" name="user_password" type="password" class="form-control" placeholder="비밀번호" maxlength="20" >
-									</div>
-								<?}?>
-								</div>
-
-								<div class="form-group">
-									<label for="user_name" class="col-lg-2 col-md-3 control-label">이름</label>
-									<div class="col-lg-10 col-md-9">
-										<input id="user_name" name="user_name" type="text" class="form-control"  placeholder="이름" value="<?echo $data['name'];?>" maxlength="20">
+									<label for="sel_phone" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 핸드폰 번호</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="sel_phone" name="sel_phone" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['mobile']?>>
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="user_email" class="col-lg-2 col-md-3 control-label">이메일</label>
-									<div class="col-lg-10 col-md-9">
-										<input id="user_email" name="user_email" type="text" class="form-control"  placeholder="이메일" value="<?echo $data['email'];?>" maxlength="20">
+									<label for="email" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 이메일</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="email" name="email" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['email']?>>
 									</div>
 								</div>
-								 <div class="form-group">
-									<label class="col-lg-2 col-md-3 control-label">부서</label>
-									<div class="col-lg-10 col-md-9">
-										<select class="form-control" id="user_organization" name="user_organization">
-											<option value="">선택</option>
-											<?echo $option;?>
-										</select>
-									</div>
-								</div>
-
 								<div class="form-group">
-									<label for="" class="col-lg-2 col-md-3 control-label">페이지 권한</label>
-									<div class="col-lg-10 col-md-9">
-										<div class="checkbox-custom checkbox-inline">
-											<input type="checkbox" id="board_reply" name="board_reply" <?//echo ($data['reply'] == 0 ? 'checked':'')?>>
-											<label for="board_reply">페이지 관리 - 준비중</label>
+									<label for="addr" class="col-lg-2 col-md-2 control-label lb-left-align">주소</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="addr" name="addr" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['addr']?>>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="annual" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 연차</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="annual" name="annual" type="text" class="form-control" placeholder="" maxlength="20" value=<?php echo $data['annual']?>>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="adt_annual" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 연차적용일</label>
+									<div class="col-lg-4 col-md-4">
+										<div class="input-daterange input-group">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input type="text" class="form-control" name="anual_start" id="anual_start" value="<?php if($data['sDate'] != '') echo date('Y-m-d', strtotime($data['sDate']));?>"/>
+											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value="<?php if($data['eDate'] != '') echo date('Y-m-d', strtotime($data['eDate']));?>"/>
 										</div>
 									</div>
 								</div>
-							
+								<div class="form-group">
+									<label for="birthday" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 생년월일</label>
+									<div class="col-lg-2 col-md-2">
+										<div class="input-daterange input-group">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input type="text" class="form-control" name="birthday" id="birthday" value="<?php if($data['birth'] != '') echo date('Y-m-d', strtotime($data['birth']));?>"/>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="join_date" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 입사일</label>
+									<div class="col-lg-2 col-md-2">
+										<div class="input-daterange input-group">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input type="text" class="form-control" name="join_date" id="join_date" value="<?php if($data['inDate'] != '') echo  date('Y-m-d', strtotime($data['inDate']));?>"/>
+										</div>
+									</div>
+									<div class="col-lg-2 col-md-2">
+										<div class="radio-custom radio-inline">
+                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4" checked="checked">
+                                        	<label for="radio4">남자</label>
+                                        </div>
+                                        <div class="radio-custom radio-inline">
+                                        	<input type="radio" name="sex" value=1 <?=$data['gender'] == '1' ? ' checked="checked"' : '';?> id="radio5">
+                                        	<label for="radio5">여자</label>
+                                        </div>
+									</div>
+									
+								</div>
+								<div class="form-group">
+									<label for="color" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 색상</label>
+									<div class="col-lg-2 col-md-2">
+										<div id="component-colorpicker" class="input-group colorpicker-element">
+											<span class="input-group-addon"><i style="background-color: rgb(89, 161, 101);"></i></span>
+											<input type="text"  class="form-control" id="color" name="color" value="<?php echo $data['color'];?>">
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="order" class="col-lg-2 col-md-2 control-label lb-left-align">순서</label>
+									<div class="col-lg-10 col-md-10">
+										<input id="order" name="order" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['order']?>>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">재직여부</label>
+									<div class="col-lg-2 col-md-2">
+										<div class="radio-custom radio-inline">
+                                        	<input type="radio" name="in_office" value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office" checked="checked">
+                                        	<label for="in_office">재직</label>
+                                        </div>
+                                        <div class="radio-custom radio-inline">
+                                        	<input type="radio" name="in_office" value=1 <?=$data['is_active'] == '1' ? ' checked="checked"' : '';?> id="out_office">
+                                        	<label for="out_office">퇴사</label>
+                                        </div>
+									</div>
+								</div>
+								
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('member/lists')?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('member')?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<button id="contents_member_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+									<button id="contents_setting_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
-
+								
 							</form>
+							<!-- top form(member-form-write-setting) END  -->
+							
+
 						</div>
-						
+						<!-- End .panel-body -->
 						
 
 					</div>
@@ -105,14 +197,5 @@
 </div>
 <!-- / page-content -->
 
-
-
-<script src="/html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
-<script src="/html/plugins/forms/select2/select2.js"></script>
-<script src="/html/plugins/forms/validation/jquery.validate.js"></script>
-<script src="/html/plugins/forms/validation/additional-methods.min.js"></script>
-<script src="/html/plugins/charts/sparklines/jquery.sparkline.js"></script>
-
-<script src="/html/plugins/forms/checkall/jquery.checkAll.js"></script>
-
-<script src="/html/js/sw/sw_user_list.js"></script>
+<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-colorpicker/bootstrap-colorpicker.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_member_write.js"></script>
