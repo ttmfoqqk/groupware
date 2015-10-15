@@ -21,10 +21,13 @@
 						
 						<!-- Start .panel-body -->
 						<div class="panel-body">
+							
 							<!-- top form(member-form-write-setting) start  -->
 							<form id="member-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form" enctype="multipart/form-data">
-								<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
-								<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
+								
 								<div class="form-group">
 									<!-- col-lg-2 start (profile picture) -->
 									<div class="col-lg-2">
@@ -69,6 +72,7 @@
 									</div>
 									<!-- col-lg-10 end -->
 								</div>
+								
 								<div class="form-group">
 									<label for="phone" class="col-lg-2 col-md-2 control-label lb-left-align">전화번호</label>
 									<div class="col-lg-10 col-md-10">
@@ -78,7 +82,7 @@
 								<div class="form-group">
 									<label for="sel_phone" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 핸드폰 번호</label>
 									<div class="col-lg-10 col-md-10">
-										<input id="sel_phone" name="sel_phone" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['mobile']?>>
+										<input id="mobile" name="mobile" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['mobile']?>>
 									</div>
 								</div>
 								<div class="form-group">
@@ -104,8 +108,9 @@
 									<div class="col-lg-4 col-md-4">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="anual_start" id="anual_start" value="<?php if($data['sDate'] != '') echo date('Y-m-d', strtotime($data['sDate']));?>"/>
-											<span class="input-group-addon">to</span> <input type="text" class="form-control" name="anual_end" id="anual_end" value="<?php if($data['eDate'] != '') echo date('Y-m-d', strtotime($data['eDate']));?>"/>
+											<input type="text" class="form-control" name="sDate" id="sDate" value="<?php echo $data['sDate'];?>"/>
+											<span class="input-group-addon">to</span>
+											<input type="text" class="form-control" name="eDate" id="eDate" value="<?php echo $data['eDate'];?>"/>
 										</div>
 									</div>
 								</div>
@@ -114,7 +119,7 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="birthday" id="birthday" value="<?php if($data['birth'] != '') echo date('Y-m-d', strtotime($data['birth']));?>"/>
+											<input type="text" class="form-control" name="birth" id="birth" value="<?php echo $data['birth'];?>"/>
 										</div>
 									</div>
 								</div>
@@ -123,16 +128,16 @@
 									<div class="col-lg-2 col-md-2">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="join_date" id="join_date" value="<?php if($data['inDate'] != '') echo  date('Y-m-d', strtotime($data['inDate']));?>"/>
+											<input type="text" class="form-control" name="inDate" id="inDate" value="<?php echo $data['inDate'];?>"/>
 										</div>
 									</div>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name="sex" value=0 <?=$data['gender'] == '0' ? ' checked="checked"' : '';?> id="radio4" checked="checked">
+                                        	<input type="radio" name="gender" value="0" <?=$data['gender'] == '0' ? 'checked' : '';?> id="radio4" checked="checked">
                                         	<label for="radio4">남자</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
-                                        	<input type="radio" name="sex" value=1 <?=$data['gender'] == '1' ? ' checked="checked"' : '';?> id="radio5">
+                                        	<input type="radio" name="gender" value="1" <?=$data['gender'] == '1' ? 'checked' : '';?> id="radio5">
                                         	<label for="radio5">여자</label>
                                         </div>
 									</div>
@@ -150,25 +155,25 @@
 								<div class="form-group">
 									<label for="order" class="col-lg-2 col-md-2 control-label lb-left-align">순서</label>
 									<div class="col-lg-10 col-md-10">
-										<input id="order" name="order" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['order']?>>
+										<input id="order" name="order" type="text" class="form-control" maxlength="20" value=<?php echo $data['order']?>>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="in_office" class="col-lg-2 col-md-2 control-label lb-left-align">재직여부</label>
 									<div class="col-lg-2 col-md-2">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name="in_office" value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_office" checked="checked">
+                                        	<input type="radio" name="is_active" value="0" <?=$data['is_active'] == '0' ? 'checked' : '';?> id="in_office" checked="checked">
                                         	<label for="in_office">재직</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
-                                        	<input type="radio" name="in_office" value=1 <?=$data['is_active'] == '1' ? ' checked="checked"' : '';?> id="out_office">
+                                        	<input type="radio" name="is_active" value="1" <?=$data['is_active'] == '1' ? 'checked' : '';?> id="out_office">
                                         	<label for="out_office">퇴사</label>
                                         </div>
 									</div>
 								</div>
 								
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('member')?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>

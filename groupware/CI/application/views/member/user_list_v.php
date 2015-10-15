@@ -92,6 +92,7 @@
 
 							<form id="member-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
 							<input type="hidden" name="action_type" id="action_type" value="">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
 								
 								<table class="table table-bordered" id="tabletools">
 									<thead>
