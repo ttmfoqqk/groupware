@@ -1,22 +1,14 @@
 <?
-class Dev_member extends CI_Controller{
-	private $PAGE_CONFIG;
+class Member extends CI_Controller{
+	private $TABLE_NAME = 'sw_user';
+	private $CATEGORY = 'member';
+	private $PAGE_NAME = '사원관리';
+	
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('member_model');
 		
-		$this->PAGE_CONFIG['segment']  = 3;
-		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
-		$this->PAGE_CONFIG['params'] = array(
-			'sData'     => !$this->input->get('sData')     ? '' : $this->input->get('sData')     ,
-			'eData'     => !$this->input->get('eData')     ? '' : $this->input->get('eData')     ,
-			'name'      => !$this->input->get('name')      ? '' : $this->input->get('name')      ,
-			'phone'     => !$this->input->get('phone')     ? '' : $this->input->get('phone')     ,
-			'email'     => !$this->input->get('email')     ? '' : $this->input->get('email')     ,
-			'is_active' => !$this->input->get('is_active') ? '' : $this->input->get('is_active')
-		);
-		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
-	}
+		$this->load->model('md_company');
+    }
 
 	public function _remap($method){
 		login_check();
@@ -32,148 +24,119 @@ class Dev_member extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
-				if($method == 'excel'){
-					$this->$method();
-				}else{
-					set_cookie('left_menu_open_cookie',site_url('member'),'0');
-					$this->load->view('inc/header_v');
-					$this->load->view('inc/side_v');
-					$this->$method();
-					$this->load->view('inc/footer_v');
-				}
+				set_cookie('left_menu_open_cookie',site_url('member'),'0');
+				$this->load->view('inc/header_v');
+				$this->load->view('inc/side_v');
+				$this->$method();
+				$this->load->view('inc/footer_v');
 			}else{
 				show_error('에러');
 			}
 		}
 	}
-	
-	private function getListOption(){
-		$option['where'] = array(
-			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
-			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData'],
-			'is_active' => $this->PAGE_CONFIG['params']['is_active']
-		);
-		$option['like'] = array(
-			'name'  => $this->PAGE_CONFIG['params']['name'],
-			'phone' => $this->PAGE_CONFIG['params']['phone'],
-			'email' => $this->PAGE_CONFIG['params']['email']
-		);
-		return $option;
-	}
-	
 	public function index(){
 		$this->lists();
-	}
-	
-	public function lists(){
-		$option = $this->getListOption();
-		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-	
-		$data['total']         = $this->member_model->get_user_list($option,null,null,'count');
-		$data['list']          = $this->member_model->get_user_list($option,PAGING_PER_PAGE,$offset);
-	
-		$data['anchor_url']    = site_url('dev_member/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		$data['write_url']     = site_url('dev_member/write/'.$this->PAGE_CONFIG['params_string']);
-		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['search_url']    = site_url('dev_member/');
-		$data['action_url']    = site_url('dev_member/proc/');
-		$data['excel_url']     = site_url('dev_member/excel/'.$this->PAGE_CONFIG['params_string']);
-	
-		$config['base_url']    = site_url('dev_member/lists');
-		$config['total_rows']  = $data['total'];
-		$config['per_page']    = PAGING_PER_PAGE;
-		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
-		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
-	
-		$this->pagination->initialize($config);
-		$data['pagination'] = $this->pagination->create_links();
-	
-		$this->load->view('member/user_list_v',$data);
-	}
-	
-	public function excel(){
-		$option = $this->getListOption();
-	
-		$data['total'] = $this->member_model->get_user_list($option,null,null,'count');
-		$data['list']  = $this->member_model->get_user_list($option,$data['total'],0);
-	
-	
-		$this->load->library('PHPExcel');
-		$objPHPExcel = new PHPExcel();
-	
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("사원 관리");
-		$objPHPExcel->setActiveSheetIndex(0);
-	
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'H') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-	
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-	
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '이름');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '휴대폰번호');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '이메일');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '재직여부');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '등록일자');
-	
-		$row = 2;
-		foreach ( $data['list'] as $lt ) {
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $lt['name']);
-			$objPHPExcel->getActiveSheet()->setCellValueExplicit('B'.$row, $lt['mobile'],PHPExcel_Cell_DataType::TYPE_STRING);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['email']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['active']);
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['created']);
-			$row ++;
-		}
-	
-		$filename = '사원 관리_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
-	
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+		//$data['list'] = array();
 	}
 	
 	public function write(){
-		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
-		$option['where'] = array(
-			'no'=>$no
+		$this->md_company->setTable('sw_user');
+		$get_no = $page_method = $this->uri->segment(3);
+		$where = array(
+				'no'=>$get_no
 		);
-		$setVla = array(
-			'order'  => '0'
-		);
-		$data['data'] = $this->member_model->get_user_detail($option,$setVla);
+		$result = $this->md_company->get($where);
 		
-		if( !$data['data']['no'] ){
-			$data['action_type'] = 'create';
-		}else{
+		$data['action_url'] = site_url('member/proc');
+		
+		if (count($result) > 0){
 			$data['action_type'] = 'edit';
+			$result = $result[0];
+			$data['data'] = $result;
+		}else{
+			$data['action_type'] = 'create';
+			$data['data'] = $this->md_company->getEmptyData();
+			$data['data']['order'] = 0;
 		}
-
-		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['action_url'] = site_url('member/proc/' .$this->PAGE_CONFIG['cur_page']);
-		$data['list_url']   = site_url('member/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
-		
-		$this->load->view('member/user_write_v',$data);
+		$data['head_name'] = '사원관리';
+		$this->load->view('company/member_write',$data);
 	}
-
+	
+	public function getListFilter(){
+		$likes['name'] = !$this->input->get('ft_name') ? '' : $this->input->get('ft_name');
+		$likes['phone'] = !$this->input->get('ft_phone') ? '' : $this->input->get('ft_phone');
+		$likes['email'] = !$this->input->get('ft_email') ? '' : $this->input->get('ft_email');
+		$likes['is_active'] = ($this->input->get('ft_iswork')=="") ? '' : (string)$this->input->get('ft_iswork');
+		return $likes;
+	}
+	
+	public function lists(){
+		//필터 설정
+		$likes = $this->getListFilter();
+		$data['filter'] = $likes;		//페이지 필터 값  
+		//Pagination, 테이블정보 필요 설정 세팅
+		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
+		$where = NULL;
+		
+		$this->md_company->setTable($this->TABLE_NAME);
+		$total = $this->md_company->getCount($where, $likes);
+		$uri_segment = 3;
+		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
+		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
+		
+		//Pagination 설정
+		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
+		$config['total_rows'] = $total; // 전체 글갯수
+		$config['uri_segment'] = $uri_segment;
+		$config['per_page'] = $tb_show_num;
+		$this->pagination->initialize($config);
+		$data['pagination'] = $this->pagination->create_links();
+		
+		//테이블 정보 설정
+		$data['list'] = array();
+		$result = $this->md_company->get($where, '*', $tb_show_num, $offset, $likes);
+		if (count($result) > 0){
+			foreach ($result as $row)
+			{
+				array_push($data['list'], $row);
+			}
+		}
+		$data['table_num'] = $offset + count($result) . ' / ' . $total;	
+		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
+		
+		//페이지 정보 설정
+		$data['action_url'] = site_url('member/proc');
+		$data['action_type'] = 'delete';
+		$data['head_name'] = $this->PAGE_NAME;
+		$data['page'] = $this->CATEGORY;
+		//뷰 로딩
+		$this->load->view('company/member_v',$data);
+		
+	}
+	
+	public function _lists(){
+		$dptNum = $this->input->post('menu_no');
+		echo $this->md_company->getUsersByDepartment($dptNum);
+	}
+	
+	public function _allList(){
+		$this->md_company->setTable('sw_user');
+		$this->load->library("common");
+		$ret = $this->md_company->get(NULL, 'no, name');
+		if (count($ret) > 0){
+			echo $this->common->getRet(true, $ret);
+		}else
+			echo $this->common->getRet(false, 'no data');
+	}
+	
+	public function encryp($passwd){
+		$salt   = $this->config->item('encryption_key');
+		$string = $passwd . $salt;
+		for($i=0;$i<10;$i++) {
+			$string = hash('sha512',$string . $passwd . $salt);
+		}
+		return $string;
+	}
 	
 	public function proc(){
 		$this->load->library('form_validation');
@@ -199,8 +162,6 @@ class Dev_member extends CI_Controller{
 		$color = $this->input->post('color');
 		$order = $this->input->post('order');
 		$inOffice = $this->input->post('in_office');
-		
-		$parameters   = urldecode($this->input->post('parameters'));
 		
 		$config['upload_path'] = 'upload/member/';
 		$config['remove_spaces'] = true;
@@ -359,21 +320,6 @@ class Dev_member extends CI_Controller{
 		}else{
 			alert('잘못된 접근입니다.');
 		}
-	}
-	
-	public function _lists(){
-		$dptNum = $this->input->post('menu_no');
-		echo $this->md_company->getUsersByDepartment($dptNum);
-	}
-	
-	public function _allList(){
-		$this->md_company->setTable('sw_user');
-		$this->load->library("common");
-		$ret = $this->md_company->get(NULL, 'no, name');
-		if (count($ret) > 0){
-			echo $this->common->getRet(true, $ret);
-		}else
-			echo $this->common->getRet(false, 'no data');
 	}
 
 
