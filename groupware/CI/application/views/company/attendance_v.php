@@ -46,7 +46,7 @@
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">부서</label>
 									<div class="col-lg-3 col-md-3">
-										<select class="fancy-select form-control" id="menu_no" name="menu_no" data-method="department" data-value="<?echo $this->input->get('menu');?>">
+										<select class="fancy-select form-control" id="menu_no" name="menu_no" data-method="department" data-value="<?echo $this->input->get('menu_no');?>">
                                         	<option value="">전체</option>
                                         </select>
 									</div>
