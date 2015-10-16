@@ -1,172 +1,184 @@
 <?
-class Attendance extends CI_Controller{
-	private $TABLE_NAME = 'sw_attendance';
-	private $PAGE_NAME = '근태설정';
-	
+class Dev_attendance extends CI_Controller{
+	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		login_check();
-		$param = $this->uri->segment(2);
-		set_cookie('left_menu_open_cookie',site_url('attendance/'.$param),'0');
-		$this->load->model('md_company');
 		$this->load->model('md_attendance');
-		$this->lang->load('company_info', 'korean');
+		
+		$this->PAGE_CONFIG['segment']  = 3;
+		$this->PAGE_CONFIG['set_page'] = $this->uri->segment(2);
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
+		$this->PAGE_CONFIG['params']   = array(
+			'sData'   => !$this->input->get('sData')   ? '' : $this->input->get('sData')   ,
+			'eData'   => !$this->input->get('eData')   ? '' : $this->input->get('eData')   ,
+			'menu_no' => !$this->input->get('menu_no') ? '' : $this->input->get('menu_no') ,
+			'name'    => !$this->input->get('name')    ? '' : $this->input->get('name')
+		);
+		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
 	public function _remap($method){
-		
+		login_check();
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
 			}
 		}else{
 			if(method_exists($this, $method)){
-				$this->load->view('inc/header_v');
-				$this->load->view('inc/side_v');
-				$this->$method();
-				$this->load->view('inc/footer_v');
+				if($method == 'excel'){
+					$this->$method();
+				}else{
+					set_cookie('left_menu_open_cookie',site_url('attendance/'.$this->PAGE_CONFIG['segment']),'0');
+					$this->load->view('inc/header_v');
+					$this->load->view('inc/side_v');
+					$this->$method();
+					$this->load->view('inc/footer_v');
+				}
 			}else{
 				show_error('에러');
 			}
 		}
 	}
+	private function getListOption(){
+		$option['where'] = array(
+			'date_format(h.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
+			'date_format(h.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
+		);
+		$option['like'] = array(
+			'u.name' => $this->PAGE_CONFIG['params']['name']
+		);
+
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		$option['where_in'] = array(
+			'ud.menu_no' => $array_menu
+		);
+		return $option;
+	}
+	
+	
 	public function index(){
 		$this->lists();
 	}
 	
-	public function getListFilter(){
-		$likes['m.name'] = !$this->input->get('ft_department') ? '' : $this->input->get('ft_department');
-		$likes['u.name'] =!$this->input->get('ft_userName') ? '' : $this->input->get('ft_userName');
-		return $likes;
-	}
-	
 	public function lists(){
 		permission_check('att-list','R');
-		$this->CATEGORY = 'attendance';
-		$this->TABLE_NAME = 'sw_attendance_history';
-		$this->PAGE_NAME = '근태현황';
 		
-		//필터 설정
-		$likes = $this->getListFilter();
-		$data['filter'] = $likes;		//페이지 필터 값
-		$date['start'] = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
-		$date['end'] = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')));
-		$data['date'] = $date;
+		$option = $this->getListOption();
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+
+		$data['total']         = $this->md_attendance->attendance_history_list($option,null,null,'count');
+		$data['list']          = $this->md_attendance->attendance_history_list($option,PAGING_PER_PAGE,$offset);
 		
+		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['search_url']    = site_url('dev_attendance/lists/');
+		$data['excel_url']     = site_url('dev_attendance/excel/'.$this->PAGE_CONFIG['params_string']);		
 		
-		//Pagination, 테이블정보 필요 설정 세팅
-		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
-		if($date['start'] && $date['end']){
-			$end = $date['end'];
-			$end = date("Y-m-d", strtotime($end."+1 day"));
-			$where = array('h.created >='=>$date['start'], 'h.created <'=>$end);
-		}else
-			$where = NULL;
-		
-		$total = $this->md_attendance->getAttendanceCount($where, $likes);
-		$uri_segment = 3;
-		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
-		
-		//Pagination 설정
-		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
-		$config['total_rows'] = $total; // 전체 글갯수
-		$config['uri_segment'] = $uri_segment;
-		$config['per_page'] = $tb_show_num;
+		$config['base_url']    = site_url('dev_attendance/lists');
+		$config['total_rows']  = $data['total'];
+		$config['per_page']    = PAGING_PER_PAGE;
+		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
+
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
-		//테이블 정보 설정
-		$data['list'] = array();
-		$result = $this->md_attendance->getAttendance($where, $likes, PAGING_PER_PAGE, $offset);
-		if (count($result) > 0){
-			$data['list'] = $result;
-		}
-		
-		$data['department'] = array();
-		$this->md_company->setTable('sw_menu');
-		$department = $this->md_company->get(array('category'=>'department'));
-		//array_push($data['department'], $this->lang->line('all'));
-		if (count($department) > 0){
-			$data['department'] = $department;
-		}
-		
-		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-		$data['tb_num'] =  $tb_show_num;		//테이블 row 갯수
-		
-		//페이지 타이틀 설정
-		$data['head_name'] = "회사정보";
-		$data['page'] = $this->CATEGORY;
-		$data['date'] = $date;
-		
-		
 		$this->load->view('company/attendance_v',$data);
+	}
+	
+	public function excel(){
+		$option = $this->getListOption();
+	
+		$data['total'] = $this->md_attendance->attendance_history_list($option,null,null,'count');
+		$data['list']  = $this->md_attendance->attendance_history_list($option,$data['total'],0);
+	
+	
+		$this->load->library('PHPExcel');
+		$objPHPExcel = new PHPExcel();
+	
+		$objPHPExcel->getProperties()->setCreator("groupware");
+		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
+		$objPHPExcel->getProperties()->setTitle("근태현황");
+		$objPHPExcel->setActiveSheetIndex(0);
+	
+		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+		foreach (range('A', 'H') as $column){
+			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
+	
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
+					array(
+						'font' => array(
+							'bold' => true,
+							'size' => 14
+						),
+						'alignment' => array(
+							'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+							'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+							'wrap'       => true
+						)
+					)
+			);
+		}
+	
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', '부서');
+		$objPHPExcel->getActiveSheet()->setCellValue('B1', '사원명');
+		$objPHPExcel->getActiveSheet()->setCellValue('C1', '출근');
+		$objPHPExcel->getActiveSheet()->setCellValue('D1', '퇴근');
+		$objPHPExcel->getActiveSheet()->setCellValue('E1', '지각');
+		$objPHPExcel->getActiveSheet()->setCellValue('F1', '지각점수');
+		$objPHPExcel->getActiveSheet()->setCellValue('G1', '근태누적');
+		$objPHPExcel->getActiveSheet()->setCellValue('H1', '등록일자');
+	
+		$row = 2;
+		foreach ( $data['list'] as $lt ) {
+
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $lt['menu_name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['sData']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['eData']);
+			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['oData']);
+			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['point']);
+			$objPHPExcel->getActiveSheet()->setCellValue('G'.$row, '');
+			$objPHPExcel->getActiveSheet()->setCellValue('H'.$row, $lt['created']);
+			$row ++;
+		}
+	
+		$filename = '근태현황_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
+		header('Content-Type: application/vnd.ms-excel'); //mime type
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+		header('Cache-Control: max-age=0'); //no cache
+	
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+		$objWriter->save('php://output');
 	}
 
 
 	public function set(){
 		permission_check('att-set','R');
-		$this->TABLE_NAME = 'sw_attendance';
-		$this->PAGE_NAME = '근태설정';
-		$this->md_company->setTable($this->TABLE_NAME);
-		$where = NULL;
-		$likes = NULL;
-		
-		//테이블 정보 설정
-		$data['list'] = array();
+
 		$data['action_url'] = site_url('attendance/save');
-		$result = $this->md_company->get($where);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
-		if (count($result) > 0){
-			$data['list'] = $result;
-		}
+		$data['list'] = $this->md_attendance->attendance_list();
 		
-		//지각 시간
-		$this->md_company->setTable('sw_attendance_history');
-		$ret = $this->md_company->get(array('user_no'=>$this->session->userdata('no')), 'oData');
-		$tHour = $tMinute = $tSec = 0;
-		if(count($ret) > 0){
-			foreach ($ret as $oDate){
-				if($oDate != null){
-					$mt = explode(':', $oDate['oData']);
-					$tHour = $tHour + $mt[0];
-					$tMinute = $tMinute + $mt[1];
-					$tSec = $tSec + $mt[2];
-				}
-			}
-		}
-		$tH = floor($tMinute/60);
-		$tMinute = $tMinute%60;
-		$tHour = $tHour + $tH;
-		$data['late_time'] = $tHour . '시간 ' . $tMinute . '분 '. $tSec . '초';
+		//누적 지각,업무 시간
+		$option['where'] = array(
+			'user_no' => $this->session->userdata('no'),
+			'date_format(created,"%Y")' => date('Y')
+		);
+		$setVla = array(
+			'oData' => '00:00:00'
+		);
+		$result = $this->md_attendance->attendance_history_sum($option,$setVla);
+		$data['late_time']    = $result['late_time'];
+		$data['working_time'] = $result['working_time'];
 		
-		//업무시간
-		$ret = $this->md_company->get(array('user_no'=>$this->session->userdata('no'), 'sData >='=>date('Y') . "-01-01 00:00:00", 'eData >='=>date('Y') . "-01-01 00:00:00"));
-		$tHour = $tMinute = $tSec = 0;
-		if(count($ret) > 0){
-			foreach ($ret as $oDate){
-				$sDate = strtotime($oDate['sData']);
-				$eDate = strtotime($oDate['eData']);
-				$diff_in = gmdate("H:i:s", ($eDate - $sDate));
-				
-				$mt = explode(':', $diff_in);
-				$tHour = $tHour + $mt[0];
-				$tMinute = $tMinute + $mt[1];
-				$tSec = $tSec + $mt[2];
-			}
-		}
-		$tH = floor($tMinute/60);
-		$tMinute = $tMinute%60;
-		$tHour = $tHour + $tH;
-		$data['working_time'] = $tHour . '시간 ' . $tMinute . '분 '. $tSec . '초';
 		
 		//누적 지각 옵션 값
-		$this->md_company->setTable('sw_base_code');
-		$ret = $this->md_company->get(array('key'=>'accrue_lateness_time'), 'name');
-		//print_r($ret);
-		$data['accure_lateness'] = isset($ret[0]['name']) ? $ret[0]['name'] : '';
-		
-		//페이지 타이틀 설정
-		$data['head_name'] = $this->PAGE_NAME;
+		$option['where'] = array(
+			'parent_key' => 1
+		);
+		$result = $this->md_attendance->get_temp_baseCode($option);
+		$data['accure_lateness'] = $result['name'];
+
 		$this->load->view('company/attendance_set_v',$data);
 	}
 	
@@ -209,10 +221,26 @@ class Attendance extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 		
+		
 		//배열로 가져와서 순서대로 no 넣기.
-		$this->md_company->modify(array("no"=>0), array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1));
-		$this->md_company->modify(array("no"=>1), array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2));
-		$this->md_company->modify(array("no"=>2), array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3));
+		
+		$option['where'] = array("no"=>0);
+		$values = array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1);
+		$this->md_attendance->set_attendance_update($option, $values);
+		unset($option);
+		unset($values);
+		
+		$option['where'] = array("no"=>1);
+		$values = array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2);
+		$this->md_attendance->set_attendance_update($option, $values);
+		unset($option);
+		unset($values);
+		
+		$option['where'] = array("no"=>2);
+		$values = array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3);
+		$this->md_attendance->set_attendance_update($option, $values);
+		unset($option);
+		unset($values);
 		
 		alert('수정되었습니다.', site_url('attendance/set') );
 	}
