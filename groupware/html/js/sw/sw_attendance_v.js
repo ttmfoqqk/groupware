@@ -1,7 +1,5 @@
-var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
-var enDatePickerOpt = {format: 'yyyy-mm-dd',  todayHighlight:true};						//dataPicker option (english)
-
 $(document).ready(function() {
+	$(".input-daterange").datepicker();
 	var $menu_no = $('#menu_no');
 	if($menu_no.length>0){
 		$menu_no.create_menu({
