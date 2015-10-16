@@ -116,8 +116,8 @@
 											</div>
 											<div class="col-lg-2 col-md-2">
 												<select class="fancy-select form-control" id="isUsed_3" name="isUsed_3">
-                                                	<option value=1 <?php if(!empty($list[2]) && $list[2]['is_active'] == 1) echo ' selected="selected"';?>>사용</option>
-													<option value=0 <?php if(!empty($list[2]) && $list[2]['is_active'] == 0) echo ' selected="selected"';?>>비사용</option>
+                                                	<option value=1 <?php if(!empty($list[2]) && $list[2]['is_active'] == 1) echo 'selected"';?>>사용</option>
+													<option value=0 <?php if(!empty($list[2]) && $list[2]['is_active'] == 0) echo 'selected';?>>비사용</option>
                                                 </select>
 											</div>
 										</div>
@@ -155,12 +155,5 @@
 </div>
 <!-- / page-content -->
 
-
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/select2/select2.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/validation/jquery.validate.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-timepicker/bootstrap-timepicker.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/js/sw/sw_attendance_setting.js"></script>
+<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-timepicker/bootstrap-timepicker.js"></script>
+<script src="<?echo $this->config->base_url()?>html/js/sw/sw_attendance_setting.js"></script>
