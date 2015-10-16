@@ -1,5 +1,5 @@
 <?
-class Dev_attendance extends CI_Controller{
+class Attendance extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
@@ -28,7 +28,7 @@ class Dev_attendance extends CI_Controller{
 				if($method == 'excel'){
 					$this->$method();
 				}else{
-					set_cookie('left_menu_open_cookie',site_url('attendance/'.$this->PAGE_CONFIG['segment']),'0');
+					set_cookie('left_menu_open_cookie',site_url('attendance/'.$this->PAGE_CONFIG['set_page']),'0');
 					$this->load->view('inc/header_v');
 					$this->load->view('inc/side_v');
 					$this->$method();
@@ -70,10 +70,10 @@ class Dev_attendance extends CI_Controller{
 		$data['list']          = $this->md_attendance->attendance_history_list($option,PAGING_PER_PAGE,$offset);
 		
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
-		$data['search_url']    = site_url('dev_attendance/lists/');
-		$data['excel_url']     = site_url('dev_attendance/excel/'.$this->PAGE_CONFIG['params_string']);		
+		$data['search_url']    = site_url('attendance/lists/');
+		$data['excel_url']     = site_url('attendance/excel/'.$this->PAGE_CONFIG['params_string']);		
 		
-		$config['base_url']    = site_url('dev_attendance/lists');
+		$config['base_url']    = site_url('attendance/lists');
 		$config['total_rows']  = $data['total'];
 		$config['per_page']    = PAGING_PER_PAGE;
 		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
