@@ -364,7 +364,8 @@ class Member extends CI_Controller{
 	
 	public function _lists(){
 		$dptNum = $this->input->post('menu_no');
-		echo $this->member_model->getUsersByDepartment($dptNum);
+		$array_menu = search_node($dptNum,'children');
+		echo $this->member_model->getUsersByDepartment($array_menu);
 	}
 	
 	public function _allList(){

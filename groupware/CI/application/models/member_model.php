@@ -168,8 +168,11 @@ class Member_model extends CI_Model{
 	public function getUsersByDepartment($dptNo){
 		$this->db->select('u.no, u.name');
 		$this->db->join('sw_user u', 'ud.user_no = u.no', 'left');
-		$this->db->where('ud.menu_no', $dptNo);
 		$this->db->join('sw_menu m', 'ud.menu_no = m.no', 'left');
+		$this->db->where_in('ud.menu_no', $dptNo);
+		$this->db->group_by('u.no');
+		$this->db->group_by('u.name');
+		$this->db->order_by('u.order');
 	
 		$ret = $this->db->get('sw_user_department ud');
 		if (count($ret) > 0){
