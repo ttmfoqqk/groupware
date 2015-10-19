@@ -1,10 +1,73 @@
 <?
 class Md_rule extends CI_Model{
-	private $TABLE_NAME = 'sw_rule';
-	
 	public function __construct(){
 		parent::__construct();
 	}
+	
+	public function get_rule_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
+		if($type == 'count'){
+			$this->db->select('count(*) as total');
+		}else{
+			$this->db->select('rule.*');
+			$this->db->select('IF(rule.operator=0,"+","-") as operator',FALSE);
+			$this->db->select('IF(rule.is_active=0,"사용","미사용") as active',FALSE);
+			$this->db->select('date_format(rule.created,"%Y-%m-%d") as created',FALSE);
+			$this->db->select('menu.no as menu_no , menu.name as menu_name');
+			$this->db->select('user.name as user_name');
+			$this->db->order_by('rule.order','ASC');
+			$this->db->order_by('rule.no','DESC');
+			$this->db->limit($limit,$offset);
+		}
+	
+		$this->db->from('sw_rule as rule');
+		$this->db->join('sw_user as user', 'rule.user_no = user.no', 'left');
+		$this->db->join('sw_menu as menu', 'rule.menu_no = menu.no', 'left');
+		set_options($option);
+		$query = $this->db->get();
+	
+		if($type == 'count'){
+			$query  = $query->row();
+			$result = $query->total;
+		}else{
+			$result = $query->result_array();
+		}
+		return $result;
+	}
+	
+	public function get_rule_detail($option=NULL,$setVla=array()){
+		$this->db->select('*');
+		$this->db->from('sw_rule');
+		set_options($option);
+	
+		$query = $this->db->get();
+		$result = set_detail_field($query,$setVla);
+	
+		return $result;
+	}
+	
+	
+	public function set_rule_insert($option){
+		$this->db->set('created', 'NOW()', false);
+		$this->db->insert('sw_rule',$option);
+		return $this->db->insert_id();
+	}
+	public function set_rule_update($values,$option){
+		set_options($option);
+		$this->db->update('sw_rule',$values);
+	}
+	public function set_rule_delete($option){
+		set_options($option);
+		$this->db->delete('sw_rule');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public function getCount($where=NULL, $likes=NULL){
 		if($likes!=NULL){

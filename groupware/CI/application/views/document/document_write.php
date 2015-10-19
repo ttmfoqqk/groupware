@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?php echo $head_name?></h2>
+					<h2>회사서식 정보</h2>
 				</div>
 			</div>
 			<div class="row">
@@ -23,8 +23,11 @@
 						<div class="panel-body">
 							<!-- top form(document-form-write-setting) start  -->
 							<form id="document-form-write-setting" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form" enctype="multipart/form-data">
-								<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
-								<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="action_type" id="action_type" value="<?echo $action_type;?>">
+							<input type="hidden" name="no" id="no" value="<?echo $data['no'];?>">
+							<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
+							
+								
 								<div class="form-group">
 									<label for="sel_phone" class="col-lg-2 col-md-2 control-label lb-left-align"> 등록자</label>
 									<div class="col-lg-10 col-md-10">
@@ -40,7 +43,7 @@
 								<div class="form-group">
 									<label for="document" class="col-lg-2 col-md-2 control-label lb-left-align"><font class="red">* </font> 분류</label>
 									<div class="col-lg-10 col-md-10">
-										<select class="fancy-select form-control" id="document" name="document" data-method="document" data-value="<?php echo $data['menu_no'];?>">
+										<select class="fancy-select form-control" id="menu_no" name="menu_no" data-method="document" data-value="<?php echo $data['menu_no'];?>">
                                         	<option value="">분류</option>
                                         </select>
 									</div>
@@ -60,31 +63,31 @@
 									<label for="adt_annual" class="col-lg-2 col-md-2 control-label lb-left-align">첨부파일</label>
 									<div class="col-lg-10 col-md-10">
 										<input type="file" id="userfile" name="userfile" class="filestyle" data-buttonText="찾기" data-buttonName="btn-danger" data-iconName="fa fa-plus">
-										<a href=<?php echo site_url('/upload/document/') . '/' . $data['file']?>><?php echo $data['origin_file'];?></a>
+										<a href="<?php echo site_url('download?path=upload/document/&oname='.$data['origin_file'].'&uname='.$data['file'])?>"><?php echo $data['origin_file'];?></a>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="order" class="col-lg-2 col-md-2 control-label lb-left-align">순서</label>
 									<div class="col-lg-10 col-md-10">
-										<input id="order" name="order" type="text" class="form-control" placeholder=""  maxlength="20" value=<?php echo $data['order']?>>
+										<input id="order" name="order" type="text" class="form-control" placeholder=""  maxlength="20" value="<?php echo $data['order']?>">
 									</div>
 								</div>
 								<div class="form-group">
 									<label  class="col-lg-2 col-md-2 control-label lb-left-align">사용여부</label>
 									<div class="col-lg-3 col-md-3">
 										<div class="radio-custom radio-inline">
-                                        	<input type="radio" name=is_active value=0 <?=$data['is_active'] == '0' ? ' checked="checked"' : '';?>  id="in_active" checked="checked">
+                                        	<input type="radio" name=is_active value="0" <?=$data['is_active'] == '0' ? 'checked' : '';?>  id="in_active" checked="checked">
                                         	<label for="in_active">사용</label>
                                         </div>
                                         <div class="radio-custom radio-inline">
-                                        	<input type="radio" name="is_active" value=1 <?=$data['is_active'] == '1' ? ' checked="checked"' : '';?> id="out_active">
+                                        	<input type="radio" name="is_active" value="1" <?=$data['is_active'] == '1' ? 'checked' : '';?> id="out_active">
                                         	<label for="out_active">미사용</label>
                                         </div>
 									</div>
 								</div>
 								
 								<div class="panel-body pull-left">
-									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo site_url('document')?>';">리스트</button>
+									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
@@ -113,5 +116,4 @@
 </div>
 <!-- / page-content -->
 
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-filestyle/bootstrap-filestyle.js"></script>
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_document_write.js"></script>

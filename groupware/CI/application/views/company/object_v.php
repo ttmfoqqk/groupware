@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?php echo $head_name?></h2>
+					<h2>물품정보</h2>
 				</div>
 			</div>
 			<div class="row">
@@ -23,79 +23,64 @@
 						</div>
 						<div class="panel-body">
 							<!-- 검색 -->
-							<form id="qu" class="form-horizontal" method="get" role="form"
-								action="<?echo site_url($page . '/lists/1')?>">
+							<form id="qu" class="form-horizontal" method="get" role="form" action="<?echo site_url('object/lists/')?>">
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">등록일자</label>
 									<div class="col-lg-6 col-md-6">
 										<div class="input-daterange input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input type="text" class="form-control" name="ft_start"
-												id="ft_start"
-												value=<?php if($date['start'] != '1') echo "'" .$date['start'] . "'";?> />
-											<span class="input-group-addon">to</span> <input type="text"
-												class="form-control" name="ft_end" id="ft_end"
-												value=<?php if($date['end'] != '1') echo "'" .$date['end'] . "'";?> />
+											<input type="text" class="form-control" name="sData" id="sData" value="<?php echo $this->input->get('sData');?>"/>
+											<span class="input-group-addon">to</span>
+											<input type="text" class="form-control" name="eData" id="eData" value="<?php echo $this->input->get('eData');?>"/>
 										</div>
 									</div>
 									<div class="col-lg-4 col-md-4">
-										<button type="button"
-											class="btn btn-sm btn-primary btn-alt init_today">오늘</button>
-										<button type="button"
-											class="btn btn-sm btn-primary btn-alt init_seven">7일</button>
-										<button type="button"
-											class="btn btn-sm btn-primary btn-alt init_thirty">30일</button>
-										<button type="button"
-											class="btn btn-sm btn-primary btn-alt init_date">날짜초기화</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sToday">오늘</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sWeek">7일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sMonth">30일</button>
+										<button type="button" class="btn btn-sm btn-primary btn-alt" id="sReset">날짜초기화</button>
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">분류</label>
 									<div class="col-lg-3 col-md-3">
-										<select class="fancy-select form-control" id="ft_kind" name="ft_kind" data-method="object" data-value="<?echo $this->input->get('ft_kind');?>">
+										<select class="fancy-select form-control" id="menu_no" name="menu_no" data-method="object" data-value="<?echo $this->input->get('menu_no');?>">
                                         	<option value="">전체</option>
                                         </select>
 									</div>
 									<label class="col-lg-2 col-md-2 control-label" for="">물품명</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_itemName"
-											name="ft_itemName" placeholder="물품명"
-											value=<?php echo $filter['o.name'] != NULL ? $filter['o.name'] : '';?>>
+										<input type="text" class="form-control" id="name" name="name" placeholder="물품명" value="<?php echo $this->input->get('name');?>">
 									</div>
 								</div>
 
 								<div class="form-group col-lg-12 col-md-12">
 									<label class="col-lg-2 col-md-2 control-label" for="">물품위치</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_area"
-											name="ft_area" placeholder="물품위치"
-											value=<?php echo $filter['o.area'] != NULL ? $filter['o.area'] : '';?>>
+										<input type="text" class="form-control" id="area" name="area" placeholder="물품위치" value="<?php echo $this->input->get('area');?>">
 									</div>
 
 									<label class="col-lg-2 col-md-2 control-label" for="">관리자</label>
 									<div class="col-lg-3 col-md-3">
-										<input type="text" class="form-control" id="ft_usrName"
-											name="ft_usrName" placeholder="관리자"
-											value=<?php echo $filter['u.name'] != NULL ? $filter['u.name'] : '';?>>
+										<input type="text" class="form-control" id="userName" name="userName" placeholder="관리자" value="<?php echo $this->input->get('userName');?>">
 									</div>
 
 									<div class="col-lg-2 col-md-2">
-										<button type="submit" class="btn btn-primary btn-alt mr5 mb10">검
-											색</button>
+										<button type="submit" class="btn btn-primary btn-alt mr5 mb10">검 색</button>
 									</div>
 								</div>
 
 
 								<!-- 테이블 옵션  -->
 								<div class="pull-left">
-									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num" val=<?php echo $tb_num;?>>
-										<option value="10" <?=$tb_num == '10' ? ' selected="selected"' : '';?>>10개</option>
-										<option value="20" <?=$tb_num == '20' ? ' selected="selected"' : '';?>>20개</option>
+									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num">
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? 'selected' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? 'selected' : '';?>>20개</option>
 									</select>
 								</div>
 								<div class="pull-right">
-									<button type="submit" class="btn btn-alt mr5 mb10">엑셀</button>
+									<button type="button" class="btn btn-alt mr5 mb10" onclick="location.href='<?php echo $excel_url;?>'">엑셀</button>
 								</div>
 								<!-- END 테이블 옵션  -->
 								
@@ -103,13 +88,10 @@
 							<!-- 검색 -->
 							
 
-							<form id="object-form-list" action="<?echo $action_url;?>"
-								method="post" class="form-horizontal group-border stripped"
-								role="form">
-								<input type="hidden" name="action_type" id="action_type"
-									value="<?echo $action_type;?>">
-								<input type="hidden" name="page_cate" id="page_cate"
-									value="<?echo $page;?>">
+							<form id="object-form-list" action="<?echo $action_url;?>" method="post" class="form-horizontal group-border stripped" role="form">
+								<input type="hidden" name="action_type" id="action_type" value="">
+								<input type="hidden" name="parameters" id="parameters" value="<?echo $parameters;?>">
+								
 								<table class="table table-bordered" id="tabletools">
 									<thead>
 										<tr>
@@ -131,43 +113,37 @@
 										<!-- 리스트 -->
 									<?php
 										foreach ( $list as $lt ) {
-										$anchor_url = site_url ( 'object/write/' . $lt ['no'] );
+										$anchor = $anchor_url.'&no='.$lt['no'];
 										?>
 										<tr>
 											<td>
 												<div class="checkbox-custom">
-													<input id="check<?$lt['no'];?>" name="no[]"
-														class="check" type="checkbox"
-														value=<?php echo $lt['no'];?>> <label
-														for="check<?$lt['no'];?>"></label> <input type="hidden"
-														value="<?php echo $lt['no'];?>">
+													<input id="no" name="no[]" class="check" type="checkbox" value="<?echo $lt['no'];?>">
+													<label for="check"></label>
 												</div>
 											</td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['menu_name'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['area'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
-											<td><a href="<?echo $anchor_url;?>" class="text-normal"><?php echo $lt['user_name'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['order'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['menu_name'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['name'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['area'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['created'];?></a></td>
+											<td><a href="<?echo $anchor;?>" class="text-normal"><?php echo $lt['user_name'];?></a></td>
 										</tr>
 									<?php }?>
 									<!-- 리스트 -->
 									<?if (count ( $list ) <= 0) {?>
-									<tr>
+										<tr>
 											<td colspan="7">등록된 내용이 없습니다.</td>
 										</tr>
-								<?}?>
+									<?}?>
 									
 								</tbody>
 								</table>
 
-								<div class="panel-body" style="text-align: center;">
-									<?php echo $table_num?><br><?echo $pagination;?></div>
+								<div class="panel-body" style="text-align: center;"><?echo $pagination;?></div>
 								<div class="panel-body pull-right">
-									<button type="button" class="btn btn-primary btn-alt mr5 mb10"
-										onclick="location.href='<?echo site_url('object/write/')?>';">등록</button>
-									<button id="btn_list_delete" type="button"
-										class="btn btn-danger btn-alt mr5 mb10">삭제</button>
+									<button type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="location.href='<?echo $write_url;?>';">등록</button>
+									<button id="btn_list_delete" type="button" class="btn btn-danger btn-alt mr5 mb10">삭제</button>
 								</div>
 							</form>
 						</div>

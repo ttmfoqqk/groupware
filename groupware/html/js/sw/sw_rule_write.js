@@ -1,5 +1,3 @@
-var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
-
 $(document).ready(function() {
 	if($('#action_type').val() == "create")
 		$('#contents_setting_delete').hide();
@@ -23,10 +21,10 @@ $(document).ready(function() {
 	});
 	
 	//분류필터 리스트 init
-	var $menu_part_no = $('#rule');
-	$menu_part_no.create_menu({
-		method : $menu_part_no.attr('data-method'),
-		value : $menu_part_no.attr('data-value')
+	var $menu_no = $('#menu_no');
+	$menu_no.create_menu({
+		method : $menu_no.attr('data-method'),
+		value : $menu_no.attr('data-value')
 	});
     
 })

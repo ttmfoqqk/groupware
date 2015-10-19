@@ -64,8 +64,8 @@
 								<!-- 테이블 옵션  -->
 								<div class="pull-left">
 									<select class="fancy-select form-control tb_num" id="tb_num" name="tb_num">
-										<option value="10" <?=$this->input->get('tb_num') == '10' ? ' selected="selected"' : '';?>>10개</option>
-										<option value="20" <?=$this->input->get('tb_num') == '20' ? ' selected="selected"' : '';?>>20개</option>
+										<option value="10" <?=$this->input->get('tb_num') == '10' ? 'selected' : '';?>>10개</option>
+										<option value="20" <?=$this->input->get('tb_num') == '20' ? 'selected' : '';?>>20개</option>
 									</select>
 								</div>
 								<div class="pull-right">

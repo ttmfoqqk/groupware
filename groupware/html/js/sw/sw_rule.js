@@ -1,33 +1,32 @@
-var koDatePickerOpt = {language : 'kr',  format: 'yyyy-mm-dd',  todayHighlight:true}; 	//dataPicker option (korean)
-
 $(document).ready(function() {
-	//date range
-	$(".input-daterange").datepicker(koDatePickerOpt);
-	//START data 세팅 버튼 이벤트
-	$(".init_date").on('click',function(){
-		$("input[name$='start']").datepicker('setDate', ""); //$.datepicker.formatDate('yy-mm-dd', new Date())
-		$("input[name$='end']").datepicker('setDate', "");
-	});
+	$(".input-daterange").datepicker();
 	
-	$(".init_today").on('click',function(){
-		$("input[name$='start']").datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
-		$("input[name$='end']").datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+	var $menu_no = $('#menu_no');
+	
+	$menu_no.create_menu({
+		method : $menu_no.attr('data-method'),
+		value : $menu_no.attr('data-value')
 	});
-	$(".init_seven").on('click',function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 6);
-		$("input[name$='start']").datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		$("input[name$='end']").datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+	var sData  = $('#sData');
+	var eData  = $('#eData');
+	
+	var btn_sToday = $('#sToday');
+	var btn_sWeek  = $('#sWeek');
+	var btn_sMonth = $('#sMonth');
+	var btn_sReset = $('#sReset');
+	
+	btn_sToday.click(function(){
+		set_btn_datepicker(sData,eData,-0);
 	});
-	$(".init_thirty").on('click',function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 29);
-		$("input[name$='start']").datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		$("input[name$='end']").datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+	btn_sWeek.click(function(){
+		set_btn_datepicker(sData,eData,-7);
 	});
-	//END data 세팅 버튼 이벤트
+	btn_sMonth.click(function(){
+		set_btn_datepicker(sData,eData,-30);
+	});
+	btn_sReset.click(function(){
+		set_btn_datepicker(sData,eData,null);
+	});
 	
 	// 리스트 선택삭제
 	$('#btn_list_delete').on('click',function(){
@@ -44,15 +43,7 @@ $(document).ready(function() {
 		    }
 		});
 	});
-	
-	//분류필터 리스트 init
-	var $menu_part_no = $('#ft_rule');
-	$menu_part_no.create_menu({
-		method : $menu_part_no.attr('data-method'),
-		value : $menu_part_no.attr('data-value')
-	});
-	
-	
+
 	$('.tb_num').change(function(){
 		$('#qu').submit();
 	});

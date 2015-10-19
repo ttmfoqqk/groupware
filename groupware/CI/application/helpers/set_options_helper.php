@@ -1,6 +1,11 @@
 <? if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-// select option 적용
+
+/***
+ * @param string $option
+ * where , where_in , like = array ,
+ * custom = text
+ */
 function set_options($option=null) {
 	$CI =& get_instance();
 
@@ -35,6 +40,12 @@ function set_options($option=null) {
 	}
 }
 
+/***
+ * 
+ * @param unknown $query
+ * @param unknown $setVla - 기본값 셋팅
+ * @return unknown
+ */
 function set_detail_field($query,$setVla=array()){
 	$count = $query->num_rows();
 	if($count <= 0){

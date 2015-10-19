@@ -6,6 +6,9 @@ class Md_attendance extends CI_Model{
 		parent::__construct();
 	}
 	
+	/*
+	 * 근태 누적 점수 쿼리 추가하기
+	 */
 	public function attendance_history_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
 		if($type == 'count'){
 			$this->db->select('count(*) as total');

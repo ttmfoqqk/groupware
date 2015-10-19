@@ -1,15 +1,22 @@
 <?
 class Rule extends CI_Controller{
-	private $TABLE_NAME = 'sw_rule';
-	private $PAGE_NAME = '회사규정 정보';
-	private $CATEGORY = 'rule';
+	private $PAGE_CONFIG;
 	
 	public function __construct() {
 		parent::__construct();
-		
-		$this->load->model('md_company');
 		$this->load->model('md_rule');
-		$this->md_company->setTable($this->TABLE_NAME);
+		
+		$this->PAGE_CONFIG['segment']  = 3;
+		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
+		$this->PAGE_CONFIG['params'] = array(
+			'sData'    => !$this->input->get('sData')    ? '' : $this->input->get('sData')    ,
+			'eData'    => !$this->input->get('eData')    ? '' : $this->input->get('eData')    ,
+			'menu_no'  => !$this->input->get('menu_no')  ? '' : $this->input->get('menu_no')  ,
+			'operator' => !$this->input->get('operator') ? '' : $this->input->get('operator') ,
+			'name'     => !$this->input->get('name')     ? '' : $this->input->get('name')     ,
+			'userName' => !$this->input->get('userName') ? '' : $this->input->get('userName')
+		);
+		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
 	public function _remap($method){
@@ -27,174 +34,196 @@ class Rule extends CI_Controller{
 			}
 		}else{
 			if(method_exists($this, $method)){
-				set_cookie('left_menu_open_cookie',site_url('rule'),'0');
-				$this->load->view('inc/header_v');
-				$this->load->view('inc/side_v');
-				$this->$method();
-				$this->load->view('inc/footer_v');
+				if($method == 'excel'){
+					$this->$method();
+				}else{
+					set_cookie('left_menu_open_cookie',site_url('rule'),'0');
+					$this->load->view('inc/header_v');
+					$this->load->view('inc/side_v');
+					$this->$method();
+					$this->load->view('inc/footer_v');
+				}
 			}else{
 				show_error('에러');
 			}
 		}
 	}
+	private function getListOption(){
+		$option['where'] = array(
+			'date_format(rule.created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
+			'date_format(rule.created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData'],
+			'operator' => $this->PAGE_CONFIG['params']['operator']
+		);
+		$option['like'] = array(
+			'rule.name'  => $this->PAGE_CONFIG['params']['name'],
+			'user.name' => $this->PAGE_CONFIG['params']['userName']
+		);
+		
+		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
+		$option['where_in'] = array(
+			'rule.menu_no' => $array_menu
+		);
+		return $option;
+	}
+	
 	public function index(){
 		$this->lists();
 	}
-	
-	
-	public function getListFilter(){
-		$likes['r.name'] = !$this->input->get('ft_title') ? '' : $this->input->get('ft_title');
-		$likes['u.name'] = !$this->input->get('ft_userName') ? '' : $this->input->get('ft_userName');
-		return $likes;
-	}
+
 	
 	public function lists(){
-		//필터 설정
-		$likes = $this->getListFilter();
+		$option = $this->getListOption();
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+
+		$data['total']         = $this->md_rule->get_rule_list($option,null,null,'count');
+		$data['list']          = $this->md_rule->get_rule_list($option,PAGING_PER_PAGE,$offset);
 		
-		$menu = !$this->input->get('ft_rule') ? NULL : $this->input->get('ft_rule');
-		$is_point = !$this->input->get('ft_point') ? NULL : $this->input->get('ft_point');
+		$data['anchor_url']    = site_url('rule/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$data['write_url']     = site_url('rule/write/'.$this->PAGE_CONFIG['params_string']);
+		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['action_url']    = site_url('rule/proc/' .$this->PAGE_CONFIG['cur_page']);
+		$data['excel_url']     = site_url('rule/excel/'.$this->PAGE_CONFIG['params_string']);		
 		
-		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
-		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
-		
-		//Pagination, 테이블정보 필요 설정 세팅
-		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
-		
-		if(($start && $end) || $menu || $is_point){
-			$where = array();
-			if($start && $end){
-				$where['r.created <'] = $end;
-				$where['r.created >='] = $start;
-			}
-			if($menu)
-				$where['r.menu_no'] = $menu;
-			if($is_point)
-				$where['r.operator'] = $is_point;
-		}
-		else
-			$where = NULL;
-		
-		$total = $this->md_rule->getCount($where, $likes);
-		$uri_segment = 3;
-		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
-		
-		//Pagination 설정
-		$config['base_url'] = site_url($this->CATEGORY . '/lists/');
-		$config['total_rows'] = $total; // 전체 글갯수
-		$config['uri_segment'] = $uri_segment;
-		$config['per_page'] = $tb_show_num;
+		$config['base_url']    = site_url('rule/lists');
+		$config['total_rows']  = $data['total'];
+		$config['per_page']    = PAGING_PER_PAGE;
+		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
+
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
-		
-		//테이블 정보 설정
-		$data['list'] = array();
-		$result = $this->md_rule->get($where, $likes, $tb_show_num, $offset);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
-		if (count($result) > 0){
-			$data['list'] = $result;
-		}
-		$data['table_num'] = $offset + count($result) . ' / ' . $total;
-		
-		//페이지 타이틀 설정
-		$data['action_url'] = site_url('rule/proc');
-		$data['action_type'] = 'delete';
-		$data['head_name'] = "회사규정 정보";
-		$data['page'] = $this->CATEGORY;
-		
 		
 		$this->load->view('rule/rule_v',$data);
 	}
+	
+	public function excel(){
+		$option = $this->getListOption();
+	
+		$data['total'] = $this->md_rule->get_rule_list($option,null,null,'count');
+		$data['list']  = $this->md_rule->get_rule_list($option,$data['total'],0);
+	
+	
+		$this->load->library('PHPExcel');
+		$objPHPExcel = new PHPExcel();
+	
+		$objPHPExcel->getProperties()->setCreator("groupware");
+		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
+		$objPHPExcel->getProperties()->setTitle("회사규정");
+		$objPHPExcel->setActiveSheetIndex(0);
+	
+		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+		foreach (range('A', 'H') as $column){
+			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
+	
+			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
+				array(
+					'font' => array(
+						'bold' => true,
+						'size' => 14
+					),
+					'alignment' => array(
+						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+						'wrap'       => true
+					)
+				)
+			);
+		}
+	
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', '분류');
+		$objPHPExcel->getActiveSheet()->setCellValue('B1', '제목');
+		$objPHPExcel->getActiveSheet()->setCellValue('C1', '점수');
+		$objPHPExcel->getActiveSheet()->setCellValue('D1', '사용여부');
+		$objPHPExcel->getActiveSheet()->setCellValue('E1', '등록일자');
+		$objPHPExcel->getActiveSheet()->setCellValue('F1', '등록자');
+	
+		$row = 2;
+		foreach ( $data['list'] as $lt ) {
+			$menu = search_node($lt['menu_no'],'parent');
+	
+			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $menu['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['name']);
+			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['operator'].$lt['point']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['active']);
+			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['created']);
+			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['user_name']);
+			$row ++;
+		}
+	
+		$filename = '회사규정_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
+		header('Content-Type: application/vnd.ms-excel'); //mime type
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+		header('Cache-Control: max-age=0'); //no cache
+	
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+		$objWriter->save('php://output');
+	}
 
 	public function _lists(){
-		//필터 설정
-		$likes = $this->getListFilter();
+		$option = $this->getListOption();
+		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+
+		$data['total']         = $this->md_rule->get_rule_list($option,null,null,'count');
+		$data['list']          = $this->md_rule->get_rule_list($option,PAGING_PER_PAGE,$offset);
 		
-		$menu = !$this->input->get('ft_rule') ? NULL : $this->input->get('ft_rule');
-		$is_point = !$this->input->get('ft_point') ? NULL : $this->input->get('ft_point');
-		
-		$start = !$this->input->get('ft_start') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_start')));
-		$end = !$this->input->get('ft_end') ? NULL : date("Y-m-d", strtotime($this->input->get('ft_end')."+1 day"));
-		
-		//Pagination, 테이블정보 필요 설정 세팅
-		$tb_show_num = !$this->input->get('tb_num') ? PAGING_PER_PAGE : $this->input->get('tb_num');
-		
-		if(($start && $end) || $menu || $is_point){
-			$where = array();
-			if($start && $end){
-				$where['r.created <'] = $end;
-				$where['r.created >='] = $start;
-			}
-			if($menu)
-				$where['r.menu_no'] = $menu;
-			if($is_point)
-				$where['r.operator'] = $is_point;
-		}
-		else
-			$where = NULL;
-		
-		$total = $this->md_rule->getCount($where, $likes);
-		$uri_segment = 3;
-		$cur_page = !$this->uri->segment($uri_segment) ? 1 : $this->uri->segment($uri_segment); // 현재 페이지
-		$offset    = ($tb_show_num * $cur_page)-$tb_show_num;
-		
-		//Pagination 설정
-		$config['base_url'] = "";
-		$config['total_rows'] = $total; // 전체 글갯수
-		$config['uri_segment'] = $uri_segment;
-		$config['per_page'] = $tb_show_num;
+		$config['base_url']    = site_url('rule/lists');
+		$config['total_rows']  = $data['total'];
+		$config['per_page']    = PAGING_PER_PAGE;
+		$config['cur_page']    = $this->PAGE_CONFIG['cur_page'];
+		$config['uri_segment'] = $this->PAGE_CONFIG['segment'];
+
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		
-		//테이블 정보 설정
-		$data['list'] = array();
-		$result = $this->md_rule->get($where, $likes, $tb_show_num, $offset);	//'no, order, gubun, bizName, bizNumber, phone, fax, created'
-		if (count($result) > 0){
-			$data['list'] = $result;
-		}
 		echo json_encode($data);
 	}
 	
 	public function write(){
-		$get_no = $this->uri->segment(3);
-		$where = array(
-				'no'=>$get_no
+		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
+		$option['where'] = array(
+			'no'=>$no
 		);
-		$result = $this->md_company->get($where);
-		$data['action_url'] = site_url('rule/proc');
-		if (count($result) > 0){
-			$data['action_type'] = 'edit';
-			$result = $result[0];
-			$data['data'] = $result;
-		}else{
+		$setVla = array(
+			'order'  => '0'
+		);
+		$data['data'] = $this->md_rule->get_rule_detail($option,$setVla);
+		
+		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
-			$data['data'] = $this->md_company->getEmptyData();
-			$data['data']['order'] = 0;
+		}else{
+			$data['action_type'] = 'edit';
 		}
-		$data['head_name'] = '규정서식 관리';
+
+		$data['parameters'] = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['action_url'] = site_url('rule/proc/' .$this->PAGE_CONFIG['cur_page']);
+		$data['list_url']   = site_url('rule/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		
 		$this->load->view('rule/rule_write',$data);
 	}
 	
 	public function proc(){
 		$this->load->library('form_validation');
 		
-		$no = $this->input->post('no');
-		$action_type = $this->input->post ( 'action_type' );
-		$menu_no = $this->input->post('rule');
-		$name = $this->input->post('name');
-		$operator = $this->input->post('operator');
-		$point = $this->input->post('point');
-		$contents = $this->input->post('contents');
-		$order = $this->input->post('order');
-		$is_active = $this->input->post('is_active');
+		$action_type = $this->input->post('action_type');
+		$no          = $this->input->post('no');
+		$menu_no     = $this->input->post('menu_no');
+		$name        = $this->input->post('name');
+		$operator    = $this->input->post('operator');
+		$point       = $this->input->post('point');
+		$contents    = $this->input->post('contents');
+		$order       = $this->input->post('order');
+		$is_active   = $this->input->post('is_active');
+		$parameters  = urldecode($this->input->post('parameters'));
 		
-		$config['upload_path'] = 'upload/rule/';
+		$config['upload_path']   = 'upload/rule/';
 		$config['remove_spaces'] = true;
-		$config['encrypt_name'] = true;
+		$config['encrypt_name']  = true;
 		$config['allowed_types'] = FILE_ALL_TYPE;
+		
 		if( $action_type == 'create' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('rule','분류','required');
+			$this->form_validation->set_rules('menu_no','분류','required');
 			$this->form_validation->set_rules('name','제목','required');
 			$this->form_validation->set_rules('operator','점수 오퍼레이션','required');
 			$this->form_validation->set_rules('point','점수','required');
@@ -220,28 +249,25 @@ class Rule extends CI_Controller{
 				}
 			}
 				
-			$cur = new DateTime();
-			$cur = $cur->format('Y-m-d H:i:s');
 			$data = array(
-					'menu_no'=>$menu_no,
-					'user_no'=>$this->session->userdata('no'),
-					'name'=>$name,
-					'contents'=>$contents,
-					'operator'=>$operator,
-					'point'=>$point,
-					'file'=>$file,
-					'order'=>$order,
-					'is_active'=>$is_active,
-					'created'=>$cur,
-					'origin_file' => $origin_file
+				'menu_no'     => $menu_no,
+				'user_no'     => $this->session->userdata('no'),
+				'name'        => $name,
+				'contents'    => $contents,
+				'operator'    => $operator,
+				'point'       => $point,
+				'file'        => $file,
+				'order'       => $order,
+				'is_active'   => $is_active,
+				'origin_file' => $origin_file
 			);
-				
-			$result = $this->md_company->create($data);
-			alert('등록되었습니다.', site_url('rule' . '/index') );
+
+			$result = $this->md_rule->set_rule_insert($data);
+			alert('등록되었습니다.', site_url('rule') );
 			
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
-			$this->form_validation->set_rules('rule','분류','required');
+			$this->form_validation->set_rules('menu_no','분류','required');
 			$this->form_validation->set_rules('name','제목','required');
 			$this->form_validation->set_rules('operator','점수 오퍼레이션','required');
 			$this->form_validation->set_rules('point','점수','required');
@@ -252,6 +278,11 @@ class Rule extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$option['where'] = array(
+				'no'=>$no
+			);
+			$getData = $this->md_rule->get_rule_detail($option);
+			
 			$file = $origin_file = NULL;
 			if( $_FILES['userfile']['name'] ) {
 				$this->load->library('upload', $config);
@@ -259,53 +290,55 @@ class Rule extends CI_Controller{
 					$upload_error = $this->upload->display_errors('','') ;
 					alert($upload_error);
 				}else{
-					//이전파일 삭제하고 업로드
-					$exUserFile = $this->md_company->get(array('no'=>$no), 'file');
-					if(count($exUserFile) > 0 && $exUserFile[0]['file'] != NULL)
-						unlink(realpath($config['upload_path']) . '/' . $exUserFile[0]['file']);
+					if($getData['file']){
+						unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+					}
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
 					$origin_file = $_FILES['userfile']['name'];
 				}
 			}
 			
-			$data = array(
-					'menu_no'=>$menu_no,
-					'name'=>$name,
-					'contents'=>$contents,
-					'operator'=>$operator,
-					'point'=>$point,
-					'file'=>$file,
-					'order'=>$order,
-					'is_active'=>$is_active,
-					'origin_file' => $origin_file
+			$values = array(
+				'menu_no'   => $menu_no,
+				'name'      => $name,
+				'contents'  => $contents,
+				'operator'  => $operator,
+				'point'     => $point,
+				'order'     => $order,
+				'is_active' => $is_active
 			);
+			if($file != null){
+				$values['file'] = $file;
+				$values['origin_file'] = $origin_file;
+			}
 			
-			$this->md_company->modify(array('no'=>$no), $data);
-			alert('수정되었습니다.', site_url('rule' . '/index') );
-			
-			
+			$this->md_rule->set_rule_update($values, $option);
+			alert('수정되었습니다.', site_url('rule/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no ) );
 		}elseif( $action_type == 'delete'){
 			$this->form_validation->set_rules('no', 'no','required');
+			
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
+			$option['where_in'] = array(
+				'rule.no' => $no
+			);
+			
+			$list = $this->md_rule->get_rule_list($option,count($no),0);
 				
-			$set_no = is_array($no) ? implode(',',$no):$no;
-			$where = 'no in (' . $set_no . ')';
-				
-			//프로필 삭제
-			$exUserFile = $this->md_company->get($where, 'file');
-			if(count($exUserFile) > 0){
-				for ($i=0 ; $i < count($exUserFile); $i++){
-					if($exUserFile[$i]['file'] != '')
-						unlink(realpath($config['upload_path']) . '/' . $exUserFile[$i]['file']);
+			foreach( $list as $lt ){
+				if($lt['file'] != ''){
+					if(is_file(realpath($config['upload_path']) . '/' . $lt['file'])){
+						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
+					}					
 				}
 			}
-			$set_no = is_array($no) ? implode(',',$no):$no;
-			$where = 'no in (' . $set_no . ')';
-			$this->md_company->delete($where);
-			alert('삭제되었습니다.', site_url('rule' . '/index') );
+			$option['where_in'] = array(
+				'no' => $no
+			);
+			$this->md_rule->set_rule_delete($option);
+			alert('삭제되었습니다.', site_url('rule') );
 		}else{
 			alert('잘못된 접근입니다.');
 		}

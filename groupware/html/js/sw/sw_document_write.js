@@ -6,11 +6,10 @@ $(document).ready(function() {
 	else
 		$('#contents_setting_delete').show();
 	
-	//분류필터 리스트 init
-	var $menu_part_no = $('#document');
-	$menu_part_no.create_menu({
-		method : $menu_part_no.attr('data-method'),
-		value : $menu_part_no.attr('data-value')
+	var $menu_no = $('#menu_no');
+	$menu_no.create_menu({
+		method : $menu_no.attr('data-method'),
+		value : $menu_no.attr('data-value')
 	});
 	
 	//상세페이지 삭제

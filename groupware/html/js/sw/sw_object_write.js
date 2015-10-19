@@ -30,10 +30,12 @@ $(document).ready(function() {
 		value : $menu_part_no.attr('data-value')
 	});
 	//관리자필터 리스트 init
+	
 	var $user_part_no = $('#user_no');
 	$user_part_no.create_user({
 		method : $user_part_no.attr('data-method'),
 		value : $user_part_no.attr('data-value')
 	});
+	
 	
 })

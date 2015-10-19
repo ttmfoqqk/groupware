@@ -292,8 +292,8 @@ $(document).ready(function() {
 			
 
 			for (var i in json_obj){
-				console.log(json_obj[i]);
-				console.log($value);
+				//console.log(json_obj[i]);
+				//console.log($value);
                 output+='<option value="'+json_obj[i].no+'" '+ ($value==json_obj[i].no?'selected':'') +'>' + json_obj[i].name + '</option>';
             }
 			return output;

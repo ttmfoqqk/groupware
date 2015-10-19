@@ -309,26 +309,26 @@ class Member extends CI_Controller{
 			}
 			
 			$values = array(
-					'pwd'         => $pass,
-					'name'        => $name,
-					'phone'       => $phone,
-					'mobile'      => $mobile,
-					'email'       => $email,
-					'addr'        => $addr,
-					'annual'      => $annual,
-					'sDate'       => $sDate,
-					'eDate'       => $eDate,
-					'birth'       => $birth,
-					'gender'      => $gender,
-					'inDate'      => $inDate,
-					'color'       => $color,
-					'order'       => $order,
-					'is_active'   => $is_active,
-					'position'    => $position,
-					'origin_file' => $origin_file
+				'pwd'         => $pass,
+				'name'        => $name,
+				'phone'       => $phone,
+				'mobile'      => $mobile,
+				'email'       => $email,
+				'addr'        => $addr,
+				'annual'      => $annual,
+				'sDate'       => $sDate,
+				'eDate'       => $eDate,
+				'birth'       => $birth,
+				'gender'      => $gender,
+				'inDate'      => $inDate,
+				'color'       => $color,
+				'order'       => $order,
+				'is_active'   => $is_active,
+				'position'    => $position
 			);
 			if($file != null){
 				$values['file'] = $file;
+				$values['origin_file'] = $origin_file;
 			}
 
 			$this->member_model->set_user_update($values, $option);
@@ -343,7 +343,7 @@ class Member extends CI_Controller{
 			$option['where_in'] = array(
 				'no' => $no
 			);
-			$this->member_model->set_user_delete($option);
+			
 			$list = $this->member_model->get_user_list($option,count($no),0);
 			
 			foreach( $list as $lt ){
@@ -351,6 +351,7 @@ class Member extends CI_Controller{
 					unlink(realpath($config['upload_path']) . '/' . $lt['file']);
 				}
 			}
+			$this->member_model->set_user_delete($option);
 			alert('삭제되었습니다.', site_url('member') );
 		}else{
 			alert('잘못된 접근입니다.');
@@ -377,7 +378,7 @@ class Member extends CI_Controller{
 				'data'   => 'no data'
 			);
 		}
-		echo $return;
+		echo json_encode($return);
 	}
 
 
