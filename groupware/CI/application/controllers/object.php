@@ -270,7 +270,9 @@ class Object extends CI_Controller{
 				}else{
 					//이전파일 삭제하고 업로드
 					if($getData['file']){
-						unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+						if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+							unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+						}
 					}
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
@@ -315,7 +317,9 @@ class Object extends CI_Controller{
 
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
-					unlink(realpath($config['upload_path']) . '/' . $lt['file']);
+					if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
+					}
 				}
 			}
 			

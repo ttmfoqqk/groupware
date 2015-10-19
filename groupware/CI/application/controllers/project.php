@@ -312,7 +312,9 @@ class Project extends CI_Controller{
 					$file_name = $upload_data['file_name'];
 					
 					if( $oldFile ){
-						unlink($config['upload_path'].$oldFile);
+						if( is_file($config['upload_path'].$oldFile) ){
+							unlink($config['upload_path'].$oldFile);
+						}
 					}
 				}
 			}

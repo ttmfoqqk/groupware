@@ -291,7 +291,9 @@ class Rule extends CI_Controller{
 					alert($upload_error);
 				}else{
 					if($getData['file']){
-						unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+						if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+							unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+						}
 					}
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];

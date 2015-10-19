@@ -257,8 +257,11 @@ class Document extends CI_Controller{
 					$upload_error = $this->upload->display_errors('','') ;
 					alert($upload_error);
 				}else{
-					if($getData['file'])
-						unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+					if($getData['file']){
+						if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+							unlink(realpath($config['upload_path']) . '/' . $getData['file']);
+						}
+					}
 					$upload_data = $this->upload->data();
 					$file = $upload_data['file_name'];
 					$origin_file = $_FILES['userfile']['name'];
@@ -293,7 +296,7 @@ class Document extends CI_Controller{
 				if($lt['file'] != ''){
 					if(is_file(realpath($config['upload_path']) . '/' . $lt['file'])){
 						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
-					}					
+					}
 				}
 			}
 			

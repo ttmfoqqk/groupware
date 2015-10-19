@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$(".input-daterange").datepicker({language : 'kr',format: 'yyyy-mm-dd',autoclose:true,todayHighlight:true});
+	$(".input-daterange").datepicker();
 
 	var sData  = $('#sData');
 	var eData  = $('#eData');
@@ -12,28 +12,16 @@ $(document).ready(function(){
 	
 
 	btn_sToday.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', new Date()));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-0);
 	});
 	btn_sWeek.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 6);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-7);
 	});
 	btn_sMonth.click(function(){
-		var myDate = new Date();
-		var dayOfMonth = myDate.getDate();
-		myDate.setDate(dayOfMonth - 29);
-		sData.datepicker('setDate',  $.datepicker.formatDate('yy-mm-dd', myDate));
-		eData.datepicker('setDate', $.datepicker.formatDate('yy-mm-dd', new Date()));
+		set_btn_datepicker(sData,eData,-30);
 	});
 	btn_sReset.click(function(){
-		sData.datepicker('setDate', "");
-		eData.datepicker('setDate', "");
+		set_btn_datepicker(sData,eData,null);
 	});
 	
 	var department    = $('#department');

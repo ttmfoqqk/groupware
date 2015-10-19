@@ -263,7 +263,9 @@ class Meeting extends CI_Controller{
 					$file_name = $upload_data['file_name'];
 						
 					if( $oldFile ){
-						unlink($config['upload_path'].$oldFile);
+						if( is_file($config['upload_path'].$oldFile) ){
+							unlink($config['upload_path'].$oldFile);
+						}
 					}
 				}
 			}
@@ -289,8 +291,22 @@ class Meeting extends CI_Controller{
 			}
 			
 			$option['where_in'] = array(
+				'object.no' => $no
+			);
+				
+			$list = $this->meeting_model->get_meeting_detail($option,count($no),0);
+			
+			foreach( $list as $lt ){
+				if($lt['file'] != ''){
+					if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
+					}
+				}
+			}
+			
+			$option['where_in'] = array(
 				'no'=>$no
-			);			
+			);
 			$this->meeting_model->set_delete($option);
 			alert('삭제되었습니다.', site_url('meeting/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
