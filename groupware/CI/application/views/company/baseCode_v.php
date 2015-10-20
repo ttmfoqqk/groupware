@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?php echo $head_name?></h2>
+					<h2>기초코드</h2>
 				</div>
 			</div>
 			<div class="row">
@@ -22,46 +22,55 @@
 						<div class="panel-body">
 							<!-- START .col-lg-6 col-md-6 -->
 							<div class="col-lg-6 col-md-6 ">
-								<table class="table table-bordered" id="tbKey">
-									<thead>
-										<tr>
-											<th style="min-width: 50px;">순서</th>
-											<th style="min-width: 100px;" class="per15">KEY</th>
-											<th style="min-width: 300px; ">내용</th>
-											<th style="min-width: 60px;"></th>
-										</tr>
-									</thead>
-									<tbody id="keyBody">
-									</tbody>
-								</table>
-								<button id="btKeyAdd" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createKey($(this));">등록</button>
-							</div>
-							<!-- END .col-lg-6 .col-md-6 -->
-							<!-- START .col-lg-6 .col-md-6 -->
-							<div class="col-lg-6 col-md-6 ">
-								<table class="table table-bordered" id="tbCode">
+								<table class="table table-bordered table-hover" id="tbKey">
 									<thead>
 										<tr>
 											<th style="min-width: 45px; width: 45px;">
 												<div class="checkbox-custom">
-													<input class="check-all" type="checkbox" id="masterCheck"
-														value="option1"> <label for="masterCheck"></label>
+													<input class="check-all" type="checkbox" id="masterCheck2" value="option1">
+													<label for="masterCheck2"></label>
 												</div>
 											</th>
-											<th style="min-width: 50px;">순서</th>
-											<th style="min-width: 50px;">IDX</th>
-											<th style="min-width: 200px;">내용</th>
-											<th style="min-width: 80px;">사용 여부</th>
-											<th style="min-width: 60px;"></th>
+											<th class="text-center" style="min-width: 50px;">순서</th>
+											<th class="text-center" style="min-width: 50px;" class="per15">KEY</th>
+											<th class="text-center" style="min-width: 200px; ">내용</th>
+											<th class="text-center" style="min-width: 80px;">사용 여부</th>
+											<th class="text-center" style="min-width: 60px;"></th>
 										</tr>
 									</thead>
-									<input type="hidden" value="" name="idx" id="idx">
-									<tbody  id="codeBody">
-										<tr><td colspan="6">등록된 내용이 없습니다.</td></tr>
+									<tbody id="keyBody">
+										<tr><td colspan="4">로딩중 입니다.</td></tr>
 									</tbody>
 								</table>
-								<button id="btCodeAdd" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createCode($(this));">등록</button>
-								<button id="btCodeDel" type="button" class="btn btn-primary btn-alt mr5 mb10" onclick="createCode($(this));">삭제</button>
+								<button id="btKeyAdd" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+								<button id="btKeyRemove" type="button" class="btn btn-primary btn-alt mr5 mb10">삭제</button>
+							</div>
+							<!-- END .col-lg-6 .col-md-6 -->
+							<!-- START .col-lg-6 .col-md-6 -->
+							<div class="col-lg-6 col-md-6 ">
+								
+								<table class="table table-bordered table-hover" id="tbCode">
+									<thead>
+										<tr>
+											<th style="min-width: 45px; width: 45px;">
+												<div class="checkbox-custom">
+													<input class="check-all" type="checkbox" id="masterCheck" value="option1">
+													<label for="masterCheck"></label>
+												</div>
+											</th>
+											<th class="text-center" style="min-width: 50px;">순서</th>
+											<th class="text-center" style="min-width: 50px;">IDX</th>
+											<th class="text-center" style="min-width: 200px;">내용</th>
+											<th class="text-center" style="min-width: 80px;">사용 여부</th>
+											<th class="text-center" style="min-width: 60px;"></th>
+										</tr>
+									</thead>
+									<tbody  id="codeBody" data-key="">
+										<tr><td colspan="6">KEY를 선택해주세요.</td></tr>
+									</tbody>
+								</table>
+								<button id="btCodeAdd" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
+								<button id="btCodeRemove" type="button" class="btn btn-primary btn-alt mr5 mb10">삭제</button>
 							</div>
 							<!-- END .col-lg-6 .col-md-6 -->
 

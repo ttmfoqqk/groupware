@@ -1,21 +1,22 @@
 <?
 class BaseCode extends CI_Controller{
+	private $TABLE_NAME = 'sw_base_code';
+	
 	public function __construct() {
 		parent::__construct();
-		$this->load->model("baseCode_model");
+		$this->load->model("md_company");
+		$this->md_company->setTable($this->TABLE_NAME);
     }
 
 	public function _remap($method){
 		login_check();
-		
+		permission_check('baseCode','R');
 		if ($this->input->is_ajax_request()) {
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
 			}
 		}else{
 			if(method_exists($this, $method)){
-				permission_check('baseCode','R');
-				
 				set_cookie('left_menu_open_cookie',site_url('baseCode'),'0');
 				$this->load->view('inc/header_v');
 				$this->load->view('inc/side_v');
@@ -32,107 +33,6 @@ class BaseCode extends CI_Controller{
 	public function lists(){
 		$this->load->view('company/baseCode_v');
 	}
-	
-	public function _lists(){
-		$parent_key = $this->input->get('key') ? $this->input->get('key') : NULL;
-		$option['where'] = array(
-			'parent_key' => $parent_key
-		);
-		$data = $this->baseCode_model->get_code_list($option);
-		echo json_encode($data);
-	}
-	
-	public function _proc(){
-		$code_type   = $this->input->post('code_type');
-		
-		$no          = $this->input->post('modal_no');
-		$action_type = $this->input->post('modal_action');
-		$key         = $this->input->post('modal_key');
-		$parent_key  = $code_type == 'key' ? NULL : $this->input->post('modal_key');
-		$name        = $this->input->post('modal_name');
-		$order       = $this->input->post('modal_order');
-		$is_active   = $this->input->post('modal_active');
-		
-		
-		
-		if($action_type == 'create'){
-			if($code_type == 'key'){
-				$option['where'] = array(
-					'key' => $key
-				);
-				$data = $this->baseCode_model->get_code_list($option);
-				if(count($data) > 0 ){
-					$return = array(
-						'result' => 'error',
-						'msg'    => '이미 등록된 KEY 입니다.'
-					);
-					echo json_encode($return);
-					exit;
-				}
-			}
-			
-			$option = array(
-				'key'        => $key,
-				'parent_key' => $parent_key,
-				'name'       => $name,
-				'order'      => $order,
-				'is_active'  => $is_active
-			);
-			
-			$this->baseCode_model->set_code_insert($option);
-			$return = array(
-				'result' => 'ok',
-				'msg'    => 'create'
-			);
-		}elseif($action_type == 'update'){
-			$values = array(
-				'name'       => $name,
-				'order'      => $order,
-				'is_active'  => $is_active
-			);
-			$option['where'] = array(
-				'no' => $no
-			);
-
-			$this->baseCode_model->set_code_update($values,$option);
-			$return = array(
-				'result' => 'ok',
-				'msg'    => 'update'
-			);
-		}elseif($action_type == 'delete'){
-			$option['where_in'] = array(
-				'no' => $no
-			);
-			$this->baseCode_model->set_code_delete($option);
-			
-			if($code_type == 'key'){
-				$data = $this->baseCode_model->get_code_list($option);
-				foreach($data as $lt){
-					$option_sub['where'] = array(
-						'parent_key' => $lt['key']
-					);
-					$this->baseCode_model->set_code_delete($option_sub);
-				}
-			}
-			
-			$return = array(
-				'result' => 'ok',
-				'msg'    => 'delete'
-			);
-		}else{
-			$return = array(
-				'result' => 'error',
-				'msg'    => '잘못된 접근입니다.'
-			);
-		}
-
-		echo json_encode($return);
-	}
-	
-	
-	
-	
-	
 	
 	
 	public function _keyList(){

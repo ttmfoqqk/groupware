@@ -180,8 +180,6 @@ class Member_model extends CI_Model{
 		}else
 			return json_encode(array());
 	}
-	
-
 }
 /* End of file member_model.php */
 /* Location: ./models/member_model.php */

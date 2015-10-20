@@ -155,6 +155,7 @@ class Attendance extends CI_Controller{
 
 	public function set(){
 		permission_check('att-set','R');
+		$this->load->model('baseCode_model');
 
 		$data['action_url'] = site_url('attendance/save');
 		$data['list'] = $this->md_attendance->attendance_list();
@@ -174,10 +175,16 @@ class Attendance extends CI_Controller{
 		
 		//누적 지각 옵션 값
 		$option['where'] = array(
-			'parent_key' => 1
+			'parent_key' => 'accrue_lateness_time',
+			'is_active'  => 0
 		);
-		$result = $this->md_attendance->get_temp_baseCode($option);
-		$data['accure_lateness'] = $result['name'];
+		$result = $this->baseCode_model->get_code_list($option);
+		if(count($result)>0){
+			$accure_lateness = $result[0]['name'];
+		}else{
+			$accure_lateness = 0;
+		}
+		$data['accure_lateness'] = $accure_lateness;
 
 		$this->load->view('company/attendance_set_v',$data);
 	}
