@@ -39,7 +39,7 @@
 										</tr>
 									</thead>
 									<tbody id="keyBody">
-										<tr><td colspan="4">로딩중 입니다.</td></tr>
+										<tr><td colspan="6">로딩중 입니다.</td></tr>
 									</tbody>
 								</table>
 								<button id="btKeyAdd" type="button" class="btn btn-primary btn-alt mr5 mb10">등록</button>
