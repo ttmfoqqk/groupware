@@ -4,7 +4,7 @@ class Approved_archive extends CI_Controller{
 
 	public function __construct() {
 		parent::__construct();
-
+		$this->load->model('common_model');
 		$this->load->model('approved_model');
 		
 		$this->PAGE_CONFIG['segment']  = 3;
@@ -112,10 +112,11 @@ class Approved_archive extends CI_Controller{
 
 		$data['total']         = $this->approved_model->approved_archive_list($option,null,null,'count');
 		$data['list']          = $this->approved_model->approved_archive_list($option,PAGING_PER_PAGE,$offset);
-		$data['anchor_url']    = site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']); // 글 링크
-		$data['write_url']     = site_url('approved_archive/write/'.$this->PAGE_CONFIG['params_string']); // 글 링크
-		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
-		$data['action_url']    = site_url('approved_archive/proc/' .$this->PAGE_CONFIG['cur_page']); // 폼 action
+		
+		$data['anchor_url']    = site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
+		$data['write_url']     = site_url('approved_archive/write/'.$this->PAGE_CONFIG['params_string']);
+		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
+		$data['action_url']    = site_url('approved_archive/proc/' .$this->PAGE_CONFIG['cur_page']);
 		$data['excel_url']     = site_url('approved_archive/excel/'.$this->PAGE_CONFIG['params_string']);
 
 		$config['base_url']    = site_url('approved_archive/lists');
@@ -128,6 +129,7 @@ class Approved_archive extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_archive_v',$data);
+
 	}
 	
 	public function excel(){
@@ -172,10 +174,11 @@ class Approved_archive extends CI_Controller{
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(
 				'approved.no'=>$no
-		);		
+		);
 		$setVla = array(
 			'created'   => Date('Y-m-d'),
-			'user_name' => $this->session->userdata('name')
+			'user_name' => $this->session->userdata('name'),
+			'order'     => 0,
 		);
 		
 		$data['data'] = $this->approved_model->approved_archive_detail($option,$setVla);
@@ -194,7 +197,6 @@ class Approved_archive extends CI_Controller{
 			}
 		}
 
-		$data['action_type'] = 'create';
 		$data['parameters']  = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
 		$data['action_url']  = site_url('approved_archive/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 		$data['list_url']    = site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
@@ -204,7 +206,7 @@ class Approved_archive extends CI_Controller{
 	public function proc(){
 		$this->load->library('form_validation');
 
-
+		$tableName     = 'sw_approved';
 		$action_type   = $this->input->post('action_type');
 		$no            = $this->input->post('no');
 		$approved_kind = $this->input->post('approved_kind');
@@ -276,28 +278,31 @@ class Approved_archive extends CI_Controller{
 			
 
 			$option = array(
-				'kind'       =>$approved_kind,
-				'project_no' =>$task_no,
-				'user_no'    =>$this->session->userdata('no'),
-				'menu_no'    =>$department,
-				'title'      =>$title,
-				'sData'      =>$sData,
-				'eData'      =>$eData,
-				'file'       =>$file_name,
-				'order'      =>$order
+				'kind'       => $approved_kind,
+				'project_no' => $task_no,
+				'user_no'    => $this->session->userdata('no'),
+				'menu_no'    => $department,
+				'title'      => $title,
+				'sData'      => $sData,
+				'eData'      => $eData,
+				'file'       => $file_name,
+				'order'      => $order,
+				'created'    => 'NOW()'
 			);
-			$insert_id = $this->approved_model->set_approved_insert($option);
+			//$insert_id = $this->approved_model->set_approved_insert($option);
+			$insert_id = $this->common_model->insert($tableName,$option);
 
 			if($approved_kind == '1'){
 				// 일반업무 등록시 담당자 self insert -> sw_document_staff;
-				$option = array();
-				array_push($option,array(
+				$set = array();
+				array_push($set,array(
 					'approved_no' => $insert_id,
 					'menu_no'     => $department,
 					'user_no'     => $this->session->userdata('no'),
 					'order'       => 1
 				));
-				$result = $this->approved_model->temp_document_staff_insert($option);
+				//$result = $this->approved_model->temp_document_staff_insert($option);
+				$result = $this->common_model->insert_batch('sw_document_staff',$set);
 			}
 
 			if($contents){
@@ -361,7 +366,7 @@ class Approved_archive extends CI_Controller{
 				}
 			}
 			
-			$option = array(
+			$set = array(
 				'project_no' =>$task_no,
 				'menu_no'    =>$department,
 				'title'      =>$title,
@@ -370,16 +375,16 @@ class Approved_archive extends CI_Controller{
 				'file'       =>$file_name,
 				'order'      =>$order
 			);
-			$this->approved_model->set_approved_update($option,array('no'=>$no));
+			$option['where'] = array('no'=>$no);
+			//$this->approved_model->set_approved_update($option,array('no'=>$no));
+			$this->common_model->update($tableName,$set,$option);
 
-			//if($contents){
-				$option = array(
-					'approved_no' =>$no,
-					'user_no'     =>$this->session->userdata('no'),
-					'contents'    =>$contents
-				);
-				$result = $this->approved_model->set_approved_contents_insert($option);
-			//}
+			$option = array(
+				'approved_no' =>$no,
+				'user_no'     =>$this->session->userdata('no'),
+				'contents'    =>$contents
+			);
+			$result = $this->approved_model->set_approved_contents_insert($option);
 
 			alert('수정되었습니다.', site_url('approved_archive/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
@@ -389,11 +394,22 @@ class Approved_archive extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
-
-			$set_no = is_array($no) ? implode(',',$no):$no;
 			
-			/* 데이터 삭제 */
-			$this->approved_model->set_approved_delete($set_no);
+			/* 삭제
+			 * sw_approved
+			 */
+			$option['where_in'] = array('no' => $no);
+			$this->common_model->delete($tableName,$option);
+			
+			/* 삭제
+			 * sw_approved_status
+			 * sw_document_staff
+			 * sw_approved_contents 
+			 */
+			$option['where_in'] = array('approved_no' => $no);
+			$this->common_model->delete('sw_approved_status',$option);
+			$this->common_model->delete('sw_document_staff',$option);
+			$this->common_model->delete('sw_document_staff',$option);
 			
 			alert('삭제되었습니다.', site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
@@ -430,14 +446,14 @@ class Approved_archive extends CI_Controller{
 				);
 			}else{
 			
-				$option = array();
+				$set = array();
 				for( $i=0; $i < count($json_data)-1; $i++ ){
 					if($i == 0){
 						$status = 'a';
 					}else{
 						$status = NULL;
 					}
-					array_push($option,array(
+					array_push($set,array(
 						'approved_no'   => $approved_no,
 						'sender'        => $json_data[$i]->user_no,
 						'receiver'      => $json_data[$i+1]->user_no,
@@ -449,7 +465,12 @@ class Approved_archive extends CI_Controller{
 					));
 				}
 
-				$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
+				//$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
+				$this->common_model->insert_batch('sw_approved_status',$set);
+				
+				$option['where'] = array('approved_no'=>$approved_no);
+				$this->common_model->delete('sw_approved_status',$set);
+				
 				$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'
@@ -489,10 +510,10 @@ class Approved_archive extends CI_Controller{
 				);
 			}else{
 				
-				$option = array();
+				$set = array();
 				$i = 1;
 				foreach($json_data as $key) {
-					array_push($option,array(
+					array_push($set,array(
 						'approved_no' => $approved_no,
 						'menu_no'     => $key->menu_no,
 						'user_no'     => $key->user_no,
@@ -501,7 +522,14 @@ class Approved_archive extends CI_Controller{
 					));
 					$i++;
 				}
-				$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
+				
+				//$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
+				$this->db->insert_batch('sw_document_staff',$set);
+				
+				$option['where'] = array('approved_no'=>$approved_no);
+				$this->db->delete('sw_document_staff',$option);
+				
+				
 				$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'

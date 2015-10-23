@@ -181,7 +181,9 @@ class Approved_model extends CI_Model{
 		return $result;
 	}
 
-	
+	/*
+	 * 결재 카운트 - 중복제거용
+	 */
 	public function get_check($no){
 		$this->db->select('count(*) as count');
 		$this->db->from('sw_approved A');
@@ -194,24 +196,12 @@ class Approved_model extends CI_Model{
 		$query = $query->row();
 		return $query->count;
 	}
-
-	public function set_approved_insert($option){
-		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_approved',$option);
-		return $this->db->insert_id();
-	}
-	public function set_approved_update($option,$where){
-		$this->db->update('sw_approved',$option,$where);
-	}
-	public function set_approved_delete($set_no){
-		$this->db->delete('sw_approved','no in('.$set_no.')');
-		$this->set_approved_staff_delete('approved_no in('.$set_no.')');
-		$this->temp_document_staff_delete('approved_no in('.$set_no.')');
-
-		$this->set_approved_contents_delete('approved_no in('.$set_no.')');
-	}
 	
-	/* 내용 */
+	
+	/**
+	 * 컨텐츠 입력/수정 
+	 * @param unknown $option
+	 */
 	public function set_approved_contents_insert($option){
 
 		$this->db->select('count(*) as total');
@@ -229,8 +219,18 @@ class Approved_model extends CI_Model{
 			$this->db->update('sw_approved_contents', array('contents'=>$option['contents']) , array('approved_no'=>$option['approved_no'],'user_no'=>$option['user_no']) );
 		}
 	}
-	public function set_approved_contents_delete($option){
-		$this->db->delete('sw_approved_contents',$option);
+	
+	/* 내용 */
+	public function get_approved_contents_list($option){
+		$this->db->select('contents.* , user.name as user_name');
+		$this->db->from('sw_approved_contents as contents');
+		$this->db->join('sw_user AS user','contents.user_no = user.no');
+		$this->db->where($option);
+		$this->db->order_by('created','ASC');
+	
+		$query  = $this->db->get();
+		$result = $query->result_array();
+		return $result;
 	}
 
 	/* 담당자 */
@@ -245,34 +245,7 @@ class Approved_model extends CI_Model{
 		$result = $query->result_array();
 		return $result;
 	}
-
-	public function set_approved_staff_delete($option){
-		$this->db->delete('sw_approved_status',$option);
-	}
-
-	public function set_approved_staff_insert($option,$staff){
-		$this->set_approved_staff_delete($staff);
-		$this->db->insert_batch('sw_approved_status',$option);
-	}
-	public function set_approved_staff_update($option,$where){
-		$this->db->update('sw_approved_status',$option,$where);
-	}
-
 	
-	/* 내용 */
-	public function get_approved_contents_list($option){
-		$this->db->select('contents.* , user.name as user_name');
-		$this->db->from('sw_approved_contents as contents');
-		$this->db->join('sw_user AS user','contents.user_no = user.no');
-		$this->db->where($option);
-		$this->db->order_by('created','ASC');
-
-		$query  = $this->db->get();
-		$result = $query->result_array();
-		return $result;
-	}
-
-
 	/* 일반업무 담당자 임시 테이블 */
 	public function temp_document_staff_list($option){
 		$this->db->select('staff.*');
@@ -289,16 +262,6 @@ class Approved_model extends CI_Model{
 		return $result;
 	}
 
-	public function temp_document_staff_delete($option){
-		$this->db->delete('sw_document_staff',$option);
-	}
-
-	public function temp_document_staff_insert($option,$staff=null){
-		if( !is_null($staff) ){
-			$this->temp_document_staff_delete($staff);
-		}
-		$this->db->insert_batch('sw_document_staff',$option);
-	}
 }
 /* End of file approved_model.php */
 /* Location: ./models/approved_model.php */

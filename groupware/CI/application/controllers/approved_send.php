@@ -3,6 +3,7 @@ class Approved_send extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('approved_model');
 
 		$this->PAGE_CONFIG['segment']  = 4;
@@ -256,15 +257,14 @@ class Approved_send extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$option = array(
-				'status' => 'b'
-			);
-			$where = array(
+			$set = array('status' => 'b');
+			$option['where'] = array(
 				'approved_no' =>$no,
 				'sender'      =>$this->session->userdata('no')
 			);
 
-			$this->approved_model->set_approved_staff_update($option,$where);
+			//$this->approved_model->set_approved_staff_update($option,$where);
+			$this->common_model->update('sw_approved_status',$set,$option);
 
 			alert('결재 요청되었습니다.', site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}elseif ( $action_type == 'edit' ){

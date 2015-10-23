@@ -3,6 +3,7 @@ class Approved_receive extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('approved_model');
 
 		$this->PAGE_CONFIG['segment']  = 4;
@@ -261,25 +262,23 @@ class Approved_receive extends CI_Controller{
 			
 			// 히스토리 , 날짜등 업데이트 여부 확인
 			// 결재 완료/반려
-			$option = array(
-				'status' => $status
-			);
-			$where = array(
+			$set = array('status' => $status);
+			$option['where'] = array(
 				'approved_no' =>$no,
 				'receiver'    =>$this->session->userdata('no')
 			);
-			$this->approved_model->set_approved_staff_update($option,$where);
+			//$this->approved_model->set_approved_staff_update($option,$where);
+			$this->common_model->update('sw_approved_status',$set,$option);
 			
 			if( $status == 'c' ){
 				// 결재 신청
-				$option = array(
-					'status' => 'a'
-				);
-				$where = array(
+				$set = array('status' => 'a');
+				$option['where'] = array(
 					'approved_no' =>$no,
 					'sender'      =>$this->session->userdata('no')
 				);
-				$this->approved_model->set_approved_staff_update($option,$where);
+				//$this->approved_model->set_approved_staff_update($option,$where);
+				$this->common_model->update('sw_approved_status',$set,$option);
 			}
 
 			alert('결재 되었습니다.', site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
