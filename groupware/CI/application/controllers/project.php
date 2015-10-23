@@ -118,72 +118,46 @@ class Project extends CI_Controller{
 	}
 	
 	public function excel(){
+		$this->load->library('Excel');
+		$excel = new Excel();
+		
 		$option = $this->getListOption();
-	
+		/*
+		 * 엑셀 라이브러리 생성중
+		 */
 		$data['total'] = $this->project_model->get_project_list($option,null,null,'count');
 		$data['list']  = $this->project_model->get_project_list($option,$data['total'],0);
-	
-	
-		$this->load->library('PHPExcel');
-		$objPHPExcel = new PHPExcel();
-	
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("업무 정보");
-		$objPHPExcel->setActiveSheetIndex(0);
-	
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'H') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-	
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-	
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '담당부서');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '분류');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '제목');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '진행기간');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '결재점수');
-		$objPHPExcel->getActiveSheet()->setCellValue('F1', '누락점수');
-		$objPHPExcel->getActiveSheet()->setCellValue('G1', '기안일자');
-		$objPHPExcel->getActiveSheet()->setCellValue('H1', '기안자');
-	
-		$row = 2;
+		
+		$title = '업무 정보';
+		$labels = array(
+				'A' => '담당부서',
+				'B' => '분류',
+				'C' => '제목',
+				'D' => '진행기간',
+				'E' => '결재점수',
+				'F' => '누락점수',
+				'G' => '기안일자',
+				'H' => '기안자'
+		);
+		
+		$values=array();
 		foreach ( $data['list'] as $lt ) {
 			$part = search_node($lt['part_no'],'parent');
 			$menu = search_node($lt['menu_no'],'parent');
-	
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $part['name']);
-			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $menu['name']);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['title']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['sData'].' ~ '.$lt['eData']);
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['pPoint']);
-			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['mPoint']);
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$row, $lt['created']);
-			$objPHPExcel->getActiveSheet()->setCellValue('H'.$row, $lt['user_name']);
-			$row ++;
-		}
-	
-		$filename = '업무 정보_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
 
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+			$item = array(
+				'A' => $part['name'],
+				'B' => $menu['name'],
+				'C' => $lt['title'],
+				'D' => $lt['sData'].' ~ '.$lt['eData'],
+				'E' => $lt['pPoint'],
+				'F' => $lt['mPoint'],
+				'G' => $lt['created'],
+				'H' => $lt['user_name'] 
+			);
+			array_push($values, $item);		}
+		
+		$excel->printExcel($title,$labels,$values);
 	}
 	
 	

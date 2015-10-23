@@ -150,17 +150,17 @@ class Approved_archive extends CI_Controller{
 			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
 	
 			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-					array(
-							'font' => array(
-									'bold' => true,
-									'size' => 14
-							),
-							'alignment' => array(
-									'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-									'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-									'wrap'       => true
-							)
+				array(
+					'font' => array(
+						'bold' => true,
+						'size' => 14
+					),
+					'alignment' => array(
+						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+						'wrap'       => true
 					)
+				)
 			);
 		}
 	
