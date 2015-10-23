@@ -5,7 +5,13 @@ class Excel {
 		$CI =& get_instance();
 		$CI->load->library('PHPExcel');
 	}
-
+	
+	/**
+	 * 엑셀 출력
+	 * @param string $title
+	 * @param array $labels
+	 * @param array $values
+	 */
 	function printExcel($title='제목없음',$labels=array(),$values=array()){
 		$objPHPExcel = new PHPExcel();
 
@@ -39,7 +45,7 @@ class Excel {
 		$row = 2;
 		foreach( $values as $value ){
 			foreach($value as $key=>$value){
-				$objPHPExcel->getActiveSheet()->setCellValue($key.$row, $value);
+				$objPHPExcel->getActiveSheet()->setCellValueExplicit($key.$row, $value,PHPExcel_Cell_DataType::TYPE_STRING);
 			}
 			$row ++;
 		}

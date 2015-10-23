@@ -165,68 +165,41 @@ class Approved_receive extends CI_Controller{
 	}
 	
 	public function excel(){
+		$this->load->library('Excel');
+		$excel = new Excel();
 		$option = $this->getListOption();
 	
 		$data['total'] = $this->approved_model->approved_send_list($option,null,null,'count');
 		$data['list']  = $this->approved_model->approved_send_list($option,$data['total'],0);
-	
-		$this->load->library('PHPExcel');
-		$objPHPExcel = new PHPExcel();
-	
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("받은 결재");
-		$objPHPExcel->setActiveSheetIndex(0);
-	
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'G') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-	
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-	
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '분류');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '제목');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '진행기간');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '결재');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '누락');
-		$objPHPExcel->getActiveSheet()->setCellValue('F1', '등록일자');
-		$objPHPExcel->getActiveSheet()->setCellValue('G1', '담당자');
-	
-		$row = 2;
+		
+		$title = '받은 결재';
+		$labels = array(
+			'A' => '분류',
+			'B' => '제목',
+			'C' => '진행기간',
+			'D' => '결재',
+			'E' => '누락',
+			'F' => '등록일자',
+			'G' => '담당자'
+		);
+		
+		$values=array();
+		
 		foreach ( $data['list'] as $lt ) {
 			$menu = search_node($lt['menu_no'],'parent');
-	
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $menu['name']);
-			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['title']);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['sData'].' ~ '.$lt['eData']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, ($lt['kind']=='0' ? '+'.$lt['pPoint'] : ''));
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, ($lt['kind']=='0' ? '-'.$lt['mPoint'] : ''));
-			$objPHPExcel->getActiveSheet()->setCellValue('F'.$row, $lt['created']);
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$row, $lt['user_name']);
-			$row ++;
+			$item = array(
+				'A' => $menu['name'],
+				'B' => $lt['title'],
+				'C' => $lt['sData'].' ~ '.$lt['eData'],
+				'D' => ($lt['kind']=='0' ? '+'.$lt['pPoint'] : ''),
+				'E' => ($lt['kind']=='0' ? '-'.$lt['mPoint'] : ''),
+				'F' => $lt['created'],
+				'G' => $lt['user_name']
+			);
+			array_push($values, $item);
 		}
-	
-		$filename = '받은 결재_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
-
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+		
+		$excel->printExcel($title,$labels,$values);
 	}
 
 	public function write(){

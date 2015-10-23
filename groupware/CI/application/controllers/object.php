@@ -94,65 +94,37 @@ class Object extends CI_Controller{
 	}
 	
 	public function excel(){
+		$this->load->library('Excel');
+		$excel = new Excel();
 		$option = $this->getListOption();
 	
 		$data['total'] = $this->md_object->get_object_list($option,null,null,'count');
 		$data['list']  = $this->md_object->get_object_list($option,$data['total'],0);
-	
-	
-		$this->load->library('PHPExcel');
-		$objPHPExcel = new PHPExcel();
-	
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("물품 정보");
-		$objPHPExcel->setActiveSheetIndex(0);
-	
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'E') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-	
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-	
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '분류');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '물품명');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '물품위치');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '등록일자');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '관리자');
-	
-		$row = 2;
+		
+		$title = '물품 정보';
+		$labels = array(
+			'A' => '분류',
+			'B' => '물품명',
+			'C' => '물품위치',
+			'D' => '등록일자',
+			'E' => '관리자'
+		);
+		
+		$values=array();
+		
 		foreach ( $data['list'] as $lt ) {
 			$menu = search_node($lt['menu_no'],'parent');
-	
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $menu['name']);
-			$objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $lt['name']);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['area']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['created']);
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['user_name']);
-			$row ++;
+			$item = array(
+				'A' => $menu['name'],
+				'B' => $lt['name'],
+				'C' => $lt['area'],
+				'D' => $lt['created'],
+				'E' => $lt['user_name']
+			);
+			array_push($values, $item);
 		}
-	
-		$filename = '물품 정보_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
-	
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+		
+		$excel->printExcel($title,$labels,$values);
 	}
 	
 	public function write(){

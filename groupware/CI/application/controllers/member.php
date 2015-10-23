@@ -92,63 +92,36 @@ class Member extends CI_Controller{
 	}
 	
 	public function excel(){
+		$this->load->library('Excel');
+		$excel = new Excel();
 		$option = $this->getListOption();
 	
 		$data['total'] = $this->member_model->get_user_list($option,null,null,'count');
 		$data['list']  = $this->member_model->get_user_list($option,$data['total'],0);
-	
-	
-		$this->load->library('PHPExcel');
-		$objPHPExcel = new PHPExcel();
-	
-		$objPHPExcel->getProperties()->setCreator("groupware");
-		$objPHPExcel->getProperties()->setLastModifiedBy("groupware");
-		$objPHPExcel->getProperties()->setTitle("사원 관리");
-		$objPHPExcel->setActiveSheetIndex(0);
-	
-		$objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-		foreach (range('A', 'H') as $column){
-			$objPHPExcel->getActiveSheet()->getColumnDimension($column)->setWidth(20);
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->getFont()->setBold(true);
-	
-			$objPHPExcel->getActiveSheet()->getStyle($column.'1')->applyFromArray(
-				array(
-					'font' => array(
-						'bold' => true,
-						'size' => 14
-					),
-					'alignment' => array(
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-						'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-						'wrap'       => true
-					)
-				)
-			);
-		}
-	
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', '이름');
-		$objPHPExcel->getActiveSheet()->setCellValue('B1', '휴대폰번호');
-		$objPHPExcel->getActiveSheet()->setCellValue('C1', '이메일');
-		$objPHPExcel->getActiveSheet()->setCellValue('D1', '재직여부');
-		$objPHPExcel->getActiveSheet()->setCellValue('E1', '등록일자');
-	
-		$row = 2;
+		
+		$title = '사원 관리';
+		$labels = array(
+			'A' => '이름',
+			'B' => '휴대폰번호',
+			'C' => '이메일',
+			'D' => '재직여부',
+			'E' => '등록일자'
+		);
+		
+		$values=array();
+		
 		foreach ( $data['list'] as $lt ) {
-			$objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $lt['name']);
-			$objPHPExcel->getActiveSheet()->setCellValueExplicit('B'.$row, $lt['mobile'],PHPExcel_Cell_DataType::TYPE_STRING);
-			$objPHPExcel->getActiveSheet()->setCellValue('C'.$row, $lt['email']);
-			$objPHPExcel->getActiveSheet()->setCellValue('D'.$row, $lt['active']);
-			$objPHPExcel->getActiveSheet()->setCellValue('E'.$row, $lt['created']);
-			$row ++;
+			$item = array(
+					'A' => $lt['name'],
+					'B' => $lt['mobile'],
+					'C' => $lt['email'],
+					'D' => $lt['active'],
+					'E' => $lt['created']
+			);
+			array_push($values, $item);
 		}
-	
-		$filename = '사원 관리_' . date('Y년 m월 d일 H시 i분 s초', time()) . '.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
-	
-		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-		$objWriter->save('php://output');
+		
+		$excel->printExcel($title,$labels,$values);
 	}
 	
 	public function write(){
