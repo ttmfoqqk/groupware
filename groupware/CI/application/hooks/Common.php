@@ -18,7 +18,7 @@ class _Common{
 		unset($result);
 		
 
-		
+		$date_limit = date('Y-m-d',strtotime(date('Y-m-d').'-5 days'));
 		// 결재 메뉴 카운트
 		// 미결재 카운트용 추가 작성 요망
 		$count_approved['sender']   = array('a'=>'0','b'=>'0','c'=>'0','d'=>'0','ao'=>'0');
@@ -29,10 +29,11 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'sender' , $CI->session->userdata('no') );
-		$CI->db->where( 'created >', date('Y-m-d') );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") >=', '"'.date('Y-m-d').'"' ,FALSE);
 		$CI->db->group_by('status');
 		$query = $CI->db->get();
 		$result['sender'] = $query->result_array();
+		//echo $date_limit;
 
 		foreach( $result['sender'] as $lt ){
 			$count_approved['sender'][$lt['status']] = $lt['count'];
@@ -42,7 +43,8 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'sender' , $CI->session->userdata('no') );
-		$CI->db->where( 'created < ', date('Y-m-d') );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") <= ', '"'.date('Y-m-d').'"' ,FALSE );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") >= ', '"'.$date_limit.'"' ,FALSE );
 		$CI->db->where( 'status', 'a' );
 		$query = $CI->db->get();
 		$result['sender_ao'] = $query->row();
@@ -53,7 +55,7 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'receiver' , $CI->session->userdata('no') );
-		$CI->db->where( 'created >', date('Y-m-d') );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") >=', '"'.date('Y-m-d').'"' ,FALSE);
 		$CI->db->group_by('status');
 		$query = $CI->db->get();
 		$result['receiver'] = $query->result_array();
@@ -66,7 +68,8 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'receiver' , $CI->session->userdata('no') );
-		$CI->db->where( 'created < ', date('Y-m-d') );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") <= ', '"'.date('Y-m-d').'"' ,FALSE );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") >= ', '"'.$date_limit.'"' ,FALSE );
 		$CI->db->where( 'status', 'a' );
 		$query = $CI->db->get();
 		$result['receiver_ao'] = $query->row();

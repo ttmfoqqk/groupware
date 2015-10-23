@@ -42,18 +42,17 @@ class Menu extends CI_Controller{
 
 	public function _remap($method){
 		login_check();
-		
-		if( $method == 'write' or $method == 'proc' or $method == 'moves' or $method == 'update' or $method == 'delete' or $method == 'create' ){
-			permission_check('menu-'.$this->PAGE_CONFIG['method'],'W');
-		}else{
-			permission_check('menu-'.$this->PAGE_CONFIG['method'],'R');
-		}
-		
+
 		if ($this->input->is_ajax_request()) {
+			if($method!='lists'){
+				permission_check('menu-'.$this->PAGE_CONFIG['method'],'W');
+			}
 			if(method_exists($this, '_' . $method)){
 				$this->{'_' . $method}();
 			}
 		}else{
+			permission_check('menu-'.$this->PAGE_CONFIG['method'],'R');
+
 			set_cookie('left_menu_open_cookie',site_url('menu/lists/'.$this->PAGE_CONFIG['method'] ),'0');
 			if(method_exists($this, $method)){
 				$this->load->view('inc/header_v');
