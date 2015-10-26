@@ -4,7 +4,10 @@ class Board extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('board_model');
+		$this->load->model('common_model');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_board_contents';
+		$this->PAGE_CONFIG['tableName_file'] = 'sw_board_file';
 		
 		$this->PAGE_CONFIG['segment']  = 4;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
@@ -21,7 +24,7 @@ class Board extends CI_Controller{
 			'code' => $this->uri->segment(3) ,
 			'activated' => 0
 		);
-		$this->board = $this->board_model->get_setting_detail($option);
+		$this->board = $this->common_model->detail('sw_board_list',NULL,$option);
 		
 		if( !$this->board['no'] ){
 			alert('잘못된 게시판 코드 입니다.');
@@ -54,7 +57,15 @@ class Board extends CI_Controller{
 	}
 
 	public function lists(){
+		$option_notice['where'] = array(
+				'code' => $this->board['code'] ,
+				'is_delete' => '0',
+				'is_notice' => '0'
+		);
+		
 		$option['where'] = array(
+			'code' => $this->board['code'] ,
+			'is_delete' => '0',
 			'date_format(created,"%Y-%m-%d") >=' => $this->PAGE_CONFIG['params']['sData'],
 			'date_format(created,"%Y-%m-%d") <=' => $this->PAGE_CONFIG['params']['eData']
 		);
@@ -62,19 +73,23 @@ class Board extends CI_Controller{
 			'subject'   => $this->PAGE_CONFIG['params']['subject'],
 			'user_name' => $this->PAGE_CONFIG['params']['user_name']
 		);
-		
 		$array_menu = search_node($this->PAGE_CONFIG['params']['menu_no'],'children');
 		$option['where_in'] = array(
 			'menu_no' => $array_menu
 		);
+		
+		$order = array(
+			'original_no'=>'DESC',
+			'order'=>'ASC'
+		);
 
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+
+		$data['total']         = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,null,null,null,'count');
+		$data['notice']        = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option_notice,null,null,$order);
+		$data['list']          = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,PAGING_PER_PAGE,$offset,$order);
 		
 		$data['board_name']    = $this->board['name'];
-		$data['total']         = $this->board_model->get_board_list($option,$this->board['code'],null,null,'count');
-		$data['notice']        = $this->board_model->get_board_list($option,$this->board['code'],null,null,'notice');
-		$data['list']          = $this->board_model->get_board_list($option,$this->board['code'],PAGING_PER_PAGE,$offset);
-		
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('board/view/' .$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('board/write/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page']);
@@ -101,13 +116,17 @@ class Board extends CI_Controller{
 			'no'   => $no,
 			'code' => $this->board['code']
 		);
-		$data['data'] = $this->board_model->get_board_detail($option,$setVla,$mode);
+		if($mode=='view'){
+			$sql = "update `sw_board_contents` set count_hit=count_hit+1 where no = '".$no."' ";
+			$this->db->query($sql);
+		}
+		$data['data'] = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option,$setVla);
 		
 		$option['where'] = array(
 			'parent_no'=>$no,
 			'code'=>$this->board['code']
 		);
-		$data['files'] = $this->board_model->get_board_file_list($option);
+		$data['files'] = $this->common_model->lists($this->PAGE_CONFIG['tableName_file'],NULL,$option);
 
 		return $data;
 	}
@@ -177,8 +196,13 @@ class Board extends CI_Controller{
 		$order       = $this->input->post('order')==''?0:$this->input->post('order');
 		$oldFile     = $this->input->post('oldFile');
 		$menu_no     = $this->input->post('menu_no');
-
 		$parameters  = urldecode($this->input->post('parameters'));
+		
+		$config['upload_path']   = 'upload/board/';
+		$config['allowed_types'] = FILE_ALL_TYPE;
+		$config['encrypt_name']  = true;
+		
+		$this->load->library('upload', $config);
 
 		if( $action_type == 'create' ){
 			
@@ -192,12 +216,6 @@ class Board extends CI_Controller{
 			
 			$file_insert_fg = false;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/board/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = true;
-
-				$this->load->library('upload', $config);
-
 				if ( !$this->upload->do_upload() ){
 					$upload_error = $this->upload->display_errors('','') ;
 					alert($upload_error);
@@ -207,7 +225,7 @@ class Board extends CI_Controller{
 				}
 			}
 
-			$option = array(
+			$set = array(
 				'code'          => $this->board['code'],
 				'depth'         => 0,
 				'order'         => 0,
@@ -222,19 +240,26 @@ class Board extends CI_Controller{
 				'count_reply'   => 0,
 				'count_comment' => 0,
 				'ip'            => $this->input->ip_address(),
-				'menu_no'       => $menu_no
+				'menu_no'       => $menu_no,
+				'created'       => 'NOW()'
 			);
-			$result = $this->board_model->set_board_insert($option);
-			$this->board_model->set_board_update(array('original_no'=>$result,'parent_no'=>$result),array('no'=>$result));
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			
+			$set = array(
+				'original_no' => $result,
+				'parent_no'   => $result
+			);
+			$option['where'] = array('no'=>$result);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
 			
 			if( $file_insert_fg ){
-				$option_filse = array(
+				$set_filse = array(
 					'code'          => $this->board['code'],
 					'parent_no'     => $result ,
 					'original_name' => $upload_data['orig_name'],
 					'upload_name'   => $upload_data['file_name']
 				);
-				$this->board_model->set_board_file_insert($option_filse);
+				$this->common_model->insert($this->PAGE_CONFIG['tableName_file'],$set_filse);
 			}
 
 			alert('등록되었습니다.', site_url('board/lists/'.$this->board['code']) );
@@ -250,12 +275,6 @@ class Board extends CI_Controller{
 			
 			$file_insert_fg = false;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/board/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = true;
-			
-				$this->load->library('upload', $config);
-			
 				if ( !$this->upload->do_upload() ){
 					$upload_error = $this->upload->display_errors('','') ;
 					alert($upload_error);
@@ -265,31 +284,32 @@ class Board extends CI_Controller{
 					
 					if( $oldFile ){
 						unlink($config['upload_path'].$oldFile);
-						$this->board_model->set_board_file_delete(array('code'=>$this->board['code'],'parent_no'=>$contents_no));
+						$set = array('code'=>$this->board['code'],'parent_no'=>$contents_no);
+						$this->common_model->delete($this->PAGE_CONFIG['tableName_file'],$set);
 					}
 				}
 			}
 			if( $file_insert_fg ){
-				$option_filse = array(
+				$set_filse = array(
 					'code'          => $this->board['code'],
 					'parent_no'     => $contents_no ,
 					'original_name' => $upload_data['orig_name'],
 					'upload_name'   => $upload_data['file_name']
 				);
-				$this->board_model->set_board_file_insert($option_filse);
+				$this->common_model->insert($this->PAGE_CONFIG['tableName_file'],$set_filse);
 			}
 
-			$option = array(
+			$set = array(
 				'subject'   => $subject,
 				'contents'  => $contents,
 				'is_notice' => $is_notice,
 				'menu_no'   => $menu_no
 			);
-			$where = array(
+			$option['where'] = array(
 				'no'=>$contents_no,
 				'code'=>$this->board['code']
 			);
-			$this->board_model->set_board_update($option,$where);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
 
 			alert('수정되었습니다.', site_url('board/view/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters.'?no='.$contents_no ) );
 
@@ -307,12 +327,6 @@ class Board extends CI_Controller{
 			
 			$file_insert_fg = false;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/board/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = true;
-			
-				$this->load->library('upload', $config);
-			
 				if ( !$this->upload->do_upload() ){
 					$upload_error = $this->upload->display_errors('','') ;
 					alert($upload_error);
@@ -328,7 +342,7 @@ class Board extends CI_Controller{
 			$sql = "update `sw_board_contents` set `order`=`order`+1 where original_no = ".$original_no." and `order` >= " . ($order+1) . " ";
 			$this->db->query($sql);
 
-			$option = array(
+			$set = array(
 				'code'          => $this->board['code'],
 				'original_no'   => $original_no,
 				'parent_no'     => $contents_no,
@@ -345,18 +359,19 @@ class Board extends CI_Controller{
 				'count_reply'   => 0,
 				'count_comment' => 0,
 				'ip'            => $this->input->ip_address(),
-				'menu_no'       => $menu_no
+				'menu_no'       => $menu_no,
+				'created'       => 'NOW()'
 			);
-			$result = $this->board_model->set_board_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
 			
 			if( $file_insert_fg ){
-				$option_filse = array(
+				$set_filse = array(
 					'code'          => $this->board['code'],
 					'parent_no'     => $result ,
 					'original_name' => $upload_data['orig_name'],
 					'upload_name'   => $upload_data['file_name']
 				);
-				$this->board_model->set_board_file_insert($option_filse);
+				$this->common_model->insert($this->PAGE_CONFIG['tableName_file'],$set_filse);
 			}
 
 			alert('등록되었습니다.', site_url('board/lists/'.$this->board['code'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters ) );
@@ -365,13 +380,25 @@ class Board extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
-			// 답변 체크 -> 삭제 방지
-			$set_no = is_array($contents_no) ? implode(',',$contents_no):$contents_no;
-			$option = array(
-				'is_delete'=>1
-			);
-			$this->board_model->set_board_update($option,'code = "'.$this->board['code'].'" and no in('.$set_no.')');
+
+			// 게시판 db삭제
+			$option['where_in'] = array('no' => $contents_no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
 			
+			// 게시판 파일 리스트
+			$option['where_in'] = array('parent_no' => $contents_no);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName_file'],array('upload_name'=>TRUE),$option);
+			
+			// 게시판 파일 삭제
+			foreach( $list as $lt ){
+				if($lt['upload_name'] != ''){
+					if( is_file(realpath($config['upload_path']) . '/' . $lt['upload_name']) ){
+						unlink(realpath($config['upload_path']) . '/' . $lt['upload_name']);
+					}
+				}
+			}
+			// 게시판 파일 db삭제
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_file'],$option);
 			alert('삭제되었습니다.', site_url('board/lists/'.$this->board['code']) );
 		}else{
 			alert('잘못된 접근입니다.');

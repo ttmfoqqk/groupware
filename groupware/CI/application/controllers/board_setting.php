@@ -3,11 +3,12 @@ class Board_setting extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('board_model');
-
-		$this->PAGE_CONFIG['segment']  = 3;
-		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment(3,1);
-		$this->PAGE_CONFIG['params']   = array();
+		$this->load->model('common_model');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_board_list';
+		$this->PAGE_CONFIG['segment']   = 3;
+		$this->PAGE_CONFIG['cur_page']  = $this->uri->segment(3,1);
+		$this->PAGE_CONFIG['params']    = array();
 		$this->PAGE_CONFIG['params_string'] = '?'.http_build_query($this->PAGE_CONFIG['params']);
     }
 
@@ -43,9 +44,14 @@ class Board_setting extends CI_Controller{
 	public function lists(){
 		$option = array();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
-
-		$data['total']         = $this->board_model->get_setting_list($option,null,null,'count');
-		$data['list']          = $this->board_model->get_setting_list($option,PAGING_PER_PAGE,$offset);
+		$order  = array(
+			'order' => 'ASC',
+			'no'    => 'DESC'
+		);
+		
+		$data['total']         = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,NULL,'count');
+		$data['list']          = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,PAGING_PER_PAGE,$offset,$order);
+		
 		$data['anchor_url']    = site_url('board_setting/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('board_setting/write/'.$this->PAGE_CONFIG['params_string']);
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
@@ -66,7 +72,7 @@ class Board_setting extends CI_Controller{
 	public function write(){
 		$no = !$this->input->get('no') ? 0 : $this->input->get('no');
 		$option['where'] = array(
-				'no'=>$no
+			'no'=>$no
 		);
 		
 		$setVla = array(
@@ -77,7 +83,7 @@ class Board_setting extends CI_Controller{
 			'order'      => '0'
 		);
 
-		$data['data'] = $this->board_model->get_setting_detail($option,$setVla);
+		$data['data'] = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option,$setVla);
 		
 		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
@@ -116,16 +122,16 @@ class Board_setting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 
-			$option = array(
-				'code'      =>$board_code,
-				'type'      =>$board_type,
-				'name'      =>$board_name,
-				'activated' =>0,
-				'reply'     =>$board_reply,
-				'comment'   =>$board_comment,
-				'order'     =>$board_order
+			$set = array(
+				'code'      => $board_code,
+				'type'      => $board_type,
+				'name'      => $board_name,
+				'activated' => 0,
+				'reply'     => $board_reply,
+				'comment'   => $board_comment,
+				'order'     => $board_order
 			);
-			$result = $this->board_model->set_setting_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
 			alert('등록되었습니다.', site_url('board_setting/lists/') );
 
 		}elseif( $action_type == 'edit' ){
@@ -139,14 +145,15 @@ class Board_setting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$option = array(
+			$set = array(
 				'type'      =>$board_type,
 				'name'      =>$board_name,
 				'reply'     =>$board_reply,
 				'comment'   =>$board_comment,
 				'order'     =>$board_order
 			);
-			$this->board_model->set_setting_update($option,array('no'=>$board_no));
+			$option['where'] = array('no'=>$board_no);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
 
 			alert('수정되었습니다.', site_url('board_setting/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$board_no) );
 		}elseif( $action_type == 'delete' ){
@@ -154,12 +161,16 @@ class Board_setting extends CI_Controller{
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
-			$set_no = is_array($board_no) ? implode(',',$board_no):$board_no;
-			$option = array(
-				'activated'=>1
-			);
-			$this->board_model->set_setting_update($option,'no in('.$set_no.')');
+			$option['where_in'] = array('no'=>$board_no);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],array('code'=>'TRUE'),$option);
 			
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			
+			// 관련 게시글 삭제
+			foreach($list as $lt){
+				$option['where'] = array('code'=>$lt['code']);
+				$this->common_model->delete('sw_board_contents',$option);
+			}
 			alert('삭제되었습니다.', site_url('board_setting/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
 			alert('잘못된 접근입니다.');
