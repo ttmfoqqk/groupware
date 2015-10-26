@@ -407,7 +407,7 @@ class Approved_archive extends CI_Controller{
 			$option['where_in'] = array('approved_no' => $no);
 			$this->common_model->delete('sw_approved_status',$option);
 			$this->common_model->delete('sw_document_staff',$option);
-			$this->common_model->delete('sw_document_staff',$option);
+			$this->common_model->delete('sw_approved_contents',$option);
 			
 			alert('삭제되었습니다.', site_url('approved_archive/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
@@ -520,16 +520,15 @@ class Approved_archive extends CI_Controller{
 					$i++;
 				}
 				
-				$this->common_model->insert_batch('sw_document_staff',$set);
-				
 				$option['where'] = array('approved_no'=>$approved_no);
 				$this->common_model->delete('sw_document_staff',$option);
+				
+				$this->common_model->insert_batch('sw_document_staff',$set);
 
 				$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'
 				);
-
 			}
 		}
 		echo json_encode($return);
