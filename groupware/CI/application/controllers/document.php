@@ -3,7 +3,10 @@ class Document extends CI_Controller{
 	private $PAGE_CONFIG;	
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('md_document');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_document';
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -137,7 +140,8 @@ class Document extends CI_Controller{
 		$setVla = array(
 			'order'  => '0'
 		);
-		$data['data'] = $this->md_document->get_document_detail($option,$setVla);
+		$data['data'] = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option,$setVla);
+		//$data['data'] = $this->md_document->get_document_detail($option,$setVla);
 		
 		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
@@ -205,7 +209,8 @@ class Document extends CI_Controller{
 				'origin_file' => $origin_file
 			);
 				
-			$result = $this->md_document->set_document_insert($data);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$data);
+			//$result = $this->md_document->set_document_insert($data);
 			alert('등록되었습니다.', site_url('document') );
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -220,7 +225,8 @@ class Document extends CI_Controller{
 			$option['where'] = array(
 					'no'=>$no
 			);
-			$getData = $this->md_document->get_document_detail($option);
+			//$getData = $this->md_document->get_document_detail($option);
+			$getData = $this->common_model->detail($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
 			
 			$file = $origin_file = NULL;
 			if( $_FILES['userfile']['name'] ) {
@@ -251,7 +257,8 @@ class Document extends CI_Controller{
 				$values['file'] = $file;
 				$values['origin_file'] = $origin_file;
 			}
-			$this->md_document->set_document_update($values, $option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$values,$option);
+			//$this->md_document->set_document_update($values, $option);
 			alert('수정되었습니다.', site_url('document/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no ) );
 		}elseif( $action_type == 'delete'){
 			$this->form_validation->set_rules('no', 'no','required');
@@ -261,8 +268,8 @@ class Document extends CI_Controller{
 			$option['where_in'] = array(
 					'no' => $no
 			);
-				
-			$list = $this->md_document->get_document_list($option,count($no),0);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$list = $this->md_document->get_document_list($option,count($no),0);
 			
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
@@ -272,7 +279,8 @@ class Document extends CI_Controller{
 				}
 			}
 			
-			$this->md_document->set_document_delete($option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			//$this->md_document->set_document_delete($option);
 			alert('삭제되었습니다.', site_url('document') );
 		}else{
 			alert('잘못된 접근입니다.');

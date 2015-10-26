@@ -3,7 +3,10 @@ class Object extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('md_object');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_object';
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -199,7 +202,7 @@ class Object extends CI_Controller{
 				}
 			}
 
-			$data = array(
+			$set = array(
 				'menu_no'     => $menu_no,
 				'user_no'     => $user_no,
 				'name'        => $name,
@@ -209,10 +212,12 @@ class Object extends CI_Controller{
 				'order'       => $order,
 				'file'        => $file,
 				'is_active'   => $is_active,
-				'origin_file' => $origin_file
+				'origin_file' => $origin_file,
+				'created'     => 'NOW()'
 			);
 
-			$result = $this->md_object->set_object_insert($data);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->md_object->set_object_insert($data);
 			alert('등록되었습니다.', site_url('object') );
 		}elseif( $action_type == 'edit' ){
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -227,9 +232,10 @@ class Object extends CI_Controller{
 			}
 			
 			$option['where'] = array(
-				'object.no'=>$no
+				'no'=>$no
 			);
-			$getData = $this->md_object->get_object_detail($option);
+			$getData = $this->common_model->detail($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$getData = $this->md_object->get_object_detail($option);
 			
 			$file = $origin_file = NULL;				
 			if( $_FILES['userfile']['name'] ) {
@@ -252,7 +258,7 @@ class Object extends CI_Controller{
 				}
 			}
 			
-			$values = array(
+			$set = array(
 				'menu_no'     => $menu_no,
 				'user_no'     => $user_no,
 				'name'        => $name,
@@ -263,15 +269,12 @@ class Object extends CI_Controller{
 			);
 			
 			if($file){
-				$values['file'] = $file;
-				$values['origin_file'] = $origin_file;
+				$set['file'] = $file;
+				$set['origin_file'] = $origin_file;
 			}
 			
-			$option['where'] = array(
-				'no'=>$no
-			);
-			
-			$this->md_object->set_object_update($values, $option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
+			//$this->md_object->set_object_update($values, $option);
 			alert('수정되었습니다.', site_url('object/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('no', 'no','required');
@@ -281,24 +284,22 @@ class Object extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$option['where_in'] = array(
-				'object.no' => $no
-			);
+			$option['where_in'] = array('no'=>$no);
 			
-			$list = $this->object_model->get_user_list($option,count($no),0);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$list = $this->md_object->get_user_list($option,count($no),0);
 
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
-					if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+					if( is_file(realpath($config['upload_path']) . '/' . $lt['file']) ){
 						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
 					}
 				}
 			}
 			
-			$option['where_in'] = array(
-				'no' => $no
-			);
-			$this->object_model->set_object_delete($option);
+			
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			//$this->md_object->set_object_delete($option);
 			alert('삭제되었습니다.', site_url('object') );
 		}else{
 			echo $action_type;

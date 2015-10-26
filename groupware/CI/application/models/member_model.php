@@ -23,7 +23,7 @@ class Member_model extends CI_Model{
 	
 	
 	
-
+	/*
 	public function get_user_list($option=NULL,$limit=NULL,$offset=NULL,$type=NULL){
 		if($type == 'count'){
 			$this->db->select('count(*) as total');
@@ -78,12 +78,14 @@ class Member_model extends CI_Model{
 		set_options($option);
 		$this->db->delete('sw_user');
 	}
+	*/
 	
 	
 	
 	
 	
 	/* 사원->부서 */
+	/*
 	public function get_department_list($option){
 		$this->db->from('sw_user_department');
 		$this->db->where($option);
@@ -94,6 +96,7 @@ class Member_model extends CI_Model{
 		$result = $query->result_array();
 		return $result;
 	}
+	
 	public function set_department_delete($option){
 		$this->db->delete('sw_user_department',$option);
 	}
@@ -101,6 +104,8 @@ class Member_model extends CI_Model{
 		$this->set_department_delete($staff);
 		$this->db->insert_batch('sw_user_department',$option);
 	}
+	*/
+	
 	/* 사원->연차 */
 	public function get_annual_count($option){
 		// 사용가능한,사용한 연차 카운트
@@ -125,6 +130,7 @@ class Member_model extends CI_Model{
 		return $result;
 	}
 	
+	/*
 	public function get_annual_list($option){
 		$this->db->from('sw_user_annual');
 		$this->db->where($option);
@@ -135,6 +141,8 @@ class Member_model extends CI_Model{
 		$result = $query->result_array();
 		return $result;
 	}
+	
+	
 	public function set_annual_delete($option){
 		$this->db->delete('sw_user_annual',$option);
 	}
@@ -142,6 +150,9 @@ class Member_model extends CI_Model{
 		$this->set_annual_delete($staff);
 		$this->db->insert_batch('sw_user_annual',$option);
 	}
+	*/
+	
+	
 	/* 사원->권한 */
 	public function get_permission_list($option=null,$user_no){
 		$this->db->select('p.*, u.permission as u_permission');
@@ -155,6 +166,7 @@ class Member_model extends CI_Model{
 		$result = $query->result_array();
 		return $result;
 	}
+	/*
 	public function set_permission_delete($option){
 		$this->db->delete('sw_user_permission',$option);
 	}
@@ -162,6 +174,7 @@ class Member_model extends CI_Model{
 		$this->set_permission_delete($staff);
 		$this->db->insert_batch('sw_user_permission',$option);
 	}
+	*/
 	
 	
 	

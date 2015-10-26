@@ -3,7 +3,10 @@ class Attendance extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('md_attendance');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_attendance';
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['set_page'] = $this->uri->segment(2);
@@ -127,10 +130,10 @@ class Attendance extends CI_Controller{
 
 	public function set(){
 		permission_check('att-set','R');
-		$this->load->model('baseCode_model');
 
 		$data['action_url'] = site_url('attendance/save');
-		$data['list'] = $this->md_attendance->attendance_list();
+		$data['list'] = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,NULL,NULL,NULL,array('no'=>'ASC'));
+		//$data['list'] = $this->md_attendance->attendance_list();
 		
 		//누적 지각,업무 시간
 		$option['where'] = array(
@@ -150,7 +153,7 @@ class Attendance extends CI_Controller{
 			'parent_key' => 'accrue_lateness_time',
 			'is_active'  => 0
 		);
-		$result = $this->baseCode_model->get_code_list($option);
+		$result = $this->common_model->lists('sw_base_code',NULL,$option);
 		if(count($result)>0){
 			$accure_lateness = $result[0]['name'];
 		}else{
@@ -162,9 +165,6 @@ class Attendance extends CI_Controller{
 	}
 	
 	public function save(){
-		$this->TABLE_NAME = 'sw_attendance';
-		$this->md_company->setTable($this->TABLE_NAME);
-		
 		$this->load->library('form_validation');
 		
 		$start1 = $this->input->post('start-time1');
@@ -200,26 +200,23 @@ class Attendance extends CI_Controller{
 			alert('잘못된 접근입니다.');
 		}
 		
-		
-		//배열로 가져와서 순서대로 no 넣기.
-		
 		$option['where'] = array("no"=>0);
-		$values = array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1);
-		$this->md_attendance->set_attendance_update($option, $values);
+		$set = array('sDate'=>$start1, 'eDate'=>$end1, 'point'=>$late1, 'is_active'=>$use1);
+		$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
 		unset($option);
-		unset($values);
+		unset($set);
 		
 		$option['where'] = array("no"=>1);
-		$values = array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2);
-		$this->md_attendance->set_attendance_update($option, $values);
+		$set = array('sDate'=>$start2, 'eDate'=>$end2, 'point'=>$late2, 'is_active'=>$use2);
+		$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
 		unset($option);
-		unset($values);
+		unset($set);
 		
 		$option['where'] = array("no"=>2);
-		$values = array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3);
-		$this->md_attendance->set_attendance_update($option, $values);
+		$set = array('sDate'=>$start3, 'eDate'=>$end3, 'point'=>$late3, 'is_active'=>$use3);
+		$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
 		unset($option);
-		unset($values);
+		unset($set);
 		
 		alert('수정되었습니다.', site_url('attendance/set') );
 	}

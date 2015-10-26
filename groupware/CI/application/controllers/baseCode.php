@@ -2,7 +2,9 @@
 class BaseCode extends CI_Controller{
 	public function __construct() {
 		parent::__construct();
-		$this->load->model("baseCode_model");
+		$this->load->model("common_model");
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_base_code';
     }
 
 	public function _remap($method){
@@ -38,7 +40,11 @@ class BaseCode extends CI_Controller{
 		$option['where'] = array(
 			'parent_key' => $parent_key
 		);
-		$data = $this->baseCode_model->get_code_list($option);
+		$order = array(
+			'order'=>'ASC',
+			'no'=>'DESC'
+		);
+		$data = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,$order);
 		echo json_encode($data);
 	}
 	
@@ -60,7 +66,7 @@ class BaseCode extends CI_Controller{
 				$option['where'] = array(
 					'key' => $key
 				);
-				$data = $this->baseCode_model->get_code_list($option);
+				$data = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option);
 				if(count($data) > 0 ){
 					$return = array(
 						'result' => 'error',
@@ -71,7 +77,7 @@ class BaseCode extends CI_Controller{
 				}
 			}
 			
-			$option = array(
+			$set = array(
 				'key'        => $key,
 				'parent_key' => $parent_key,
 				'name'       => $name,
@@ -79,7 +85,7 @@ class BaseCode extends CI_Controller{
 				'is_active'  => $is_active
 			);
 			
-			$this->baseCode_model->set_code_insert($option);
+			$this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
 			$return = array(
 				'result' => 'ok',
 				'msg'    => 'create'
@@ -93,8 +99,8 @@ class BaseCode extends CI_Controller{
 			$option['where'] = array(
 				'no' => $no
 			);
-
-			$this->baseCode_model->set_code_update($values,$option);
+			
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$values,$option);
 			$return = array(
 				'result' => 'ok',
 				'msg'    => 'update'
@@ -103,15 +109,15 @@ class BaseCode extends CI_Controller{
 			$option['where_in'] = array(
 				'no' => $no
 			);
-			$this->baseCode_model->set_code_delete($option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
 			
 			if($code_type == 'key'){
-				$data = $this->baseCode_model->get_code_list($option);
+				$data = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option);
 				foreach($data as $lt){
 					$option_sub['where'] = array(
 						'parent_key' => $lt['key']
 					);
-					$this->baseCode_model->set_code_delete($option_sub);
+					$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option_sub);
 				}
 			}
 			
@@ -127,82 +133,6 @@ class BaseCode extends CI_Controller{
 		}
 
 		echo json_encode($return);
-	}
-	
-	
-	
-	
-	
-	
-	
-	public function _keyList(){
-		$this->load->library('common');
-		$ret = $this->md_company->get(array('parent_key'=>NULL));
-		
-		if(count($ret) > 0)
-			echo $this->common->getRet(true, $ret);
-		else
-			echo $this->common->getRet(false, "No data");
-	}
-	
-	public function _codeList(){
-		$this->load->library('common');
-		
-		$no = $this->input->post('no') ? $this->input->post('no') : '';
-// 		$ret = $this->md_company->get('parent_key IS NOT NULL');
-		$ret = $this->md_company->get(array('parent_key'=>$no));
-	
-		if(count($ret) > 0)
-			echo $this->common->getRet(true, $ret);
-		else
-			echo $this->common->getRet(false, "No data");
-	}
-	
-	public function _createKey(){
-		$this->load->library('common');
-		
-		$datas = $this->input->post('data');
-		if($datas['method'] == 'create'){
-			unset($datas['method']);
-			$this->md_company->create($datas);
-			
-			echo $this->common->getRet(true, '등록 하였습니다.');
-		}else if($datas['method'] == 'modify'){
-			$no = $datas['no'];
-			unset($datas['method']);
-			unset($datas['no']);
-			
-			$this->md_company->modify(array('no'=>$no), $datas);
-			echo $this->common->getRet(true, '변경 하였습니다.');
-		}else 
-			echo $this->common->getRet(false, '잘못된 입력입니다');
-	}
-	
-	public function _createCode(){
-		$this->load->library('common');
-		
-		$datas = $this->input->post('data');
-		if($datas['method'] == 'create'){
-			unset($datas['method']);
-			$this->md_company->create($datas);
-			
-			echo $this->common->getRet(true, '등록 하였습니다.');
-		}else if($datas['method'] == 'modify'){
-			$no = $datas['no'];
-			unset($datas['method']);
-			unset($datas['no']);
-			
-			$this->md_company->modify(array('no'=>$no), $datas);
-			echo $this->common->getRet(true, '변경 하였습니다.');
-		}else if($datas['method'] == 'remove'){
-			if(!isset($datas['ids']) || empty($datas['ids']))
-				echo $this->common->getRet(false, '삭제 대상이 없습니다.');
-			else{
-				$this->md_company->deleteIn('no', $datas['ids']);
-				echo $this->common->getRet(true, '삭제 하였습니다.');
-			}
-		}else
-			echo $this->common->getRet(false, '잘못된 입력입니다');
 	}
 }
 /* End of file baseCode.php */

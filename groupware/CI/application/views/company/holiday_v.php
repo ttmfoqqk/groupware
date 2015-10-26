@@ -6,7 +6,7 @@
 			<!-- .page-content-inner -->
 			<div id="page-header" class="clearfix">
 				<div class="page-header">
-					<h2><?php echo $head_name;?></h2>
+					<h2>휴일설정</h2>
 				</div>
 			</div>
 			<div class="row">
@@ -103,18 +103,8 @@
 </div>
 <!-- / page-content -->
 
-
-
-<!-- 폼 날짜 -->
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/locales/bootstrap-datepicker.kr.js"></script>
-
-<!-- Bootbox fast bootstrap modals -->
-<script
-	src="<?echo $this->config->base_url()?>html/plugins/ui/bootbox/bootbox.js"></script>
-
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_holiday.js"></script>
+
+
 
 

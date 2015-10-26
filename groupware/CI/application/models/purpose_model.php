@@ -167,6 +167,8 @@ class Purpose_model extends CI_Model{
 		$this->db->select('ifnull(sum(point),0) AS sum',false);
 		$this->db->from('sw_other_point as point');
 		$this->db->join('sw_user as user','point.user_no = user.no');
+		$this->db->join('sw_menu as menu','point.menu_no = menu.no');
+		$this->db->where('menu.is_active','0');
 		set_options($option['other']);
 		$query  = $this->db->get();
 		$result['other'] = $query->row();

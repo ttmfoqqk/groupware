@@ -24,6 +24,7 @@ class Other_point_model extends CI_Model{
 		$this->db->join('sw_other_point AS sum','other.user_no = sum.user_no and other.no >= sum.no');
 		$this->db->join('sw_user AS user','other.user_no = user.no');
 		$this->db->join('sw_menu AS menu','other.menu_no = menu.no');
+		$this->db->where('menu.is_active','0');
 		set_options($option);
 		$query = $this->db->get();
 		
@@ -36,19 +37,6 @@ class Other_point_model extends CI_Model{
 		
 		return $result;
 	}
-
-	public function set_insert($option){
-		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_other_point',$option);
-		return $this->db->insert_id();
-	}
-	public function set_update($option,$where){
-		$this->db->update('sw_other_point',$option,$where);
-	}
-	public function set_delete($set_no){
-		$this->db->delete('sw_other_point','no in('.$set_no.')');
-	}
-
 }
 /* End of file other_point_model.php */
 /* Location: ./models/other_point_model.php */

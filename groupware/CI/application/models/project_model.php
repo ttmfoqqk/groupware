@@ -58,19 +58,6 @@ class Project_model extends CI_Model{
 		
 		return $result;
 	}
-	public function set_project_insert($option){
-		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_project',$option);
-		return $this->db->insert_id();
-	}
-	public function set_project_update($values,$option){
-		set_options($option);
-		$this->db->update('sw_project',$values);
-	}
-	public function set_project_delete($set_no){
-		$this->db->delete('sw_project','no in('.$set_no.')');
-		$this->set_project_staff_delete('project_no in('.$set_no.')');
-	}
 
 	/* 담당자 */
 	public function get_project_staff_list($option){
@@ -86,15 +73,6 @@ class Project_model extends CI_Model{
 		$query = $this->db->get();
 		$result = $query->result_array();
 		return $result;
-	}
-
-	public function set_project_staff_delete($option){
-		$this->db->delete('sw_project_staff',$option);
-	}
-
-	public function set_project_staff_insert($option,$staff){
-		$this->set_project_staff_delete($staff);
-		$this->db->insert_batch('sw_project_staff',$option);
 	}
 	
 

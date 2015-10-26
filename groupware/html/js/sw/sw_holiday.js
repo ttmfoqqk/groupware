@@ -137,7 +137,7 @@ function save(){
 			type     : 'POST',
 			url      : '/groupware/holiday/save/',
 			data     : {
-				data  : data_array
+				datas  : JSON.stringify(data_array)
 			},
 			dataType : 'json',
 			success: function(data){

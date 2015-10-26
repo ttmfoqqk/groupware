@@ -4,7 +4,10 @@ class Rule extends CI_Controller{
 	
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('md_rule');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_rule';
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -159,7 +162,8 @@ class Rule extends CI_Controller{
 		$setVla = array(
 			'order'  => '0'
 		);
-		$data['data'] = $this->md_rule->get_rule_detail($option,$setVla);
+		$data['data'] = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option,$setVla);
+		//$data['data'] = $this->md_rule->get_rule_detail($option,$setVla);
 		
 		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
@@ -221,7 +225,7 @@ class Rule extends CI_Controller{
 				}
 			}
 				
-			$data = array(
+			$set = array(
 				'menu_no'     => $menu_no,
 				'user_no'     => $this->session->userdata('no'),
 				'name'        => $name,
@@ -234,7 +238,8 @@ class Rule extends CI_Controller{
 				'origin_file' => $origin_file
 			);
 
-			$result = $this->md_rule->set_rule_insert($data);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->md_rule->set_rule_insert($data);
 			alert('등록되었습니다.', site_url('rule') );
 			
 		}elseif( $action_type == 'edit' ){
@@ -253,7 +258,8 @@ class Rule extends CI_Controller{
 			$option['where'] = array(
 				'no'=>$no
 			);
-			$getData = $this->md_rule->get_rule_detail($option);
+			$getData = $this->common_model->detail($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$getData = $this->md_rule->get_rule_detail($option);
 			
 			$file = $origin_file = NULL;
 			if( $_FILES['userfile']['name'] ) {
@@ -273,7 +279,7 @@ class Rule extends CI_Controller{
 				}
 			}
 			
-			$values = array(
+			$set = array(
 				'menu_no'   => $menu_no,
 				'name'      => $name,
 				'contents'  => $contents,
@@ -283,11 +289,12 @@ class Rule extends CI_Controller{
 				'is_active' => $is_active
 			);
 			if($file != null){
-				$values['file'] = $file;
-				$values['origin_file'] = $origin_file;
+				$set['file'] = $file;
+				$set['origin_file'] = $origin_file;
 			}
 			
-			$this->md_rule->set_rule_update($values, $option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
+			//$this->md_rule->set_rule_update($values, $option);
 			alert('수정되었습니다.', site_url('rule/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no ) );
 		}elseif( $action_type == 'delete'){
 			$this->form_validation->set_rules('no', 'no','required');
@@ -296,10 +303,11 @@ class Rule extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			$option['where_in'] = array(
-				'rule.no' => $no
+				'no' => $no
 			);
 			
-			$list = $this->md_rule->get_rule_list($option,count($no),0);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$list = $this->md_rule->get_rule_list($option,count($no),0);
 				
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
@@ -308,10 +316,9 @@ class Rule extends CI_Controller{
 					}					
 				}
 			}
-			$option['where_in'] = array(
-				'no' => $no
-			);
-			$this->md_rule->set_rule_delete($option);
+			
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			//$this->md_rule->set_rule_delete($option);
 			alert('삭제되었습니다.', site_url('rule') );
 		}else{
 			alert('잘못된 접근입니다.');

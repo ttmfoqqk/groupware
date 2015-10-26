@@ -3,7 +3,15 @@ class Member extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('member_model');
+		
+		$this->PAGE_CONFIG['tableName']            = 'sw_user';
+		$this->PAGE_CONFIG['tableName_department'] = 'sw_user_department';
+		$this->PAGE_CONFIG['tableName_annual']     = 'sw_user_annual';
+		$this->PAGE_CONFIG['tableName_permission'] = 'sw_user_permission';
+		
+		
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -68,9 +76,24 @@ class Member extends CI_Controller{
 	public function lists(){
 		$option = $this->getListOption();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
+		
+		$select = array(
+			'*' => TRUE,
+			'IF(is_active=0,"재직","퇴사") as active'       => FALSE,
+			'date_format(sDate,"%Y-%m-%d") as sDate'     => FALSE,
+			'date_format(eDate,"%Y-%m-%d") as eDate'     => FALSE,
+			'date_format(birth,"%Y-%m-%d") as birth'     => FALSE,
+			'date_format(created,"%Y-%m-%d") as created' => FALSE
+		);
+		$order = array(
+			'order' => 'ASC',
+			'no'    => 'DESC'
+		);
+		$data['total']         = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,NULL,'count');
+		$data['list']          = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,$option,PAGING_PER_PAGE,$offset,$order);
 	
-		$data['total']         = $this->member_model->get_user_list($option,null,null,'count');
-		$data['list']          = $this->member_model->get_user_list($option,PAGING_PER_PAGE,$offset);
+		//$data['total']         = $this->member_model->get_user_list($option,null,null,'count');
+		//$data['list']          = $this->member_model->get_user_list($option,PAGING_PER_PAGE,$offset);
 	
 		$data['anchor_url']    = site_url('member/write/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('member/write/'.$this->PAGE_CONFIG['params_string']);
@@ -95,9 +118,24 @@ class Member extends CI_Controller{
 		$this->load->library('Excel');
 		$excel = new Excel();
 		$option = $this->getListOption();
+		
+		$select = array(
+			'*' => TRUE,
+			'IF(is_active=0,"재직","퇴사") as active'       => FALSE,
+			'date_format(sDate,"%Y-%m-%d") as sDate'     => FALSE,
+			'date_format(eDate,"%Y-%m-%d") as eDate'     => FALSE,
+			'date_format(birth,"%Y-%m-%d") as birth'     => FALSE,
+			'date_format(created,"%Y-%m-%d") as created' => FALSE
+		);
+		$order = array(
+			'order' => 'ASC',
+			'no'    => 'DESC'
+		);
+		$data['total'] = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,NULL,'count');
+		$data['list']  = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,$option,$data['total'],0,$order);
 	
-		$data['total'] = $this->member_model->get_user_list($option,null,null,'count');
-		$data['list']  = $this->member_model->get_user_list($option,$data['total'],0);
+		//$data['total'] = $this->member_model->get_user_list($option,null,null,'count');
+		//$data['list']  = $this->member_model->get_user_list($option,$data['total'],0);
 		
 		$title = '사원 관리';
 		$labels = array(
@@ -132,7 +170,8 @@ class Member extends CI_Controller{
 		$setVla = array(
 			'order'  => '0'
 		);
-		$data['data'] = $this->member_model->get_user_detail($option,$setVla);
+		$data['data'] = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option,$setVla);
+		//$data['data'] = $this->member_model->get_user_detail($option,$setVla);
 		
 		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
@@ -212,7 +251,7 @@ class Member extends CI_Controller{
 				}
 			}
 
-			$option = array(
+			$set = array(
 				'id'          => $id,
 				'pwd'         => $pass,
 				'name'        => $name,
@@ -231,10 +270,12 @@ class Member extends CI_Controller{
 				'order'       => $order,
 				'is_active'   => $is_active,
 				'position'    => $position,
-				'origin_file' => $origin_file
+				'origin_file' => $origin_file,
+				'created'     => 'NOW()'
 			);
 			
-			$result = $this->member_model->set_user_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->member_model->set_user_insert($option);
 			alert('등록되었습니다.', site_url('member') );
 			
 		}elseif( $action_type == 'edit' ){
@@ -259,8 +300,11 @@ class Member extends CI_Controller{
 			$option['where'] = array(
 				'no'=>$no
 			);
+			
 			$pass    = $this->member_model->encryp($pass);
-			$getData = $this->member_model->get_user_detail($option);
+			$getData = $this->common_model->detail($this->PAGE_CONFIG['tableName'],NULL,$option);
+			//$getData = $this->member_model->get_user_detail($option);
+			
 			
 			$file = $origin_file = NULL;
 			if( $_FILES['userfile']['name'] ) {
@@ -283,7 +327,7 @@ class Member extends CI_Controller{
 				}
 			}
 			
-			$values = array(
+			$set = array(
 				'pwd'         => $pass,
 				'name'        => $name,
 				'phone'       => $phone,
@@ -302,11 +346,13 @@ class Member extends CI_Controller{
 				'position'    => $position
 			);
 			if($file != null){
-				$values['file'] = $file;
-				$values['origin_file'] = $origin_file;
+				$set['file'] = $file;
+				$set['origin_file'] = $origin_file;
 			}
 
-			$this->member_model->set_user_update($values, $option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set, $option);
+			//$this->member_model->set_user_update($values, $option);
+			
 			alert('수정되었습니다.', site_url('member/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no ) );
 		}elseif( $action_type == 'delete' ){
 			$this->form_validation->set_rules('no', 'no','required');
@@ -318,8 +364,9 @@ class Member extends CI_Controller{
 			$option['where_in'] = array(
 				'no' => $no
 			);
-			
-			$list = $this->member_model->get_user_list($option,count($no),0);
+			$select = array('file' => TRUE);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,$option,count($no),0);
+			//$list = $this->member_model->get_user_list($option,count($no),0);
 			
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
@@ -328,7 +375,8 @@ class Member extends CI_Controller{
 					}
 				}
 			}
-			$this->member_model->set_user_delete($option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			//$this->member_model->set_user_delete($option);
 			alert('삭제되었습니다.', site_url('member') );
 		}else{
 			alert('잘못된 접근입니다.');
@@ -342,10 +390,24 @@ class Member extends CI_Controller{
 	}
 	
 	public function _allList(){
-		$data['total'] = $this->member_model->get_user_list(null,null,null,'count');
-		$data['list']  = $this->member_model->get_user_list(null,$data['total'],0);
+		$select = array(
+				'*' => TRUE,
+				'IF(is_active=0,"재직","퇴사") as active'       => FALSE,
+				'date_format(sDate,"%Y-%m-%d") as sDate'     => FALSE,
+				'date_format(eDate,"%Y-%m-%d") as eDate'     => FALSE,
+				'date_format(birth,"%Y-%m-%d") as birth'     => FALSE,
+				'date_format(created,"%Y-%m-%d") as created' => FALSE
+		);
+		$order = array(
+				'order' => 'ASC',
+				'no'    => 'DESC'
+		);
+		$data['list']  = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,NULL,NULL,NULL,$order);
 		
-		if ($data['total'] > 0){
+		//$data['total'] = $this->member_model->get_user_list(null,null,null,'count');
+		//$data['list']  = $this->member_model->get_user_list(null,$data['total'],0);
+		
+		if (count($data['list']) > 0){
 			$return = array(
 				'result' => 'true',
 				'data'   => json_encode($data['list'])
@@ -363,10 +425,15 @@ class Member extends CI_Controller{
 	/* 부서 */
 	public function _department_lists(){
 		$no = $this->input->post('no');
-		$option = array(
+		$option['where'] = array(
 			'user_no'=>$no
 		);
-		$result = $this->member_model->get_department_list($option);
+		$order = array(
+			'order' => 'ASC',
+			'position' => 'ASC'
+		);
+		$result = $this->common_model->lists($this->PAGE_CONFIG['tableName_department'],NULL,$option,NULL,NULL,$order);
+		//$result = $this->member_model->get_department_list($option);
 		echo json_encode($result);
 	}
 
@@ -380,9 +447,9 @@ class Member extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$option = array();
+			$set = array();
 			foreach($json_data as $key) {
-				array_push($option,array(
+				array_push($set,array(
 					'user_no'  => $no,
 					'menu_no'  => $key->menu_no,
 					'position' => $key->position,
@@ -390,7 +457,12 @@ class Member extends CI_Controller{
 					'order'    => $key->order,
 				));
 			}
-			$result = $this->member_model->set_department_insert($option,array('user_no'=>$no));
+			
+			$option['where'] = array('user_no'=>$no);
+			
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_department'],$option);
+			$result = $this->common_model->insert_batch($this->PAGE_CONFIG['tableName_department'],$set);
+			//$result = $this->member_model->set_department_insert($option,array('user_no'=>$no));
 			$return = array(
 				'result' => 'ok',
 				'msg' => 'ok'
@@ -419,8 +491,14 @@ class Member extends CI_Controller{
 
 		// 등록된 업무 일자 리스트
 		$result['no_data'] = $this->member_model->get_no_list(array('B.user_no'=>$no));
-
-		$result['list'] = $this->member_model->get_annual_list(array('user_no'=>$no));
+		
+		$option['where'] = array('user_no'=>$no);
+		$order = array(
+			'order' => 'ASC',
+			'data'  => 'DESC'
+		);
+		$result['list'] = $this->common_model->lists($this->PAGE_CONFIG['tableName_annual'],NULL,$option,NULL,NULL,$order);
+		//$result['list'] = $this->member_model->get_annual_list(array('user_no'=>$no));
 		echo json_encode($result);
 	}
 
@@ -434,16 +512,19 @@ class Member extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$option = array();
+			$set = array();
 			foreach($json_data as $key) {
-				array_push($option,array(
+				array_push($set,array(
 					'user_no' => $no,
 					'name'    => $key->name,
 					'data'    => $key->data,
 					'order'   => $key->order
 				));
 			}
-			$result = $this->member_model->set_annual_insert($option,array('user_no'=>$no));
+			$option['where'] = array('user_no'=>$no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_annual'],$option);
+			$result = $this->common_model->insert_batch($this->PAGE_CONFIG['tableName_annual'],$set);
+			//$result = $this->member_model->set_annual_insert($option,array('user_no'=>$no));
 			$return = array(
 				'result' => 'ok',
 				'msg' => 'ok'
@@ -466,18 +547,22 @@ class Member extends CI_Controller{
 		$no = $this->input->post('no');
 		$json_data  = json_decode($this->input->post('json_data'));
 		
+		$option['where'] = array('user_no'=>$no);
 		if( count($json_data) <= 0){
-			$this->member_model->set_permission_delete(array('user_no'=>$no));
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_permission'],$option);
+			//$this->member_model->set_permission_delete(array('user_no'=>$no));
 		}else{
-			$option = array();
+			$set = array();
 			foreach($json_data as $key) {
-				array_push($option,array(
+				array_push($set,array(
 					'user_no'    => $no,
 					'category'   => $key->category,
 					'permission' => $key->permission
 				));
 			}
-			$this->member_model->set_permission_insert($option,array('user_no'=>$no));
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_permission'],$option);
+			$this->common_model->insert_batch($this->PAGE_CONFIG['tableName_permission'],$set);
+			//$this->member_model->set_permission_insert($option,array('user_no'=>$no));
 		}
 		$return = array(
 			'result' => 'ok',

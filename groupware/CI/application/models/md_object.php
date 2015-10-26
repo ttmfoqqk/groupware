@@ -47,6 +47,7 @@ class Md_object extends CI_Model{
 		return $result;
 	}
 	
+	/*
 	public function set_object_insert($option){
 		$this->db->set('created', 'NOW()', false);
 		$this->db->insert('sw_object',$option);
@@ -60,6 +61,7 @@ class Md_object extends CI_Model{
 		set_options($option);
 		$this->db->delete('sw_object');
 	}
+	*/
 
 }
 /* End of file md_attendance.php */

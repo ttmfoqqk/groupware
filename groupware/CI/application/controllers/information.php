@@ -3,7 +3,12 @@ class Information extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('information_model');
+		$this->load->model('common_model');
+		//$this->load->model('information_model');
+		
+		$this->PAGE_CONFIG['tableName']       = 'sw_information';
+		$this->PAGE_CONFIG['tableName_staff'] = 'sw_information_staff';
+		$this->PAGE_CONFIG['tableName_site']  = 'sw_information_site';
 		
 		$this->PAGE_CONFIG['segment']  = 4;
 		$this->PAGE_CONFIG['set_page'] = $this->uri->segment(3,'company');
@@ -93,17 +98,22 @@ class Information extends CI_Controller{
 		$option = $this->getListOption();
 		$offset = (PAGING_PER_PAGE * $this->PAGE_CONFIG['cur_page'])-PAGING_PER_PAGE;
 		
-		$data['total']         = $this->information_model->get_list($option,null,null,'count');
-		$data['list']          = $this->information_model->get_list($option,PAGING_PER_PAGE,$offset);
-		
+		$select = array(
+			'*' => TRUE,
+			'date_format(created,"%Y-%m-%d") as created' => FALSE
+		);
+		$order = array(
+			'order' => 'ASC',
+			'no'    => 'DESC'
+		);
+		$data['total']         = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,NULL,'count');
+		$data['list']          = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,$option,PAGING_PER_PAGE,$offset,$order);
 		
 		$data['action_type']   = 'delete';
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('information/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['write_url']     = site_url('information/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']);
-		
 		$data['action_url']    = site_url('information/lists/'.$this->PAGE_CONFIG['set_page']);
-		
 		$data['excel_url']     = site_url('information/excel/'.$this->PAGE_CONFIG['set_page'].$this->PAGE_CONFIG['params_string']);
 
 		// pagination option
@@ -123,8 +133,16 @@ class Information extends CI_Controller{
 		$excel = new Excel();
 		$option = $this->getListOption();
 		
-		$data['total'] = $this->information_model->get_list($option,null,null,'count');
-		$data['list']  = $this->information_model->get_list($option,$data['total'],0);
+		$select = array(
+				'*' => TRUE,
+				'date_format(created,"%Y-%m-%d") as created' => FALSE
+		);
+		$order = array(
+				'order' => 'ASC',
+				'no'    => 'DESC'
+		);
+		$data['total'] = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,$option,NULL,NULL,NULL,'count');
+		$data['list']  = $this->common_model->lists($this->PAGE_CONFIG['tableName'],$select,$option,$data['total'],0,$order);
 
 		$title = PAGE_TITLE;
 		$labels = array(
@@ -159,8 +177,8 @@ class Information extends CI_Controller{
 			'no'=>$no,
 			'category'=>$this->PAGE_CONFIG['set_page']
 		);
-
-		$data['data']  = $this->information_model->get_detail($option);
+		$select = array();
+		$data['data']  = $this->common_model->detail($this->PAGE_CONFIG['tableName'],$select,$option);
 		
 		if( !$data['data']['no'] ){
 			$data['action_type'] = 'create';
@@ -204,7 +222,7 @@ class Information extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 
-			$option = array(
+			$set = array(
 				'category'     => $category,
 				'bizName'      => $bizName,
 				'ceoName'      => $ceoName,
@@ -217,8 +235,10 @@ class Information extends CI_Controller{
 				'bigo'         => $bigo,
 				'order'        => $order,
 				'bizNumber'    => $bizNumber,
+				'created'      => 'NOW()',
 			);
-			$result = $this->information_model->set_insert($option);
+			//$result = $this->information_model->set_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
 			alert('등록되었습니다.', site_url('information/lists/'.$this->PAGE_CONFIG['set_page']) );
 
 		}elseif( $action_type == 'edit' ){
@@ -231,7 +251,7 @@ class Information extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 
-			$values = array(
+			$set = array(
 				'ceoName'      => $ceoName,
 				'gubun'        => $gubun,
 				'bizType'      => $bizType,
@@ -247,7 +267,7 @@ class Information extends CI_Controller{
 				'no'       => $no,
 				'category' => $this->PAGE_CONFIG['set_page']
 			);
-			$this->information_model->set_update($values,$option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
 
 			alert('수정되었습니다.', site_url('information/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no ) );
 
@@ -257,17 +277,20 @@ class Information extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
-			$option['where_in'] = array(
-				'no' => $no
-			);
-			$this->information_model->set_delete($option);
-			
+			$option['where_in'] = array('no' => $no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
 			unset($option);
+			
+			/*
+			 * 담당자,사이트 삭제
+			 */
 			$option['where_in'] = array(
 				'information_no' => $no
 			);
-			$this->information_model->set_staff_delete($option);
-			$this->information_model->set_site_delete($option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_staff'],$option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_site'],$option);
+			//$this->information_model->set_staff_delete($option);
+			//$this->information_model->set_site_delete($option);
 			
 			alert('삭제되었습니다.', site_url('information/lists/'.$this->PAGE_CONFIG['set_page']) );
 		}else{
@@ -282,7 +305,12 @@ class Information extends CI_Controller{
 		$option['where'] = array(
 			'information_no' => $no
 		);
-		$result = $this->information_model->get_staff_list($option);
+		$order = array(
+			'order' => 'ASC',
+			'name' => 'ASC'
+		);
+		$result = $this->common_model->lists($this->PAGE_CONFIG['tableName_staff'],NULL,$option,NULL,NULL,$order);
+		//$result = $this->information_model->get_staff_list($option);
 		echo json_encode($result);
 	}
 	
@@ -296,10 +324,10 @@ class Information extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$values = array();
+			$set = array();
 			$i = 1;
 			foreach($json_data as $key) {
-				array_push($values,array(
+				array_push($set,array(
 					'information_no' => $no,
 					'name'     => $key->name,
 					'part'     => $key->part,
@@ -312,9 +340,12 @@ class Information extends CI_Controller{
 				$i++;
 			}
 			$option['where'] = array(
-					'information_no' => $no
+				'information_no' => $no
 			);
-			$result = $this->information_model->set_staff_insert($values,$option);
+			//delete->insert_batch
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_staff'],$option);
+			$result = $this->common_model->insert_batch($this->PAGE_CONFIG['tableName_staff'],$set);
+			//$result = $this->information_model->set_staff_insert($values,$option);
 			$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'
@@ -330,7 +361,12 @@ class Information extends CI_Controller{
 		$option['where'] = array(
 			'information_no'=>$no
 		);
-		$result = $this->information_model->get_site_list($option);
+		$order = array(
+			'order' => 'ASC',
+			'url' => 'ASC'
+		);
+		$result = $this->common_model->lists($this->PAGE_CONFIG['tableName_site'],NULL,$option,NULL,NULL,$order);
+		//$result = $this->information_model->get_site_list($option);
 		echo json_encode($result);
 	}
 	
@@ -344,10 +380,10 @@ class Information extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$values = array();
+			$set = array();
 			$i = 1;
 			foreach($json_data as $key) {
-				array_push($values,array(
+				array_push($set,array(
 					'information_no' => $no,
 					'url'            => $key->url,
 					'id'             => $key->id,
@@ -360,7 +396,14 @@ class Information extends CI_Controller{
 			$option['where'] = array(
 				'information_no' => $no
 			);
-			$result = $this->information_model->set_site_insert($values,$option);
+			/*
+			 * 사이트 삭제,입력
+			 */
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_site'],$option);
+			$result = $this->common_model->insert_batch($this->PAGE_CONFIG['tableName_site'],$set);
+			
+			//$result = $this->information_model->set_site_insert($values,$option);
+			
 			$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'

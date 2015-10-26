@@ -51,19 +51,6 @@ class Meeting_model extends CI_Model{
 		
 		return $result;
 	}
-	public function set_insert($option){
-		$this->db->set('created', 'NOW()', false);
-		$this->db->insert('sw_meeting',$option);
-		return $this->db->insert_id();
-	}
-	public function set_update($values,$option){
-		set_options($option);
-		$this->db->update('sw_meeting',$values);
-	}
-	public function set_delete($option){
-		set_options($option);
-		$this->db->delete('sw_meeting');
-	}
 }
 /* End of file meeting_model.php */
 /* Location: ./models/meeting_model.php */

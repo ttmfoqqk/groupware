@@ -3,7 +3,10 @@ class Meeting extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('meeting_model');
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_meeting';
 		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -168,6 +171,11 @@ class Meeting extends CI_Controller{
 		$oldFile     = $this->input->post('oldFile');
 		$parameters  = urldecode($this->input->post('parameters'));
 		
+		
+		$config['upload_path']   = 'upload/meeting/';
+		$config['allowed_types'] = FILE_ALL_TYPE;
+		$config['encrypt_name']  = false;
+		
 		if( $action_type == 'create' ){
 			// 파일 업로드 처리 추가
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -181,9 +189,6 @@ class Meeting extends CI_Controller{
 			
 			$file_name = '';
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/meeting/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = false;
 			
 				$this->load->library('upload', $config);
 			
@@ -196,16 +201,18 @@ class Meeting extends CI_Controller{
 				}
 			}
 
-			$option = array(
+			$set = array(
 				'menu_no'   => $menu_no,
 				'user_no'   => $this->session->userdata('no'),
 				'name'      => $title,
 				'contents'  => $contents,
 				'order'     => $order,
 				'is_active' => $is_active,
-				'file'      => $file_name
+				'file'      => $file_name,
+				'created'   => 'NOW()'
 			);
-			$result = $this->meeting_model->set_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->meeting_model->set_insert($option);
 			alert('등록되었습니다.', site_url('meeting/lists/') );
 
 		}elseif( $action_type == 'edit' ){
@@ -221,11 +228,10 @@ class Meeting extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			
 			$file_name = $oldFile;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/meeting/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = false;
+				
 			
 				$this->load->library('upload', $config);
 			
@@ -244,7 +250,7 @@ class Meeting extends CI_Controller{
 				}
 			}
 			
-			$values = array(
+			$set = array(
 				'menu_no'   => $menu_no,
 				'name'      => $title,
 				'contents'  => $contents,
@@ -255,7 +261,8 @@ class Meeting extends CI_Controller{
 			$option['where'] = array(
 				'no'=>$no
 			);
-			$this->meeting_model->set_update($values,$option);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
+			//$this->meeting_model->set_update($values,$option);
 
 			alert('수정되었습니다.', site_url('meeting/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
@@ -265,23 +272,21 @@ class Meeting extends CI_Controller{
 			}
 			
 			$option['where_in'] = array(
-				'object.no' => $no
+				'no' => $no
 			);
-				
-			$list = $this->meeting_model->get_meeting_detail($option,count($no),0);
+			$list = $this->common_model->lists($this->PAGE_CONFIG['tableName'],array('file'=>TRUE),$option);
+			//$list = $this->meeting_model->get_meeting_detail($option,count($no),0);
 			
 			foreach( $list as $lt ){
 				if($lt['file'] != ''){
-					if( is_file(realpath($config['upload_path']) . '/' . $getData['file']) ){
+					if( is_file(realpath($config['upload_path']) . '/' . $lt['file']) ){
 						unlink(realpath($config['upload_path']) . '/' . $lt['file']);
 					}
 				}
 			}
 			
-			$option['where_in'] = array(
-				'no'=>$no
-			);
-			$this->meeting_model->set_delete($option);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
+			//$this->meeting_model->set_delete($option);
 			alert('삭제되었습니다.', site_url('meeting/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
 			alert('잘못된 접근입니다.');

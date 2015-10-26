@@ -3,8 +3,11 @@ class Other_point extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('other_point_model');
-
+		
+		$this->PAGE_CONFIG['tableName'] = 'sw_other_point';
+		
 		$this->PAGE_CONFIG['segment']  = 3;
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment($this->PAGE_CONFIG['segment'],1);
 		$this->PAGE_CONFIG['params'] = array(
@@ -60,6 +63,7 @@ class Other_point extends CI_Controller{
 
 		$data['total']         = $this->other_point_model->get_list($option,null,null,'count');
 		$data['list']          = $this->other_point_model->get_list($option,PAGING_PER_PAGE,$offset);
+		
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']); // form proc parameters
 		$data['action_url']    = site_url('other_point/proc/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 
@@ -100,16 +104,18 @@ class Other_point extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 
-			$option = array(
+			$set = array(
 				'menu_no'   => $department,
 				'user_no'   => $user,
 				'title'     => $title,
 				'operator'  => $operator,
 				'point'     => $point,
 				'date'      => $date,
-				'w_user_no' => $this->session->userdata('no')
+				'w_user_no' => $this->session->userdata('no'),
+				'created'   => 'NOW()'
 			);
-			$result = $this->other_point_model->set_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->other_point_model->set_insert($option);
 			alert('등록되었습니다.', site_url('other_point/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
 			alert('잘못된 접근입니다.');

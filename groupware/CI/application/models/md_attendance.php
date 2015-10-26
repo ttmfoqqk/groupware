@@ -50,10 +50,12 @@ class Md_attendance extends CI_Model{
 		return $result;
 	}
 	
+	/*
 	public function set_attendance_update($values,$option){
 		set_options($option);
 		$this->db->update('sw_attendance',$values);
 	}
+	
 	
 	
 	public function get_temp_baseCode($option=NULL){
@@ -66,10 +68,11 @@ class Md_attendance extends CI_Model{
 	
 		return $result;
 	}
+	*/
 	
 	
 	
-	
+	/*
 	public function attendance_list(){
 		$this->db->select('*');
 		$this->db->from('sw_attendance');
@@ -79,9 +82,9 @@ class Md_attendance extends CI_Model{
 		
 		return $result;
 	}
+	*/
 	
-	
-	
+	/*
 	public function getAttendanceCount($where=NULL, $likes=NULL){
 		if($likes!=NULL){
 			foreach ($likes as $key=>$val){
@@ -120,6 +123,7 @@ class Md_attendance extends CI_Model{
 		$ret = $this->db->get('sw_attendance_history h', $offset, $limit);
 		return $ret->result_array();
 	}
+	*/
 	
 }
 /* End of file md_attendance.php */

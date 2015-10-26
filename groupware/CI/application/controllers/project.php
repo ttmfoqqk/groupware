@@ -3,7 +3,11 @@ class Project extends CI_Controller{
 	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('common_model');
 		$this->load->model('project_model');
+		
+		$this->PAGE_CONFIG['tableName']       = 'sw_project';
+		$this->PAGE_CONFIG['tableName_staff'] = 'sw_project_staff';
 		
 		$this->PAGE_CONFIG['segment']  = 3; 
 		$this->PAGE_CONFIG['cur_page'] = $this->uri->segment( $this->PAGE_CONFIG['segment'] ,1);
@@ -204,6 +208,10 @@ class Project extends CI_Controller{
 		$oldFile      = $this->input->post('oldFile');
 		$parameters   = urldecode($this->input->post('parameters'));
 		
+		$config['upload_path']   = 'upload/project/';
+		$config['allowed_types'] = FILE_ALL_TYPE;
+		$config['encrypt_name']  = false;
+		
 		if( $action_type == 'create' ){
 			// 파일 업로드 처리 추가
 			$this->form_validation->set_rules('action_type','폼 액션','required');
@@ -221,9 +229,7 @@ class Project extends CI_Controller{
 			
 			$file_name = '';
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/project/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = false;
+				
 			
 				$this->load->library('upload', $config);
 			
@@ -236,20 +242,22 @@ class Project extends CI_Controller{
 				}
 			}
 
-			$option = array(
-				'menu_part_no' =>$menu_part_no,
-				'menu_no'      =>$menu_no,
-				'user_no'      =>$this->session->userdata('no'),
-				'title'        =>$title,
-				'contents'     =>$contents,
-				'sData'        =>$sData,
-				'eData'        =>$eData,
-				'pPoint'       =>$pPoint,
-				'mPoint'       =>$mPoint,
-				'file'         =>$file_name,
-				'order'        =>$order
+			$set = array(
+				'menu_part_no' => $menu_part_no,
+				'menu_no'      => $menu_no,
+				'user_no'      => $this->session->userdata('no'),
+				'title'        => $title,
+				'contents'     => $contents,
+				'sData'        => $sData,
+				'eData'        => $eData,
+				'pPoint'       => $pPoint,
+				'mPoint'       => $mPoint,
+				'file'         => $file_name,
+				'order'        => $order,
+				'created'      => 'NOW()'
 			);
-			$result = $this->project_model->set_project_insert($option);
+			$result = $this->common_model->insert($this->PAGE_CONFIG['tableName'],$set);
+			//$result = $this->project_model->set_project_insert($option);
 			//alert('등록되었습니다.', site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 			alert('등록되었습니다.', site_url('project/lists/') ); //신규 등록 첫페이지로
 
@@ -272,10 +280,7 @@ class Project extends CI_Controller{
 			
 			$file_name = $oldFile;
 			if( $_FILES['userfile']['name'] ) {
-				$config['upload_path']   = 'upload/project/';
-				$config['allowed_types'] = FILE_ALL_TYPE;
-				$config['encrypt_name']  = false;
-					
+				
 				$this->load->library('upload', $config);
 					
 				if ( !$this->upload->do_upload() ){
@@ -293,7 +298,7 @@ class Project extends CI_Controller{
 				}
 			}
 			
-			$values = array(
+			$set = array(
 				'menu_part_no' =>$menu_part_no,
 				'menu_no'      =>$menu_no,
 				'title'        =>$title,
@@ -305,25 +310,24 @@ class Project extends CI_Controller{
 				'file'         =>$file_name,
 				'order'        =>$order
 			);
-			$option['where'] = array(
-				'no'=>$no
-			);
-			$this->project_model->set_project_update($values,$option);
+			$option['where'] = array('no'=>$no);
+			$this->common_model->update($this->PAGE_CONFIG['tableName'],$set,$option);
+			//$this->project_model->set_project_update($values,$option);
 
 			alert('수정되었습니다.', site_url('project/write/'.$this->PAGE_CONFIG['cur_page'].$parameters.'&no='.$no) );
 		}elseif( $action_type == 'delete' ){
 			/*
 				결재 상태 count check
 			*/
-
 			$this->form_validation->set_rules('no','no','required');
 			if ($this->form_validation->run() == FALSE){
 				alert('잘못된 접근입니다.');
 			}
-			$set_no = is_array($no) ? implode(',',$no):$no;
+			$option['where_in'] = array('no'=>$no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName'],$option);
 			
-			/* 데이터 삭제 */
-			$this->project_model->set_project_delete($set_no);
+			$option['where_in'] = array('project_no'=>$no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_staff'],$option);
 			
 			alert('삭제되었습니다.', site_url('project/lists/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}else{
@@ -407,10 +411,10 @@ class Project extends CI_Controller{
 				'msg' => 'no data'
 			);
 		}else{
-			$option = array();
+			$set = array();
 			$i = 1;
 			foreach($json_data as $key) {
-				array_push($option,array(
+				array_push($set,array(
 					'project_no' => $project_no,
 					'menu_no'    => $key->menu_no,
 					'user_no'    => $key->user_no,
@@ -419,7 +423,11 @@ class Project extends CI_Controller{
 				));
 				$i++;
 			}
-			$result = $this->project_model->set_project_staff_insert($option,array('project_no'=>$project_no));
+			
+			$option['where'] = array('project_no'=>$project_no);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName_staff'],$option);
+			$result = $this->common_model->insert_batch($this->PAGE_CONFIG['tableName_staff'],$set);			
+			//$result = $this->project_model->set_project_staff_insert($option,array('project_no'=>$project_no));
 			$return = array(
 				'result' => 'ok',
 				'msg' => 'ok'

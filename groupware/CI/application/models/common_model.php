@@ -30,7 +30,7 @@ class Common_model extends CI_Model{
 					$this->db->order_by($key,$val);
 				}
 			}
-			if( !is_null($option) && !is_null($limit) ){
+			if( !is_null($offset) && !is_null($limit) ){
 				$this->db->limit($limit,$offset);
 			}
 		}
@@ -49,9 +49,14 @@ class Common_model extends CI_Model{
 		return $result;
 	}
 
-	public function detail($table=NULL,$option=array(),$setVla=array()){
-
-		$this->db->select('*');
+	public function detail($table=NULL,$select=array(),$option=array(),$setVla=array()){
+		if( count($select) > 0 ){
+			foreach($select as $key=>$val){
+				$this->db->select($key,$val);
+			}
+		}else{
+			$this->db->select('*');
+		}
 		$this->db->from($table);
 		set_options($option);
 		
@@ -61,7 +66,7 @@ class Common_model extends CI_Model{
 	}
 	
 	
-	public function insert($table=NULL,$set=array(),$option=array()){
+	public function insert($table=NULL,$set=array()){
 		if( count($set) > 0 ){
 			foreach($set as $key=>$val){
 				$setFg = TRUE;
@@ -71,7 +76,6 @@ class Common_model extends CI_Model{
 				$this->db->set($key,$val,$setFg);
 			}
 		}
-		set_options($option);
 		$this->db->insert($table);
 		return $this->db->insert_id();
 	}
@@ -88,9 +92,17 @@ class Common_model extends CI_Model{
 		set_options($option);
 		$this->db->update($table);
 	}
+	public function update_batch($table=NULL,$set=array()){
+		$this->db->update_batch($table,$set);
+	}
+	
 	public function delete($table=NULL,$option=array()){
-		set_options($option);
-		$this->db->delete($table);
+		if( count($option)>0 ){
+			set_options($option);
+			$this->db->delete($table);
+		}else{
+			$this->db->empty_table($table);
+		}
 	}
 
 }

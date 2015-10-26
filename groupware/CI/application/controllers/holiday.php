@@ -1,12 +1,11 @@
 <?
 class Holiday extends CI_Controller{
-	private $CATEGORY = 'holiday';
-	private $TABLE_NAME = 'sw_holiday';
-	private $PAGE_NAME = '휴일설정';
-	
+	private $PAGE_CONFIG;
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('md_company');
+
+		$this->load->model('common_model');
+		$this->PAGE_CONFIG['tableName'] = 'sw_holiday';
     }
 
 	public function _remap($method){
@@ -39,34 +38,46 @@ class Holiday extends CI_Controller{
 	}
 	
 	public function lists(){
-		$data['head_name'] = $this->PAGE_NAME;
-		$this->load->view('company/holiday_v', $data);
+		$this->load->view('company/holiday_v');
 	}
 	
 	function _list(){
-		$year = !$this->input->post('year') ? '' : $this->input->post('year');
-		$like = array('date'=>$year);
-		$this->load->library("Common");
-		$this->md_company->setTable($this->TABLE_NAME);
-		$result = $this->md_company->get(NULL, '*',  NULL, NULL, $like, 'date', false);
-		echo $this->common->getRet(true, $result);
+		$order = array('date'=>'ASC');
+		$result = $this->common_model->lists($this->PAGE_CONFIG['tableName'],NULL,NULL,NULL,NULL,$order);
+		$return = array(
+				'result' => 'true',
+				'data'   => json_encode($result)
+		);
+		echo json_encode($return);
 	}
 	
 	function _save(){
 		permission_check('holiday','W');
-		$this->load->library("Common");
+
+		$datas = json_decode($this->input->post('datas'));
 		
-		$datas = $this->input->post('data');
-		if(count($datas) <= 0 || empty($datas)){
-			echo $this->common->getRet(false, 'No Data');
+		if(count($datas) <= 0){
+			$return = array(
+				'result' => 'false',
+				'msg' => 'No Data'
+			);
 		}else{
-			$this->md_company->setTable($this->TABLE_NAME);
-			$this->md_company->deleteAll();
+			$set = array();
+			foreach($datas as $key) {
+				array_push($set,array(
+					'name' => $key->name,
+					'date' => $key->date
+				));
+			}
 			
-			foreach ($datas as $data)
-				$this->md_company->create($data);
-			echo $this->common->getRet(true);
+			$this->common_model->delete($this->PAGE_CONFIG['tableName']);
+			$this->common_model->insert_batch($this->PAGE_CONFIG['tableName'],$set);
+			$return = array(
+				'result' => 'true',
+				'msg' => 'ok'
+			);
 		}
+		echo json_encode($return);
 	}
 	
 }
