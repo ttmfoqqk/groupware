@@ -215,7 +215,5 @@
 <!-- / page-content -->
 
 <!-- 폼 날짜 -->
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-<script src="<?echo $this->config->base_url()?>html/plugins/forms/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
 <script src="<?echo $this->config->base_url()?>html/js/sw/sw_approved.js"></script>

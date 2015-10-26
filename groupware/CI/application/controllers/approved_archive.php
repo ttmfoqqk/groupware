@@ -256,6 +256,7 @@ class Approved_archive extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$file_name = '';
 			if( $approved_kind == '1' ){
 				$file_name = '';
 				if( $_FILES['d_file']['name'] ) {
@@ -289,7 +290,6 @@ class Approved_archive extends CI_Controller{
 				'order'      => $order,
 				'created'    => 'NOW()'
 			);
-			//$insert_id = $this->approved_model->set_approved_insert($option);
 			$insert_id = $this->common_model->insert($tableName,$option);
 
 			if($approved_kind == '1'){
@@ -301,7 +301,6 @@ class Approved_archive extends CI_Controller{
 					'user_no'     => $this->session->userdata('no'),
 					'order'       => 1
 				));
-				//$result = $this->approved_model->temp_document_staff_insert($option);
 				$result = $this->common_model->insert_batch('sw_document_staff',$set);
 			}
 
@@ -376,7 +375,6 @@ class Approved_archive extends CI_Controller{
 				'order'      =>$order
 			);
 			$option['where'] = array('no'=>$no);
-			//$this->approved_model->set_approved_update($option,array('no'=>$no));
 			$this->common_model->update($tableName,$set,$option);
 
 			$option = array(
@@ -465,11 +463,10 @@ class Approved_archive extends CI_Controller{
 					));
 				}
 
-				//$result = $this->approved_model->set_approved_staff_insert($option,array('approved_no'=>$approved_no));
-				$this->common_model->insert_batch('sw_approved_status',$set);
-				
 				$option['where'] = array('approved_no'=>$approved_no);
-				$this->common_model->delete('sw_approved_status',$set);
+				$this->common_model->delete('sw_approved_status',$option);
+				
+				$this->common_model->insert_batch('sw_approved_status',$set);
 				
 				$return = array(
 					'result' => 'ok',
@@ -523,13 +520,11 @@ class Approved_archive extends CI_Controller{
 					$i++;
 				}
 				
-				//$result = $this->approved_model->temp_document_staff_insert($option,array('approved_no'=>$approved_no));
-				$this->db->insert_batch('sw_document_staff',$set);
+				$this->common_model->insert_batch('sw_document_staff',$set);
 				
 				$option['where'] = array('approved_no'=>$approved_no);
-				$this->db->delete('sw_document_staff',$option);
-				
-				
+				$this->common_model->delete('sw_document_staff',$option);
+
 				$return = array(
 					'result' => 'ok',
 					'msg' => 'ok'

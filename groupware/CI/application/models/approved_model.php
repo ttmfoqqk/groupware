@@ -38,6 +38,7 @@ class Approved_model extends CI_Model{
 		$this->db->join('(select * from sw_document_staff group by approved_no) AS document_staff','document.no = document_staff.approved_no','left');
 		$this->db->join('sw_user AS document_user','document_staff.user_no = document_user.no','left');
 		$this->db->join('sw_menu AS document_menu','document.menu_no = document_menu.no','left');
+		$this->db->where('status.approved_no is null');
 		set_options($option);
 
 		$query = $this->db->get();

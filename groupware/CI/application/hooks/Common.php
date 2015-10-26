@@ -43,7 +43,7 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'sender' , $CI->session->userdata('no') );
-		$CI->db->where( 'date_format(created,"%Y-%m-%d") <= ', '"'.date('Y-m-d').'"' ,FALSE );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") < ', '"'.date('Y-m-d').'"' ,FALSE );
 		$CI->db->where( 'date_format(created,"%Y-%m-%d") >= ', '"'.$date_limit.'"' ,FALSE );
 		$CI->db->where( 'status', 'a' );
 		$query = $CI->db->get();
@@ -68,7 +68,7 @@ class _Common{
 		$CI->db->select('count(*) as count');
 		$CI->db->from('sw_approved_status');
 		$CI->db->where( 'receiver' , $CI->session->userdata('no') );
-		$CI->db->where( 'date_format(created,"%Y-%m-%d") <= ', '"'.date('Y-m-d').'"' ,FALSE );
+		$CI->db->where( 'date_format(created,"%Y-%m-%d") < ', '"'.date('Y-m-d').'"' ,FALSE );
 		$CI->db->where( 'date_format(created,"%Y-%m-%d") >= ', '"'.$date_limit.'"' ,FALSE );
 		$CI->db->where( 'status', 'a' );
 		$query = $CI->db->get();
