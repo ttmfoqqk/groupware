@@ -121,11 +121,11 @@
 											</tbody>
 										</table>
 									</div>
-									<?if($data['status']=='a'){?>
+									<?//if($data['status']=='a' || $data['status']=='d'){?>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?echo $data['receiver_contents'];?></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?//echo $data['receiver_contents'];?></textarea>
 									</div>
-									<?}?>
+									<?//}?>
 								</div>
 							</div>
 							
@@ -135,7 +135,7 @@
 									<button type="button" class="btn btn-info btn-alt mr5 mb10" onclick="location.href='<?echo $list_url?>';">리스트</button>
 								</div>
 								<div class="panel-body pull-right">
-									<?if( $app_type == 'send' && $data['status']=='a' ) {?>
+									<?if( $fg_btn_send == true ) {?>
 									<button id="approved_write_send" type="button" class="btn btn-danger btn-alt mr5 mb10">결재 요청</button>
 									<button type="submit" class="btn btn-primary btn-alt mr5 mb10">등록</button>
 									<?}?>

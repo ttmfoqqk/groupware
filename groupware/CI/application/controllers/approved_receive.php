@@ -274,11 +274,21 @@ class Approved_receive extends CI_Controller{
 				// 결재 신청
 				$set = array('status' => 'a');
 				$option['where'] = array(
-					'approved_no' =>$no,
-					'sender'      =>$this->session->userdata('no')
+					'approved_no' => $no,
+					'sender'      => $this->session->userdata('no'),
+					'created'     => Date('Y-m-d H:i:s')
 				);
 				//$this->approved_model->set_approved_staff_update($option,$where);
 				$this->common_model->update('sw_approved_status',$set,$option);
+			}
+			
+			if($contents){
+				$option = array(
+						'approved_no' =>$no,
+						'user_no'     =>$this->session->userdata('no'),
+						'contents'    =>$contents
+				);
+				$result = $this->approved_model->set_approved_contents_insert($option);
 			}
 
 			alert('결재 되었습니다.', site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );

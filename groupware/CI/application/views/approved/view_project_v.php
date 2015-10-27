@@ -132,11 +132,11 @@
 											</tbody>
 										</table>
 									</div>
-									<?if($data['status']=='a'){?>
+									<?//if($data['status']=='a' || $data['status']=='d'){?>
 									<div class="col-xs-10 col-xs-offset-1">
-										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?echo $data['receiver_contents'];?></textarea>
+										<textarea id="contents" name="contents" class="form-control" rows="10" placeholder="내용"><?//echo $data['receiver_contents'];?></textarea>
 									</div>
-									<?}?>
+									<?//}?>
 								</div>
 							</div>
 							

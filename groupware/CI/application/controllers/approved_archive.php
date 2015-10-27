@@ -342,6 +342,7 @@ class Approved_archive extends CI_Controller{
 				alert('잘못된 접근입니다.');
 			}
 			
+			$file_name = '';
 			if( $approved_kind == '1' ){
 				$file_name = $oldFile;
 				if( $_FILES['d_file']['name'] ) {

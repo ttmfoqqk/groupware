@@ -221,7 +221,7 @@ class Approved_send extends CI_Controller{
 		$data['action_url']  = site_url('approved_send/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 		$data['list_url']    = site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 
-		$data['fg_btn_send']   = ($data['data']['status']=='a' && $data['data']['status_created'] > APPROVED_LIMIT ? true : false);
+		$data['fg_btn_send']   = ( ($data['data']['status']=='a' ||$data['data']['status']=='d') && $data['data']['status_created'] > APPROVED_LIMIT ? true : false);
 		$data['fg_btn_receiv'] = false;		
 
 		/* 결재자들 */
@@ -260,12 +260,21 @@ class Approved_send extends CI_Controller{
 			$set = array('status' => 'b');
 			$option['where'] = array(
 				'approved_no' =>$no,
-				'sender'      =>$this->session->userdata('no')
+				'sender'      =>$this->session->userdata('no'),
+				'created'     => Date('Y-m-d H:i:s')
 			);
 
 			//$this->approved_model->set_approved_staff_update($option,$where);
 			$this->common_model->update('sw_approved_status',$set,$option);
-
+			
+			if($contents){
+				$option = array(
+					'approved_no' =>$no,
+					'user_no'     =>$this->session->userdata('no'),
+					'contents'    =>$contents
+				);
+				$result = $this->approved_model->set_approved_contents_insert($option);
+			}
 			alert('결재 요청되었습니다.', site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$parameters) );
 		}elseif ( $action_type == 'edit' ){
 			if($contents){
