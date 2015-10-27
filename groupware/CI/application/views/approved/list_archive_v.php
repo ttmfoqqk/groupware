@@ -173,10 +173,10 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['user_name'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-danger btn-xs" id="view_staff" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['no'];?>','<?echo $lt['kind'];?>');"><i class="glyphicon glyphicon-ok"></i></button>
+											<button type="button" class="btn btn-danger btn-xs" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['no'];?>','<?echo $lt['kind'];?>',true);"><i class="glyphicon glyphicon-ok"></i></button>
 											
 											<?if($lt['kind']=="1"){?>
-											<button type="button" class="btn btn-success btn-xs" id="view_staff" onclick="document_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" onclick="document_staff('<?echo $lt['no'];?>');"><i class="glyphicon glyphicon-user"></i></button>
 											<?}?>
 										</td>
 									</tr>

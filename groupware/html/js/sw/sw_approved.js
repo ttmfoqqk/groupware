@@ -295,22 +295,35 @@ function call_data_modal(mode){
 function call_project_staff_modal(no,kind,callback){
 	// base div hide
 	var test_html ='<div id="modal-body" style="display:none;"></div><div id="modal-loading">로딩중..</div>';
-
-	bootbox.dialog({
-		message: test_html,
-		title: '결재자',
-		buttons: {
-			cancel: {
-				label: '닫기',
-				className: "btn-danger"
-			},
-			success: {
-				label: '결재 등록',
-				className: "btn-success",
-				callback: callback
+	
+	if( typeof callback === 'function' ){
+		bootbox.dialog({
+			message: test_html,
+			title: '결재자',
+			buttons: {
+				cancel: {
+					label: '닫기',
+					className: "btn-danger"
+				},
+				success: {
+					label: '결재 등록',
+					className: "btn-success",
+					callback: callback
+				}
 			}
-		}
-	});
+		});
+	}else{
+		bootbox.dialog({
+			message: test_html,
+			title: '결재자',
+			buttons: {
+				cancel: {
+					label: '닫기',
+					className: "btn-danger"
+				}
+			}
+		});
+	}
 	$('.modal-header').css("background-color","#51bf87 ");
 	$('.modal-header').css("color","white");
 	
@@ -322,12 +335,16 @@ function call_project_staff_modal(no,kind,callback){
 	}
 }
 
-function call_project_staff(project_no,approved_no,kind){
+function call_project_staff(project_no,approved_no,kind,callbackFg){
 	var no = kind=='0' ? project_no : approved_no;
-	call_project_staff_modal(no,kind,function(){
-		application_approved(approved_no);
-		return false;
-	});
+	var callback;
+	if( callbackFg ){
+		callback = function(){
+			application_approved(approved_no);
+			return false;
+		}
+	}
+	call_project_staff_modal(no,kind,callback);
 }
 
 

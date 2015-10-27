@@ -43,5 +43,8 @@ define('FILE_TXT_TYPE', 'txt');
 define('FILE_ZIP_TYPE', 'zip|tar|rar');
 define('FILE_ALL_TYPE', FILE_IMAGE_TYPE . '|' . FILE_DOC_TYPE . '|' . FILE_ZIP_TYPE);
 
+
+define('APPROVED_LIMIT', date('Y-m-d',strtotime(date('Y-m-d').'-5 days')));
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

@@ -157,7 +157,7 @@
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo ($lt['kind']=='0' ? '-'.$lt['mPoint'] : '');?></a></td>
 										<td><a href="<?echo $anchor;?>" class="text-normal"><?echo $lt['created'];?></a></td>
 										<td class="text-center">
-											<button type="button" class="btn btn-success btn-xs" onclick="alert('준비중');"><i class="glyphicon glyphicon-user"></i></button>
+											<button type="button" class="btn btn-success btn-xs" onclick="call_project_staff('<?echo $lt['project_no'];?>','<?echo $lt['no'];?>','<?echo $lt['kind'];?>');"><i class="glyphicon glyphicon-user"></i></button>
 										</td>
 									</tr>
 									<?php }?>

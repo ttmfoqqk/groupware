@@ -221,7 +221,7 @@ class Approved_send extends CI_Controller{
 		$data['action_url']  = site_url('approved_send/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 		$data['list_url']    = site_url('approved_send/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 
-		$data['fg_btn_send']   = ($data['data']['status']=='a' && $data['data']['status_created'] > date('Y-m-d') ? true : false);
+		$data['fg_btn_send']   = ($data['data']['status']=='a' && $data['data']['status_created'] > APPROVED_LIMIT ? true : false);
 		$data['fg_btn_receiv'] = false;		
 
 		/* 결재자들 */

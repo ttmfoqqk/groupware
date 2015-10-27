@@ -223,7 +223,7 @@ class Approved_receive extends CI_Controller{
 		$data['action_url']    = site_url('approved_receive/proc/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']); // 폼 action
 		$data['list_url']      = site_url('approved_receive/lists/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['fg_btn_send']   = false;
-		$data['fg_btn_receiv'] = ($data['data']['status']=='b' && $data['data']['status_created'] > date("Y-m-d", strtotime(date('Y-m-d')."-3 day")) ? true : false);
+		$data['fg_btn_receiv'] = ($data['data']['status']=='b' && $data['data']['status_created'] > APPROVED_LIMIT ? true : false);
 
 		/* 결재자들 */
 		$option = array(
