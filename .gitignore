@@ -5,3 +5,5 @@
 groupware/CI/application/config/database.php
 groupware/CI/application/controllers/TemplateMember.php
 groupware/upload/*
+
+dev/

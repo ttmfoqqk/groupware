@@ -148,6 +148,7 @@ class Approved_receive extends CI_Controller{
 
 		$data['total']         = $this->approved_model->approved_send_list($option,null,null,'count');
 		$data['list']          = $this->approved_model->approved_send_list($option,PAGING_PER_PAGE,$offset);
+		echo $this->db->last_query();
 		$data['parameters']    = urlencode($this->PAGE_CONFIG['params_string']);
 		$data['anchor_url']    = site_url('approved_receive/write/'.$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page'].$this->PAGE_CONFIG['params_string']);
 		$data['action_url']    = site_url('approved_receive/proc/' .$this->PAGE_CONFIG['set_page'].'/'.$this->PAGE_CONFIG['cur_page']);
@@ -163,6 +164,8 @@ class Approved_receive extends CI_Controller{
 		$data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('approved/list_receive_v',$data);
+		
+		
 	}
 	
 	public function excel(){

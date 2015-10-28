@@ -75,7 +75,7 @@ class Project_model extends CI_Model{
 		return $result;
 	}
 	
-
+	/* 일정표 */
 	public function get_schedule($option=NULL){
 		$this->db->select('no,id,name,color');
 		$this->db->from('sw_user');
