@@ -33,6 +33,9 @@
         <link rel="icon" href="img/ico/favicon.ico" type="image/png">
         <!-- Windows8 touch icon ( http://www.buildmypinnedsite.com/ )-->
         <meta name="msapplication-TileColor" content="#3399cc" />
+		<style type="text/css">
+			body{display:none;}
+		</style>
     </head>
     <body>
         <!--[if lt IE 9]>
@@ -1050,5 +1053,12 @@
         <script src="js/jquery.dynamic.js"></script>
         <script src="js/main.js"></script>
         <script src="js/pages/tables-basic.js"></script>
+
+		<script type="text/javascript">
+		$(window).load(function(){
+			alert('로그인 쿠키 체크');
+			$('body').show();
+		});
+		</script>
     </body>
 </html>
